@@ -1,0 +1,363 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - dyna analysis - hmm/Gaussian.h</title>
+  <link rel="stylesheet" type="text/css" href="../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../index.html">top level</a> - <a href="index.html">hmm</a> - Gaussian.h<span style="font-size: 80%;"> (source / <a href="Gaussian.h.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">dyna analysis</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">11</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2017-07-03 01:01:36</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">5</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : /*---------------------------------------------------------------------------------------------*</a>
+<span class="lineNum">       2 </span>            :  * Copyright (C) 2012 Daniel Bolaños - www.bltek.com - Boulder Language Technologies           *
+<span class="lineNum">       3 </span>            :  *                                                                                             *
+<span class="lineNum">       4 </span>            :  * www.bavieca.org is the website of the Bavieca Speech Recognition Toolkit                    *
+<span class="lineNum">       5 </span>            :  *                                                                                             *
+<span class="lineNum">       6 </span>            :  * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);                             *
+<span class="lineNum">       7 </span>            :  * you may not use this file except in compliance with the License.                            *
+<span class="lineNum">       8 </span>            :  * You may obtain a copy of the License at                                                     *
+<span class="lineNum">       9 </span>            :  *                                                                                             *
+<span class="lineNum">      10 </span>            :  *         http://www.apache.org/licenses/LICENSE-2.0                                          *
+<span class="lineNum">      11 </span>            :  *                                                                                             *
+<span class="lineNum">      12 </span>            :  * Unless required by applicable law or agreed to in writing, software                         *
+<span class="lineNum">      13 </span>            :  * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,                           *
+<span class="lineNum">      14 </span>            :  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.                    *
+<span class="lineNum">      15 </span>            :  * See the License for the specific language governing permissions and                         *
+<span class="lineNum">      16 </span>            :  * limitations under the License.                                                              *
+<span class="lineNum">      17 </span>            :  *---------------------------------------------------------------------------------------------*/
+<span class="lineNum">      18 </span>            : 
+<span class="lineNum">      19 </span>            : 
+<span class="lineNum">      20 </span>            : #ifndef GAUSSIAN_H
+<span class="lineNum">      21 </span>            : #define GAUSSIAN_H
+<span class="lineNum">      22 </span>            : 
+<span class="lineNum">      23 </span>            : #include &lt;float.h&gt;
+<span class="lineNum">      24 </span>            : #include &lt;math.h&gt;
+<span class="lineNum">      25 </span>            : 
+<span class="lineNum">      26 </span>            : using namespace std;
+<span class="lineNum">      27 </span>            : 
+<span class="lineNum">      28 </span>            : #include &lt;vector&gt;
+<span class="lineNum">      29 </span>            : #include &lt;list&gt;
+<span class="lineNum">      30 </span>            : 
+<span class="lineNum">      31 </span>            : #include &quot;Vector.h&quot;
+<span class="lineNum">      32 </span>            : #include &quot;Matrix.h&quot;
+<span class="lineNum">      33 </span>            : #include &quot;SMatrix.h&quot;
+<span class="lineNum">      34 </span>            : #include &quot;TMatrix.h&quot;
+<span class="lineNum">      35 </span>            : 
+<span class="lineNum">      36 </span>            : namespace Bavieca {
+<span class="lineNum">      37 </span>            : 
+<span class="lineNum">      38 </span>            : // covariance modeling type
+<span class="lineNum">      39 </span>            : #define COVARIANCE_MODELLING_TYPE_DEFAULT                       -1
+<span class="lineNum">      40 </span>            : #define COVARIANCE_MODELLING_TYPE_DIAGONAL              0
+<span class="lineNum">      41 </span>            : #define COVARIANCE_MODELLING_TYPE_FULL                          1
+<span class="lineNum">      42 </span>            : 
+<span class="lineNum">      43 </span>            : // covariance modeling type
+<span class="lineNum">      44 </span>            : #define COVARIANCE_MODELLING_TYPE_DIAGONAL_STR          &quot;diagonal&quot;
+<span class="lineNum">      45 </span>            : #define COVARIANCE_MODELLING_TYPE_FULL_STR                      &quot;full&quot;
+<span class="lineNum">      46 </span>            : 
+<span class="lineNum">      47 </span>            : /**
+<span class="lineNum">      48 </span>            :         @author daniel &lt;dani.bolanos@gmail.com&gt;
+<span class="lineNum">      49 </span>            : */
+<span class="lineNum">      50 </span>            : class Gaussian {
+<span class="lineNum">      51 </span>            : 
+<span class="lineNum">      52 </span>            :         private:
+<span class="lineNum">      53 </span>            :         
+<span class="lineNum">      54 </span>            :                 int m_iDim;                                                                     // feature dimensionality
+<span class="lineNum">      55 </span>            :                 int m_iCovarianceType;                                  // covariance modelling type
+<span class="lineNum">      56 </span>            :                 int m_iTimestamp;
+<span class="lineNum">      57 </span>            :                 float m_fProbabilityCached;             
+<span class="lineNum">      58 </span>            : 
+<span class="lineNum">      59 </span>            :                 float m_fWeight;                                                        // component weight
+<span class="lineNum">      60 </span>            :                 Vector&lt;float&gt; *m_vMean;                                   // mean
+<span class="lineNum">      61 </span>            :                 Vector&lt;float&gt; *m_vCovarianceDiag; // covariance
+<span class="lineNum">      62 </span>            :                 SMatrix&lt;float&gt; *m_mCovarianceFull;        // covariance
+<span class="lineNum">      63 </span>            :                 
+<span class="lineNum">      64 </span>            :                 // precomputed term to speed-up Gaussian evaluation
+<span class="lineNum">      65 </span>            :                 double m_dConstant;
+<span class="lineNum">      66 </span>            :                 double m_dLogConstant;  
+<span class="lineNum">      67 </span>            :                 
+<span class="lineNum">      68 </span>            :                 // auxiliar fields for mixture splitting/incrementing
+<span class="lineNum">      69 </span>            :                 bool m_bMerged;                                                 // whether the Gaussian was just created from merging 2 Gaussian components
+<span class="lineNum">      70 </span>            :                 float m_fWeightMixtureIncrement;                // weight used for weight-based mixture increment               
+<span class="lineNum">      71 </span>            :                 
+<span class="lineNum">      72 </span>            :                 // 
+<span class="lineNum">      73 </span>            :                 TMatrix&lt;float&gt; *m_mCholeskyFactor;
+<span class="lineNum">      74 </span>            :                 
+<span class="lineNum">      75 </span>            :                 // evaluate the Gaussian distribution
+<span class="lineNum">      76 </span>            :                 inline float evaluateDiagonalCovariance(float *fFeatures, int iTime)  {
+<span class="lineNum">      77 </span>            :                 
+<span class="lineNum">      78 </span>            :                         assert(m_iCovarianceType == COVARIANCE_MODELLING_TYPE_DIAGONAL);
+<span class="lineNum">      79 </span>            :                         
+<span class="lineNum">      80 </span>            :                         double dAcc;
+<span class="lineNum">      81 </span>            :                         double dDeterminant;
+<span class="lineNum">      82 </span>            :                         float fProbability = 0.0;
+<span class="lineNum">      83 </span>            :                         float fExponent;
+<span class="lineNum">      84 </span>            :                         
+<span class="lineNum">      85 </span>            :                         double dConstant = pow(PI_NUMBER*2.0,m_iDim/2.0);       
+<span class="lineNum">      86 </span>            :                         
+<span class="lineNum">      87 </span>            :                         dDeterminant = 1.0;
+<span class="lineNum">      88 </span>            :                         fExponent = 0.0;
+<span class="lineNum">      89 </span>            :                         
+<span class="lineNum">      90 </span>            :                         for(int j = 0 ; j &lt; m_iDim ; ++j) {
+<span class="lineNum">      91 </span>            :                                 // compute the determinant of the covariance matrix
+<span class="lineNum">      92 </span>            :                                 dDeterminant *= (*m_vCovarianceDiag)(j);
+<span class="lineNum">      93 </span>            :                                 // compute the numerator
+<span class="lineNum">      94 </span>            :                                 dAcc = fFeatures[j]-(*m_vMean)(j);
+<span class="lineNum">      95 </span>            :                                 fExponent += (float)(dAcc*dAcc*(1.0/(*m_vCovarianceDiag)(j)));
+<span class="lineNum">      96 </span>            :                         }               
+<span class="lineNum">      97 </span>            :                         dDeterminant = pow(dDeterminant,0.5);
+<span class="lineNum">      98 </span>            :                         //fProbability = (float)max((double)LOG_LIKELIHOOD_FLOOR,(-0.5*fExponent)-log(fConstant*dDeterminant)); 
+<span class="lineNum">      99 </span>            :                         // we do not floor the probability since the contribution of each Gaussian component to the 
+<span class="lineNum">     100 </span>            :                         // probability of the mixture (as computed in other methods) is not floored
+<span class="lineNum">     101 </span>            :                         fProbability = (float)((-0.5*fExponent)-log(dConstant*dDeterminant));   
+<span class="lineNum">     102 </span>            :                         if (finite(fProbability) == 0) {
+<span class="lineNum">     103 </span>            :                                 fProbability = LOG_LIKELIHOOD_FLOOR;
+<span class="lineNum">     104 </span>            :                         }
+<span class="lineNum">     105 </span>            :                 
+<span class="lineNum">     106 </span>            :                         return fProbability;
+<span class="lineNum">     107 </span>            :                 }
+<span class="lineNum">     108 </span>            :                         
+<span class="lineNum">     109 </span>            :                 inline float evaluateFullCovariance(float *fFeatures, int iTime) {
+<span class="lineNum">     110 </span>            :                 
+<span class="lineNum">     111 </span>            :                         assert(m_iCovarianceType == COVARIANCE_MODELLING_TYPE_FULL);
+<span class="lineNum">     112 </span>            :                         
+<span class="lineNum">     113 </span>            :                         double dAcc;
+<span class="lineNum">     114 </span>            :                         float fProbability = 0.0;
+<span class="lineNum">     115 </span>            :                         double dExponent = 0.0;
+<span class="lineNum">     116 </span>            :                         float *fMean = m_vMean-&gt;getData();
+<span class="lineNum">     117 </span>            :                         float *fCholeskyFactorRow = m_mCholeskyFactor-&gt;getData();
+<span class="lineNum">     118 </span>            :                         
+<span class="lineNum">     119 </span>            :                         // for each row in the Cholesky Factor
+<span class="lineNum">     120 </span>            :                         for(int j = 0 ; j &lt; m_iDim ; ++j) {
+<span class="lineNum">     121 </span>            :                                 dAcc = 0.0;
+<span class="lineNum">     122 </span>            :                                 for(int k = j ; k &lt; m_iDim ; ++k) {
+<span class="lineNum">     123 </span>            :                                         dAcc += (fFeatures[k]-fMean[k])*(*fCholeskyFactorRow);
+<span class="lineNum">     124 </span>            :                                         ++fCholeskyFactorRow;
+<span class="lineNum">     125 </span>            :                                 }
+<span class="lineNum">     126 </span>            :                                 dExponent += dAcc*dAcc;
+<span class="lineNum">     127 </span>            :                                 // is it possible to stop the computation based on a very high partial exponent?
+<span class="lineNum">     128 </span>            :                         }
+<span class="lineNum">     129 </span>            :                         
+<span class="lineNum">     130 </span>            :                         fProbability = (float)(exp(-0.5*dExponent)/m_dConstant);        
+<span class="lineNum">     131 </span>            :                         fProbability = (float)std::max&lt;double&gt;((double)LOG_LIKELIHOOD_FLOOR,log(fProbability));   
+<span class="lineNum">     132 </span>            :                         if (finite(fProbability) == 0) {
+<span class="lineNum">     133 </span>            :                                 fProbability = LOG_LIKELIHOOD_FLOOR;
+<span class="lineNum">     134 </span>            :                         }
+<span class="lineNum">     135 </span>            :                         
+<span class="lineNum">     136 </span>            :                         return fProbability;
+<span class="lineNum">     137 </span>            :                 }
+<span class="lineNum">     138 </span>            : 
+<span class="lineNum">     139 </span>            :         public:
+<span class="lineNum">     140 </span>            :         
+<span class="lineNum">     141 </span>            :                 float *m_fCholeskyUpper;
+<span class="lineNum">     142 </span>            : 
+<span class="lineNum">     143 </span>            :                 // constructor
+<span class="lineNum">     144 </span>            :                 Gaussian(int iDim, int iCovarianceType);
+<span class="lineNum">     145 </span>            : 
+<span class="lineNum">     146 </span>            :                 // destructor
+<span class="lineNum">     147 </span>            :                 ~Gaussian();    
+<a name="148"><span class="lineNum">     148 </span>            :                 </a>
+<span class="lineNum">     149 </span>            :                 // return the mean
+<span class="lineNum">     150 </span><span class="lineNoCov">          0 :                 inline Vector&lt;float&gt; &amp;mean() {</span>
+<span class="lineNum">     151 </span>            :                 
+<span class="lineNum">     152 </span><span class="lineNoCov">          0 :                         return *m_vMean;</span>
+<span class="lineNum">     153 </span>            :                 }
+<a name="154"><span class="lineNum">     154 </span>            :                 </a>
+<span class="lineNum">     155 </span>            :                 // return the covariance
+<span class="lineNum">     156 </span><span class="lineNoCov">          0 :                 inline Vector&lt;float&gt; &amp;covarianceDiag() {</span>
+<span class="lineNum">     157 </span>            :                 
+<span class="lineNum">     158 </span><span class="lineNoCov">          0 :                         return *m_vCovarianceDiag;</span>
+<span class="lineNum">     159 </span>            :                 }
+<a name="160"><span class="lineNum">     160 </span>            :                 </a>
+<span class="lineNum">     161 </span>            :                 // return the covariance
+<span class="lineNum">     162 </span><span class="lineNoCov">          0 :                 inline SMatrix&lt;float&gt; &amp;covarianceFull() {</span>
+<span class="lineNum">     163 </span>            :                 
+<span class="lineNum">     164 </span><span class="lineNoCov">          0 :                         return *m_mCovarianceFull;</span>
+<span class="lineNum">     165 </span>            :                 }               
+<a name="166"><span class="lineNum">     166 </span>            :                 </a>
+<span class="lineNum">     167 </span>            :                 // return the weight
+<span class="lineNum">     168 </span><span class="lineNoCov">          0 :                 inline float &amp;weight() {</span>
+<span class="lineNum">     169 </span>            :                 
+<span class="lineNum">     170 </span><span class="lineNoCov">          0 :                         return m_fWeight;</span>
+<span class="lineNum">     171 </span>            :                 }
+<span class="lineNum">     172 </span>            :                 
+<span class="lineNum">     173 </span>            :                 // set the mean and covariance (maybe different dimensionality)
+<span class="lineNum">     174 </span>            :                 inline void setMeanCov(Vector&lt;float&gt; &amp;vMean, Vector&lt;float&gt; &amp;vCovariance) {
+<span class="lineNum">     175 </span>            :                 
+<span class="lineNum">     176 </span>            :                         assert(m_iCovarianceType == COVARIANCE_MODELLING_TYPE_DIAGONAL);
+<span class="lineNum">     177 </span>            :                         assert(vMean.getDim() == vCovariance.getDim());
+<span class="lineNum">     178 </span>            :                         
+<span class="lineNum">     179 </span>            :                         // reallocate if different dimensionality?      
+<span class="lineNum">     180 </span>            :                         if (vMean.getDim() != (unsigned int)m_iDim) {
+<span class="lineNum">     181 </span>            :                                 m_iDim = vMean.getDim();
+<span class="lineNum">     182 </span>            :                                 delete m_vMean;
+<span class="lineNum">     183 </span>            :                                 m_vMean = new Vector&lt;float&gt;(vMean);
+<span class="lineNum">     184 </span>            :                                 delete m_vCovarianceDiag;
+<span class="lineNum">     185 </span>            :                                 m_vCovarianceDiag = new Vector&lt;float&gt;(vCovariance);       
+<span class="lineNum">     186 </span>            :                         } else {
+<span class="lineNum">     187 </span>            :                                 m_vMean-&gt;copy(vMean);
+<span class="lineNum">     188 </span>            :                                 m_vCovarianceDiag-&gt;copy(vCovariance);        
+<span class="lineNum">     189 </span>            :                         }
+<span class="lineNum">     190 </span>            :                 }
+<span class="lineNum">     191 </span>            :                 
+<span class="lineNum">     192 </span>            :                 // return the Cholesky factor
+<span class="lineNum">     193 </span>            :                 inline TMatrix&lt;float&gt; &amp;choleskyFactor() {
+<span class="lineNum">     194 </span>            :                 
+<span class="lineNum">     195 </span>            :                         return *m_mCholeskyFactor;
+<span class="lineNum">     196 </span>            :                 }
+<span class="lineNum">     197 </span>            :                 
+<span class="lineNum">     198 </span>            :                 // return the evaluation constant
+<span class="lineNum">     199 </span>            :                 inline double evaluationConstant() {
+<span class="lineNum">     200 </span>            :                 
+<span class="lineNum">     201 </span>            :                         return m_dConstant;
+<span class="lineNum">     202 </span>            :                 }
+<span class="lineNum">     203 </span>            :                 
+<span class="lineNum">     204 </span>            :                 // return the logarithm of the evaluation constant
+<span class="lineNum">     205 </span>            :                 inline double evaluationLogConstant() {
+<span class="lineNum">     206 </span>            :                 
+<span class="lineNum">     207 </span>            :                         return m_dLogConstant;
+<a name="208"><span class="lineNum">     208 </span>            :                 }</a>
+<span class="lineNum">     209 </span>            :                 
+<span class="lineNum">     210 </span><span class="lineNoCov">          0 :                 inline void resetTimeStamp() {</span>
+<span class="lineNum">     211 </span>            :                 
+<span class="lineNum">     212 </span><span class="lineNoCov">          0 :                         m_iTimestamp = -1;</span>
+<span class="lineNum">     213 </span><span class="lineNoCov">          0 :                 }</span>
+<span class="lineNum">     214 </span>            :                 
+<span class="lineNum">     215 </span>            :                 // set merged
+<span class="lineNum">     216 </span>            :                 inline void setMerged(bool bMerged) {
+<span class="lineNum">     217 </span>            :                 
+<span class="lineNum">     218 </span>            :                         m_bMerged = bMerged;
+<span class="lineNum">     219 </span>            :                 }
+<span class="lineNum">     220 </span>            :                 
+<span class="lineNum">     221 </span>            :                 // remove a Gaussian component
+<span class="lineNum">     222 </span>            :                 void removeGaussianComponent(int g);
+<span class="lineNum">     223 </span>            :                 
+<span class="lineNum">     224 </span>            :                 // add a Gaussian component
+<span class="lineNum">     225 </span>            :                 void addGaussianComponent(Gaussian *gaussian);  
+<span class="lineNum">     226 </span>            :                 
+<span class="lineNum">     227 </span>            :                 // precompute the constant used to speed-up Gaussian evaluations
+<span class="lineNum">     228 </span>            :                 void precomputeConstant();
+<span class="lineNum">     229 </span>            : 
+<span class="lineNum">     230 </span>            :                 // evaluate the Gaussian distribution
+<span class="lineNum">     231 </span>            :                 inline float evaluate(float *fFeatures, int iTime) {
+<span class="lineNum">     232 </span>            :                 
+<span class="lineNum">     233 </span>            :                         if (m_iCovarianceType == COVARIANCE_MODELLING_TYPE_DIAGONAL) {
+<span class="lineNum">     234 </span>            :                                 return evaluateDiagonalCovariance(fFeatures,iTime);
+<span class="lineNum">     235 </span>            :                         } else {
+<span class="lineNum">     236 </span>            :                                 assert(m_iCovarianceType == COVARIANCE_MODELLING_TYPE_FULL);
+<span class="lineNum">     237 </span>            :                                 return evaluateFullCovariance(fFeatures,iTime);
+<span class="lineNum">     238 </span>            :                         }
+<span class="lineNum">     239 </span>            :                 }                               
+<span class="lineNum">     240 </span>            :                 
+<span class="lineNum">     241 </span>            :                 // print Gaussian information
+<span class="lineNum">     242 </span>            :                 void print(ostream &amp;os);
+<span class="lineNum">     243 </span>            :                 
+<span class="lineNum">     244 </span>            :                 // return the covariance modelling type as a string
+<span class="lineNum">     245 </span>            :                 inline static const char *getCovarianceModellingStringFormat(int iType) {
+<span class="lineNum">     246 </span>            :                 
+<span class="lineNum">     247 </span>            :                         if (iType == COVARIANCE_MODELLING_TYPE_DIAGONAL) {
+<span class="lineNum">     248 </span>            :                                 return COVARIANCE_MODELLING_TYPE_DIAGONAL_STR;
+<span class="lineNum">     249 </span>            :                         } else {
+<span class="lineNum">     250 </span>            :                                 return COVARIANCE_MODELLING_TYPE_FULL_STR;
+<span class="lineNum">     251 </span>            :                         }                       
+<span class="lineNum">     252 </span>            :                 }
+<span class="lineNum">     253 </span>            :                 
+<span class="lineNum">     254 </span>            :                 // return the covariance modelling type
+<span class="lineNum">     255 </span>            :                 inline static int getCovarianceModellingType(const char *strType) {
+<span class="lineNum">     256 </span>            :                 
+<span class="lineNum">     257 </span>            :                         if (strcmp(strType,COVARIANCE_MODELLING_TYPE_DIAGONAL_STR) == 0) {
+<span class="lineNum">     258 </span>            :                                 return COVARIANCE_MODELLING_TYPE_DIAGONAL;
+<span class="lineNum">     259 </span>            :                         } else {
+<span class="lineNum">     260 </span>            :                                 assert(strcmp(strType,COVARIANCE_MODELLING_TYPE_FULL_STR) == 0);
+<span class="lineNum">     261 </span>            :                                 return COVARIANCE_MODELLING_TYPE_FULL;
+<span class="lineNum">     262 </span>            :                         }
+<span class="lineNum">     263 </span>            :                 }
+<span class="lineNum">     264 </span>            :                 
+<span class="lineNum">     265 </span>            :                 // return the weight for mixture increment
+<span class="lineNum">     266 </span>            :                 inline float &amp;weightMixtureIncrement() {
+<span class="lineNum">     267 </span>            :                                 
+<span class="lineNum">     268 </span>            :                         return m_fWeightMixtureIncrement;
+<span class="lineNum">     269 </span>            :                 }
+<span class="lineNum">     270 </span>            :                 
+<span class="lineNum">     271 </span>            : };
+<span class="lineNum">     272 </span>            : 
+<span class="lineNum">     273 </span>            : typedef vector&lt;Gaussian*&gt; VGaussian;
+<span class="lineNum">     274 </span>            : typedef list&lt;Gaussian*&gt; LGaussian;
+<span class="lineNum">     275 </span>            : 
+<span class="lineNum">     276 </span>            : };      // end-of-namespace
+<span class="lineNum">     277 </span>            : 
+<span class="lineNum">     278 </span>            : #endif
+<span class="lineNum">     279 </span>            : 
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.13</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

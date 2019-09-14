@@ -1,0 +1,215 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - dyna analysis - hmm/HMMStateDecoding.h</title>
+  <link rel="stylesheet" type="text/css" href="../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../index.html">top level</a> - <a href="index.html">hmm</a> - HMMStateDecoding.h<span style="font-size: 80%;"> (source / <a href="HMMStateDecoding.h.func.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">dyna analysis</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">8</td>
+            <td class="headerCovTableEntry">8</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-05-05</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">4</td>
+            <td class="headerCovTableEntry">4</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : #ifndef HMMSTATEDECODING_H</a>
+<span class="lineNum">       2 </span>            : #define HMMSTATEDECODING_H
+<span class="lineNum">       3 </span>            : 
+<span class="lineNum">       4 </span>            : using namespace std;
+<span class="lineNum">       5 </span>            : 
+<span class="lineNum">       6 </span>            : #include &lt;vector&gt;
+<span class="lineNum">       7 </span>            : #include &lt;list&gt;
+<span class="lineNum">       8 </span>            : 
+<span class="lineNum">       9 </span>            : #include &lt;stdio.h&gt;
+<span class="lineNum">      10 </span>            : #include &lt;string.h&gt;
+<span class="lineNum">      11 </span>            : #include &lt;math.h&gt;
+<span class="lineNum">      12 </span>            : 
+<span class="lineNum">      13 </span>            :  
+<span class="lineNum">      14 </span>            :  
+<span class="lineNum">      15 </span>            : 
+<span class="lineNum">      16 </span>            : // for gcc #include &lt;x86intrin.h&gt; can be used instead, it includes whatever is needed
+<span class="lineNum">      17 </span>            : 
+<span class="lineNum">      18 </span>            : #if defined __linux__ || defined __MINGW32__ || defined _MSC_VER
+<span class="lineNum">      19 </span>            : #include &lt;malloc.h&gt;
+<span class="lineNum">      20 </span>            : #elif __APPLE__
+<span class="lineNum">      21 </span>            : #include &lt;sys/malloc.h&gt;
+<span class="lineNum">      22 </span>            : #else 
+<span class="lineNum">      23 </span>            :         #error &quot;unsupported platform&quot;
+<span class="lineNum">      24 </span>            : #endif
+<span class="lineNum">      25 </span>            : 
+<span class="lineNum">      26 </span>            : #include &quot;Global.h&quot;
+<span class="lineNum">      27 </span>            : 
+<span class="lineNum">      28 </span>            : namespace Bavieca {
+<span class="lineNum">      29 </span>            : 
+<span class="lineNum">      30 </span>            : class FileInput;
+<span class="lineNum">      31 </span>            : class FileOutput;
+<span class="lineNum">      32 </span>            : class IOBase;
+<span class="lineNum">      33 </span>            : class PhoneSet;
+<span class="lineNum">      34 </span>            : 
+<span class="lineNum">      35 </span>            : // state's within-word position
+<span class="lineNum">      36 </span>            : #define WITHIN_WORD_POSITION_START                      0
+<span class="lineNum">      37 </span>            : #define WITHIN_WORD_POSITION_INTERNAL           1
+<span class="lineNum">      38 </span>            : #define WITHIN_WORD_POSITION_END                                2
+<span class="lineNum">      39 </span>            : #define WITHIN_WORD_POSITION_MONOPHONE          3
+<span class="lineNum">      40 </span>            : 
+<span class="lineNum">      41 </span>            : #define STR_WITHIN_WORD_POSITION_START                  &quot;start&quot;
+<span class="lineNum">      42 </span>            : #define STR_WITHIN_WORD_POSITION_INTERNAL               &quot;internal&quot;
+<span class="lineNum">      43 </span>            : #define STR_WITHIN_WORD_POSITION_END                    &quot;end&quot;
+<span class="lineNum">      44 </span>            : #define STR_WITHIN_WORD_POSITION_MONOPHONE      &quot;monophone&quot;
+<span class="lineNum">      45 </span>            : 
+<span class="lineNum">      46 </span>            : class HMMStateDecoding;
+<span class="lineNum">      47 </span>            : 
+<span class="lineNum">      48 </span>            : typedef vector&lt;HMMStateDecoding*&gt; VHMMStateDecoding;
+<span class="lineNum">      49 </span>            : 
+<span class="lineNum">      50 </span>            : #define DIMENSIONALITY 39
+<span class="lineNum">      51 </span>            : 
+<span class="lineNum">      52 </span>            : typedef struct {
+<span class="lineNum">      53 </span>            :         int iId;                                                                                        // unique identifier (across all Gaussian component in the system)
+<span class="lineNum">      54 </span>            :         float fWeight;                                                                                  // gaussian weight
+<span class="lineNum">      55 </span>            :         float fConstant;
+<span class="lineNum">      56 </span>            :  
+<span class="lineNum">      57 </span>            :         float fMean[DIMENSIONALITY];                            // gaussian mean
+<span class="lineNum">      58 </span>            :         float fCovariance[DIMENSIONALITY];              // gaussian covariance matrix (diagonal)        
+<span class="lineNum">      59 </span>            :         
+<span class="lineNum">      60 </span>            : } GaussianDecoding;
+<span class="lineNum">      61 </span>            : 
+<span class="lineNum">      62 </span>            : typedef vector&lt;GaussianDecoding*&gt; VGaussianDecoding;
+<span class="lineNum">      63 </span>            : typedef list&lt;GaussianDecoding*&gt; LGaussianDecoding;
+<span class="lineNum">      64 </span>            : 
+<span class="lineNum">      65 </span>            : /**
+<span class="lineNum">      66 </span>            :         @author daniel &lt;dani.bolanos@gmail.com&gt;
+<span class="lineNum">      67 </span>            : */
+<span class="lineNum">      68 </span>            : class HMMStateDecoding {
+<span class="lineNum">      69 </span>            :         private:
+<span class="lineNum">      70 </span>            :                 int m_iDim;
+<span class="lineNum">      71 </span>            :                 PhoneSet *m_phoneSet;
+<span class="lineNum">      72 </span>            :                 // state identity
+<span class="lineNum">      73 </span>            :                 unsigned char m_iPhone;                                         // basephone
+<span class="lineNum">      74 </span>            :                 unsigned char m_iState;                                         // HMM-state 
+<span class="lineNum">      75 </span>            :                 unsigned char m_iPosition;                                      // HMM-state within-word position
+<span class="lineNum">      76 </span>            :                 int m_iId;                                                                              // HMM-state unique identifier
+<span class="lineNum">      77 </span>            :                 
+<span class="lineNum">      78 </span>            :                 // gaussians
+<span class="lineNum">      79 </span>            :                 int m_iGaussianComponents;
+<span class="lineNum">      80 </span>            :                 GaussianDecoding *m_gaussians;                  // block of memory containing all gaussians
+<span class="lineNum">      81 </span>            :                 
+<span class="lineNum">      82 </span>            :                 // constants
+<span class="lineNum">      83 </span>            :                 float m_fConstant;
+<span class="lineNum">      84 </span>            :                 
+<span class="lineNum">      85 </span>            :                 // caching computations
+<span class="lineNum">      86 </span>            :                 int m_iTimestamp;                                                       // time-stamp (for caching emission probability computations)
+<span class="lineNum">      87 </span>            :                 float m_fProbabilityCached;                     // cached probability
+<span class="lineNum">      88 </span>            :                 
+<span class="lineNum">      89 </span>            :                 // whether the covariance was modified to accelerate the computation of emission probabilities
+<span class="lineNum">      90 </span>            :                 bool m_bCovarianceOriginal;
+<span class="lineNum">      91 </span>            :                 // computes the emission probability of the state given the feature vector 
+<span class="lineNum">      92 </span>            :                 // uses nearest-neighbor approximation
+<span class="lineNum">      93 </span>            :                 // uses SIMD instructions (SSE) (sse support must be enabled during compilation!)
+<span class="lineNum">      94 </span>            :                 float computeEmissionProbabilityNearestNeighborSSE(float *fFeatures, int iTime);        
+<span class="lineNum">      95 </span>            :         public:
+<span class="lineNum">      96 </span>            :                 // default constructor
+<span class="lineNum">      97 </span>            :                 HMMStateDecoding();
+<span class="lineNum">      98 </span>            :                 // set initial parameters
+<span class="lineNum">      99 </span>            :                 void setInitialParameters(int iDim, PhoneSet *phoneSet, int iId);
+<span class="lineNum">     100 </span>            :                 // destructor
+<span class="lineNum">     101 </span>            :                 ~HMMStateDecoding();
+<span class="lineNum">     102 </span>            :                 // initialize the estimation by precomputing constants and invariant terms
+<span class="lineNum">     103 </span>            :                 void initialize();
+<span class="lineNum">     104 </span>            :                 // load the HMM from a file
+<a name="105"><span class="lineNum">     105 </span>            :                 void load(FileInput &amp;file);</a>
+<span class="lineNum">     106 </span>            :                 
+<a name="107"><span class="lineNum">     107 </span><span class="lineCov">       6906 :                 inline void resetTimeStamp() { m_iTimestamp = -1;}</span></a>
+<span class="lineNum">     108 </span>            : 
+<span class="lineNum">     109 </span><span class="lineCov">     471153 :                 inline int getId() { return m_iId;}</span>
+<a name="110"><span class="lineNum">     110 </span>            :                 </a>
+<span class="lineNum">     111 </span>            :                 // computes the emission probability of the state given the feature vector
+<span class="lineNum">     112 </span><span class="lineCov">   19002947 :                 inline float computeEmissionProbability(float *fFeatures, int iTime) {</span>
+<span class="lineNum">     113 </span><span class="lineCov">   19002947 :                         return computeEmissionProbabilityNearestNeighborSSE(fFeatures,iTime);</span>
+<span class="lineNum">     114 </span>            :                 }
+<span class="lineNum">     115 </span>            :                 
+<span class="lineNum">     116 </span>            :                 // return the Gaussian likelihood for the given feature vector
+<span class="lineNum">     117 </span>            :                 // uses nearest-neighbor approximation
+<span class="lineNum">     118 </span>            :                 // uses Partial Distance Elimination (PDE)
+<a name="119"><span class="lineNum">     119 </span>            :                 //double computeGaussianProbability(int iGaussian, float *fFeatures);</a>
+<span class="lineNum">     120 </span>            :                 
+<span class="lineNum">     121 </span><span class="lineCov">       3453 :                 inline void setGaussianIds(int *iId) {</span>
+<span class="lineNum">     122 </span>            :                 
+<span class="lineNum">     123 </span><span class="lineCov">     102459 :                         for(int i=0 ; i &lt; m_iGaussianComponents ; ++i) {</span>
+<span class="lineNum">     124 </span><span class="lineCov">      99006 :                                 m_gaussians[i].iId = (*iId)++;</span>
+<span class="lineNum">     125 </span>            :                         }       
+<span class="lineNum">     126 </span><span class="lineCov">       3453 :                 }               </span>
+<span class="lineNum">     127 </span>            : };
+<span class="lineNum">     128 </span>            : 
+<span class="lineNum">     129 </span>            : };      // end-of-namespace
+<span class="lineNum">     130 </span>            : 
+<span class="lineNum">     131 </span>            : #endif
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.10</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

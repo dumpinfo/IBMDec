@@ -1,0 +1,215 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - dyna analysis - param/ConfigurationFeatures.cpp</title>
+  <link rel="stylesheet" type="text/css" href="../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../index.html">top level</a> - <a href="index.html">param</a> - ConfigurationFeatures.cpp<span style="font-size: 80%;"> (source / <a href="ConfigurationFeatures.cpp.func.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">dyna analysis</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">36</td>
+            <td class="headerCovTableEntry">49</td>
+            <td class="headerCovTableEntryLo">73.5 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-05-05</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">6</td>
+            <td class="headerCovTableEntry">8</td>
+            <td class="headerCovTableEntryMed">75.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : /*---------------------------------------------------------------------------------------------*</a>
+<span class="lineNum">       2 </span>            :  * Copyright (C) 2012 Daniel Bolaños - www.bltek.com - Boulder Language Technologies           *
+<span class="lineNum">       3 </span>            :  *                                                                                             *
+<span class="lineNum">       4 </span>            :  * www.bavieca.org is the website of the Bavieca Speech Recognition Toolkit                    *
+<span class="lineNum">       5 </span>            :  *                                                                                             *
+<span class="lineNum">       6 </span>            :  * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);                             *
+<span class="lineNum">       7 </span>            :  * you may not use this file except in compliance with the License.                            *
+<span class="lineNum">       8 </span>            :  * You may obtain a copy of the License at                                                     *
+<span class="lineNum">       9 </span>            :  *                                                                                             *
+<span class="lineNum">      10 </span>            :  *         http://www.apache.org/licenses/LICENSE-2.0                                          *
+<span class="lineNum">      11 </span>            :  *                                                                                             *
+<span class="lineNum">      12 </span>            :  * Unless required by applicable law or agreed to in writing, software                         *
+<span class="lineNum">      13 </span>            :  * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,                           *
+<span class="lineNum">      14 </span>            :  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.                    *
+<span class="lineNum">      15 </span>            :  * See the License for the specific language governing permissions and                         *
+<span class="lineNum">      16 </span>            :  * limitations under the License.                                                              *
+<span class="lineNum">      17 </span>            :  *---------------------------------------------------------------------------------------------*/
+<span class="lineNum">      18 </span>            : 
+<span class="lineNum">      19 </span>            : #include &lt;stdexcept&gt;
+<span class="lineNum">      20 </span>            : 
+<span class="lineNum">      21 </span>            : #include &quot;ConfigurationFeatures.h&quot;
+<span class="lineNum">      22 </span>            : #include &quot;FeatureExtractor.h&quot;
+<span class="lineNum">      23 </span>            : 
+<span class="lineNum">      24 </span>            : namespace Bavieca {
+<a name="25"><span class="lineNum">      25 </span>            : </a>
+<span class="lineNum">      26 </span>            : // constructor
+<span class="lineNum">      27 </span><span class="lineNoCov">          0 : ConfigurationFeatures::ConfigurationFeatures() : </span>
+<span class="lineNum">      28 </span><span class="lineNoCov">          0 :         ParameterManager(), ConfigurationFile(NULL)</span>
+<span class="lineNum">      29 </span>            : {
+<span class="lineNum">      30 </span><span class="lineNoCov">          0 : }</span>
+<a name="31"><span class="lineNum">      31 </span>            : </a>
+<span class="lineNum">      32 </span>            : // constructor (from a file)
+<span class="lineNum">      33 </span><span class="lineCov">          1 : ConfigurationFeatures::ConfigurationFeatures(const char *strConfigurationFile) :</span>
+<span class="lineNum">      34 </span><span class="lineCov">          1 :         ParameterManager(), ConfigurationFile(strConfigurationFile)</span>
+<span class="lineNum">      35 </span>            : {
+<span class="lineNum">      36 </span><span class="lineCov">          1 : }</span>
+<a name="37"><span class="lineNum">      37 </span>            : </a>
+<span class="lineNum">      38 </span>            : // destructor
+<span class="lineNum">      39 </span><span class="lineCov">          1 : ConfigurationFeatures::~ConfigurationFeatures()</span>
+<span class="lineNum">      40 </span>            : {
+<span class="lineNum">      41 </span>            : 
+<span class="lineNum">      42 </span><span class="lineCov">          1 : }</span>
+<a name="43"><span class="lineNum">      43 </span>            : </a>
+<span class="lineNum">      44 </span>            : // define the parameters
+<span class="lineNum">      45 </span><span class="lineCov">          1 : void ConfigurationFeatures::defineParameters() {</span>
+<span class="lineNum">      46 </span>            : 
+<span class="lineNum">      47 </span>            :         // waveform
+<span class="lineNum">      48 </span><span class="lineCov">          1 :         defineParameter(&quot;waveform.samplingRate&quot;,&quot;audio sampling rate (in Hz)&quot;,PARAMETER_TYPE_INTEGER,false,&quot;8000|16000&quot;,&quot;16000&quot;);</span>
+<span class="lineNum">      49 </span><span class="lineCov">          1 :         defineParameter(&quot;waveform.sampleSize&quot;,&quot;audio sample size (in bits)&quot;,PARAMETER_TYPE_INTEGER,false,&quot;8|16&quot;,&quot;16&quot;);</span>
+<span class="lineNum">      50 </span>            :         
+<span class="lineNum">      51 </span>            :         // DC-removal
+<span class="lineNum">      52 </span><span class="lineCov">          1 :         defineParameter(&quot;dcRemoval&quot;,&quot;DC removal&quot;,PARAMETER_TYPE_BOOLEAN,false,NULL,&quot;yes&quot;);</span>
+<span class="lineNum">      53 </span>            :         
+<span class="lineNum">      54 </span>            :         // preemphasis
+<span class="lineNum">      55 </span><span class="lineCov">          1 :         defineParameter(&quot;preemphasis&quot;,&quot;preemphasis&quot;,PARAMETER_TYPE_BOOLEAN,false,NULL,&quot;yes&quot;);</span>
+<span class="lineNum">      56 </span>            :         
+<span class="lineNum">      57 </span>            :         // windowing
+<span class="lineNum">      58 </span><span class="lineCov">          1 :         defineParameter(&quot;window.width&quot;,&quot;window width (in ms)&quot;,PARAMETER_TYPE_INTEGER,false,NULL,&quot;20&quot;);</span>
+<span class="lineNum">      59 </span><span class="lineCov">          1 :         defineParameter(&quot;window.shift&quot;,&quot;windows shift (in ms)&quot;,PARAMETER_TYPE_INTEGER,false,NULL,&quot;10&quot;);</span>
+<span class="lineNum">      60 </span>            :         defineParameter(&quot;window.tapering&quot;,&quot;window tapering function&quot;,
+<span class="lineNum">      61 </span><span class="lineCov">          1 :                 PARAMETER_TYPE_STRING,false,&quot;Hann|HannModified|Hamming|none&quot;,&quot;Hamming&quot;);</span>
+<span class="lineNum">      62 </span>            :                 
+<span class="lineNum">      63 </span>            :         // type
+<span class="lineNum">      64 </span><span class="lineCov">          1 :         defineParameter(&quot;features.type&quot;,&quot;feature type&quot;,PARAMETER_TYPE_STRING,false,&quot;mfcc|plp&quot;,&quot;mfcc&quot;);</span>
+<span class="lineNum">      65 </span>            :         
+<span class="lineNum">      66 </span>            :         // filterbank analysis
+<span class="lineNum">      67 </span><span class="lineCov">          1 :         defineParameter(&quot;filterbank.frequency.min&quot;,&quot;minimum frequency (in Hz)&quot;,PARAMETER_TYPE_INTEGER,false,NULL,&quot;0&quot;);</span>
+<span class="lineNum">      68 </span><span class="lineCov">          1 :         defineParameter(&quot;filterbank.frequency.max&quot;,&quot;maximum frequency (in Hz)&quot;,PARAMETER_TYPE_INTEGER,false,NULL,&quot;8000&quot;);</span>
+<span class="lineNum">      69 </span><span class="lineCov">          1 :         defineParameter(&quot;filterbank.filters&quot;,&quot;number of filters&quot;,PARAMETER_TYPE_INTEGER,false,NULL,&quot;20&quot;);</span>
+<span class="lineNum">      70 </span>            :         
+<span class="lineNum">      71 </span>            :         // cepstral coefficients
+<span class="lineNum">      72 </span>            :         defineParameter(&quot;cepstralCoefficients&quot;,&quot;number of cepstral coefficients&quot;,
+<span class="lineNum">      73 </span><span class="lineCov">          1 :                 PARAMETER_TYPE_INTEGER,false,NULL,&quot;12&quot;);      </span>
+<span class="lineNum">      74 </span>            :         
+<span class="lineNum">      75 </span>            :         // energy
+<span class="lineNum">      76 </span><span class="lineCov">          1 :         defineParameter(&quot;energy&quot;,&quot;energy&quot;,PARAMETER_TYPE_BOOLEAN,false,NULL,&quot;yes&quot;);       </span>
+<span class="lineNum">      77 </span>            :         
+<span class="lineNum">      78 </span>            :         // derivatives
+<span class="lineNum">      79 </span><span class="lineCov">          1 :         defineParameter(&quot;derivatives.order&quot;,&quot;derivatives order&quot;,PARAMETER_TYPE_INTEGER,true,NULL,&quot;2&quot;);</span>
+<span class="lineNum">      80 </span><span class="lineCov">          1 :         defineParameter(&quot;derivatives.delta&quot;,&quot;derivatives delta&quot;,PARAMETER_TYPE_INTEGER,true,NULL,&quot;2&quot;);    </span>
+<span class="lineNum">      81 </span>            :         
+<span class="lineNum">      82 </span>            :         // spliced features
+<span class="lineNum">      83 </span>            :         defineParameter(&quot;spliced.size&quot;,&quot;number of consecutive static vectors that will be spliced&quot;,
+<span class="lineNum">      84 </span><span class="lineCov">          1 :                 PARAMETER_TYPE_INTEGER,true,NULL,&quot;9&quot;);</span>
+<span class="lineNum">      85 </span><span class="lineCov">          1 : }</span>
+<a name="86"><span class="lineNum">      86 </span>            : </a>
+<span class="lineNum">      87 </span>            : // load the configuration parameters
+<span class="lineNum">      88 </span><span class="lineCov">          1 : void ConfigurationFeatures::load() {</span>
+<span class="lineNum">      89 </span>            : 
+<span class="lineNum">      90 </span>            :         try {
+<span class="lineNum">      91 </span>            : 
+<span class="lineNum">      92 </span>            :                 // load pairs parameter-value from the file
+<span class="lineNum">      93 </span><span class="lineCov">          1 :                 ConfigurationFile::load();</span>
+<span class="lineNum">      94 </span>            :         
+<span class="lineNum">      95 </span>            :                 // get the data
+<span class="lineNum">      96 </span><span class="lineCov">          1 :                 VParameterValue vParameterValue;</span>
+<span class="lineNum">      97 </span><span class="lineCov">         16 :                 for(MParameterValue::iterator it = m_mParameterValue.begin() ; it != m_mParameterValue.end() ; ++it) {</span>
+<span class="lineNum">      98 </span><span class="lineCov">         15 :                         ParameterValue parameterValue;</span>
+<span class="lineNum">      99 </span><span class="lineCov">         15 :                         parameterValue.strParameter = it-&gt;first;</span>
+<span class="lineNum">     100 </span><span class="lineCov">         15 :                         parameterValue.strValue = it-&gt;second;</span>
+<span class="lineNum">     101 </span><span class="lineCov">         15 :                         vParameterValue.push_back(parameterValue);</span>
+<span class="lineNum">     102 </span><span class="lineCov">         15 :                 }</span>
+<span class="lineNum">     103 </span>            :                 
+<span class="lineNum">     104 </span>            :                 // make the parameter definitions
+<span class="lineNum">     105 </span><span class="lineCov">          1 :                 defineParameters();</span>
+<span class="lineNum">     106 </span>            :                 
+<span class="lineNum">     107 </span>            :                 // parse the parameter-value pairs
+<span class="lineNum">     108 </span><span class="lineCov">          1 :                 parse(vParameterValue);</span>
+<span class="lineNum">     109 </span>            :                 
+<span class="lineNum">     110 </span><span class="lineNoCov">          0 :         } catch (std::runtime_error) {</span>
+<span class="lineNum">     111 </span><span class="lineNoCov">          0 :                 BVC_ERROR &lt;&lt; &quot;unable to load the feature configuration file&quot;;</span>
+<span class="lineNum">     112 </span>            :         }
+<span class="lineNum">     113 </span><span class="lineCov">          1 : }</span>
+<a name="114"><span class="lineNum">     114 </span>            : </a>
+<span class="lineNum">     115 </span>            : // return the feature dimensionality
+<span class="lineNum">     116 </span><span class="lineNoCov">          0 : int ConfigurationFeatures::getDimensionality() {</span>
+<span class="lineNum">     117 </span>            : 
+<span class="lineNum">     118 </span><span class="lineNoCov">          0 :         int iStatic = atoi(getParameterValue(&quot;cepstralCoefficients&quot;));</span>
+<span class="lineNum">     119 </span><span class="lineNoCov">          0 :         if (strcmp(getParameterValue(&quot;energy&quot;),&quot;yes&quot;) == 0) {</span>
+<span class="lineNum">     120 </span><span class="lineNoCov">          0 :                 iStatic += 1;</span>
+<span class="lineNum">     121 </span>            :         }
+<span class="lineNum">     122 </span>            :         
+<span class="lineNum">     123 </span><span class="lineNoCov">          0 :         if (isParameterSet(&quot;derivatives.order&quot;)) {</span>
+<span class="lineNum">     124 </span><span class="lineNoCov">          0 :                 return iStatic*(atoi(getParameterValue(&quot;derivatives.order&quot;))+1);</span>
+<span class="lineNum">     125 </span>            :         } else {
+<span class="lineNum">     126 </span><span class="lineNoCov">          0 :                 assert(isParameterSet(&quot;spliced.size&quot;));</span>
+<span class="lineNum">     127 </span><span class="lineNoCov">          0 :                 return iStatic*atoi(getParameterValue(&quot;spliced.size&quot;));</span>
+<span class="lineNum">     128 </span>            :         }       
+<a name="129"><span class="lineNum">     129 </span>            : }</a>
+<span class="lineNum">     130 </span>            : 
+<span class="lineNum">     131 </span><span class="lineCov">          6 : };      // end-of-namespace</span>
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.10</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

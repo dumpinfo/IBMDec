@@ -1,0 +1,97 @@
+./common/sadmodule/SADModule.cpp:		m_grid[0][0].fScore = m_hmmStateSilence->computeEmissionProbability(mFeatures.getRowData(0),0);
+./common/sadmodule/SADModule.cpp:		m_grid[0][HMM_STATES_CLASS].fScore = m_hmmStateSpeech->computeEmissionProbability(mFeatures.getRowData(0),0) + m_fPenaltySilenceToSpeech;
+./common/sadmodule/SADModule.cpp:		fSilenceScore = m_hmmStateSilence->computeEmissionProbability(mFeatures.getRowData(iFeatureVector),i);	
+./common/sadmodule/SADModule.cpp:		fSpeechScore = m_hmmStateSpeech->computeEmissionProbability(mFeatures.getRowData(iFeatureVector),i);	
+Binary file ./common/sadmodule/SADModule.gcno matches
+Binary file ./common/sadmodule/SADModule.o matches
+Binary file ./common/alignment/ViterbiX.gcno matches
+Binary file ./common/alignment/ForwardBackwardX.o matches
+./common/alignment/Viterbi.h:		float computeEmissionProbability(HMMStateDecoding *hmmStateDecoding, float *fFeatureVector, int iFeatureVector);
+./common/alignment/ViterbiX.cpp:			((HMMStateDecoding*)edge->hmmStateEstimation)->computeEmissionProbability(mFeatures.getRow(0).getData(),0);
+./common/alignment/ViterbiX.cpp:				nodeTrellis->fScore = hmmStateDecoding->computeEmissionProbability(fFeatureVector,t);
+Binary file ./common/alignment/ForwardBackwardX.gcno matches
+./common/alignment/ForwardBackwardX.cpp:					double dOccLikGaussian = edgeActiveCurrent[i]->hmmStateEstimation->computeEmissionProbabilityGaussian(g,vFeatureVectorAlignment.getData(),t) + dOccupationLikelihood + log(edgeActiveCurrent[i]->hmmStateEstimation->getMixture()(g)->weight());	
+./common/alignment/ForwardBackwardX.cpp:					nodeSame->fScore = edgeActiveCurrent[i]->hmmStateEstimation->computeEmissionProbability(vFeatureVector.getData(),t+1);
+./common/alignment/ForwardBackwardX.cpp:						nodeNext->fScore = edge->hmmStateEstimation->computeEmissionProbability(vFeatureVector.getData(),t+1);
+./common/alignment/ForwardBackwardX.cpp:		trellis[edge->iEdge].fScore = edge->hmmStateEstimation->computeEmissionProbability(mFeatures.getRow(0).getData(),0);
+./common/alignment/ForwardBackwardX.cpp:		//trellis[edge->iEdge].fScore = edge->hmmState->computeEmissionProbability(fFeatures,0);
+Binary file ./common/alignment/ViterbiX.o matches
+Binary file ./common/alignment/Viterbi.gcno matches
+Binary file ./common/alignment/ForwardBackward.gcno matches
+Binary file ./common/alignment/ForwardBackward.o matches
+Binary file ./common/alignment/AlignmentFile.o matches
+Binary file ./common/alignment/HMMGraph.o matches
+./common/alignment/Viterbi.cpp:float Viterbi::computeEmissionProbability(HMMStateDecoding *hmmStateDecoding, float *fFeatureVector, int iFeatureVector) {
+./common/alignment/Viterbi.cpp:		m_fScoreCache[iIndex] = hmmStateDecoding->computeEmissionProbability(fFeatureVector,iFeatureVector);	
+./common/alignment/Viterbi.cpp:		return hmmStateDecoding->computeEmissionProbability(fFeatureVector,iFeatureVector);;	
+./common/alignment/Viterbi.cpp:	nodeTrellis[0].dScore = computeEmissionProbability(vHMMStateDecodingComposite[0],mFeatures.getRowData(0),0+iOffset);
+./common/alignment/Viterbi.cpp:				computeEmissionProbability(vHMMStateDecodingComposite[0],vFeatureVector.getData(),t+iOffset);
+./common/alignment/Viterbi.cpp:					computeEmissionProbability(vHMMStateDecodingComposite[i],vFeatureVector.getData(),t+iOffset);
+./common/alignment/Viterbi.cpp:					computeEmissionProbability(vHMMStateDecodingComposite[i],vFeatureVector.getData(),t+iOffset);
+./common/alignment/Viterbi.cpp:					node.dScore += computeEmissionProbability(vHMMStateDecodingComposite[i],vFeatureVector.getData(),t+iOffset);
+Binary file ./common/alignment/Viterbi.o matches
+./common/alignment/ForwardBackward.cpp:						dProbabilityOccupation += vHMMStateCompositeEstimation[i]->computeEmissionProbabilityGaussian(g,mFeaturesAlignment.getRow(t).getData(),t);
+./common/alignment/ForwardBackward.cpp:			float fLikelihood = hmmState->computeEmissionProbability(vFeatureVector.getData(),-1);
+./common/alignment/ForwardBackward.cpp:		return hmmState->computeEmissionProbability(vFeatureVector.getData(),-1);
+Binary file ./common/estimation/DTEstimator.o matches
+Binary file ./common/estimation/DTAccumulator.gcno matches
+Binary file ./common/estimation/HLDAEstimator.o matches
+Binary file ./common/estimation/ContextModeling.o matches
+./common/estimation/DTAccumulator.cpp:				dLikelihoodGaussian[iGaussian] = hmmState->computeEmissionProbabilityGaussian(iGaussian,
+Binary file ./common/estimation/RegressionTree.o matches
+Binary file ./common/estimation/MAPEstimator.o matches
+Binary file ./common/estimation/MLLRManager.o matches
+Binary file ./common/estimation/MLAccumulator.o matches
+Binary file ./common/estimation/GMMEditor.o matches
+Binary file ./common/estimation/MLEstimator.o matches
+Binary file ./common/estimation/DTAccumulator.o matches
+Binary file ./common/estimation/FMLLREstimator.o matches
+Binary file ./common/estimation/HMMInitializer.o matches
+Binary file ./common/wfsadecoder/WFSADecoder.gcno matches
+Binary file ./common/wfsadecoder/WFSADecoder.o matches
+Binary file ./common/wfsadecoder/ActiveStateTable.gcno matches
+./common/wfsadecoder/ActiveStateTable.cpp:						fScore = hmmStateDecoding->computeEmissionProbability(fFeatureVector,m_iTimeCurrent);	
+./common/wfsadecoder/ActiveStateTable.cpp:				float fScore = hmmStateDecoding->computeEmissionProbability(fFeatureVector,0);
+Binary file ./common/wfsadecoder/ActiveStateTable.o matches
+./common/wfsadecoder/WFSADecoder.cpp:			fScore = activeState.hmmStateDecoding->computeEmissionProbability(vFeatureVector.getData(),t);	
+./common/wfsadecoder/WFSADecoder.cpp:							fScore = hmmStateDecoding->computeEmissionProbability(vFeatureVector.getData(),t);	
+./common/wfsadecoder/WFSADecoder.cpp:					fScore = hmmStateDecoding->computeEmissionProbability(vFeatureVector.getData(),t);
+Binary file ./common/wfsabuilder/WFSABuilder.o matches
+Binary file ./common/hmm/HMMStateDecoding.gcno matches
+./common/hmm/HMMStateDecoding.h:		float computeEmissionProbabilityBruteForce(float *fFeatures, int iTime);
+./common/hmm/HMMStateDecoding.h:		float computeEmissionProbabilityNearestNeighbor(float *fFeatures, int iTime);	
+./common/hmm/HMMStateDecoding.h:		float computeEmissionProbabilityNearestNeighborPDE(float *fFeatures, int iTime);	
+./common/hmm/HMMStateDecoding.h:		float computeEmissionProbabilityNearestNeighborSSE(float *fFeatures, int iTime);	
+./common/hmm/HMMStateDecoding.h:		float computeEmissionProbabilityNearestNeighborPDE_SSE(float *fFeatures, int iTime);
+./common/hmm/HMMStateDecoding.h:		float computeEmissionProbabilityNearestNeighborAVX(float *fFeatures, int iTime);
+./common/hmm/HMMStateDecoding.h:		inline float computeEmissionProbability(float *fFeatures, int iTime) {
+./common/hmm/HMMStateDecoding.h:			return computeEmissionProbabilityNearestNeighborAVX(fFeatures,iTime);
+./common/hmm/HMMStateDecoding.h:			return computeEmissionProbabilityNearestNeighborSSE(fFeatures,iTime);
+./common/hmm/HMMStateDecoding.h:			return computeEmissionProbabilityNearestNeighborPDE(fFeatures,iTime);	
+./common/hmm/HMMState.h:		inline float computeEmissionProbability(float *fFeatures, int iTime)  {
+./common/hmm/HMMState.h:		inline float computeEmissionProbabilityGaussian(int iGaussian, float *fFeatures, int iTime)  {
+./common/hmm/HMMStateDecoding.cpp:float HMMStateDecoding::computeEmissionProbabilityBruteForce(float *fFeatures, int iTime) {
+./common/hmm/HMMStateDecoding.cpp:float HMMStateDecoding::computeEmissionProbabilityNearestNeighbor(float *fFeatures, int iTime) {
+./common/hmm/HMMStateDecoding.cpp:float HMMStateDecoding::computeEmissionProbabilityNearestNeighborPDE(float *fFeatures, int iTime) {
+./common/hmm/HMMStateDecoding.cpp:float HMMStateDecoding::computeEmissionProbabilityNearestNeighborSSE(float *fFeatures, int iTime) {
+./common/hmm/HMMStateDecoding.cpp:/*float HMMStateDecoding::computeEmissionProbabilityNearestNeighborPDE_SIMD(float *fFeatures, int iTime) {
+./common/hmm/HMMStateDecoding.cpp:float HMMStateDecoding::computeEmissionProbabilityNearestNeighborAVX(float *fFeatures, int iTime) {
+Binary file ./common/hmm/HMMState.o matches
+Binary file ./common/hmm/ContextDecisionTree.o matches
+Binary file ./common/hmm/HMMManager.o matches
+Binary file ./common/hmm/HMMStateDecoding.o matches
+Binary file ./common/decoding/HypothesisLattice.o matches
+Binary file ./common/dynamicdecoder/NetworkBuilderX.o matches
+Binary file ./common/dynamicdecoder/DynamicDecoderX.o matches
+Binary file ./common/dynamicdecoder/DynamicNetworkX.o matches
+Binary file ./common/dynamicdecoder/DynamicDecoderX.gcno matches
+./common/dynamicdecoder/DynamicDecoderX.cpp:		fScore = arc->state->computeEmissionProbability(vFeatureVector.getData(),0);	
+./common/dynamicdecoder/DynamicDecoderX.cpp:		fScore = state->computeEmissionProbability(vFeatureVector.getData(),t);	
+./common/dynamicdecoder/DynamicDecoderX.cpp:	fScore = arcNext->state->computeEmissionProbability(vFeatureVector.getData(),t);	
+./common/dynamicdecoder/DynamicDecoderX.cpp:	fScore = arcNext->state->computeEmissionProbability(vFeatureVector.getData(),t);	
+Binary file ./common/dynamicdecoder/LMLookAhead.o matches
+Binary file ./common/vtlestimator/VTLEstimator.o matches
+Binary file ./common/vtlestimator/VTLEstimator.gcno matches
+./common/vtlestimator/VTLEstimator.cpp:							fLikelihood = hmmStateDecoding->computeEmissionProbability(mFeatures->getRow(iFrame).getData(),iFrame);
+Binary file ./DynamicDecoder matches
+Binary file ./mainDynamicDecoder.o matches

@@ -1,0 +1,661 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - dyna analysis - config/ParameterManager.cpp</title>
+  <link rel="stylesheet" type="text/css" href="../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../index.html">top level</a> - <a href="index.html">config</a> - ParameterManager.cpp<span style="font-size: 80%;"> (source / <a href="ParameterManager.cpp.func.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">dyna analysis</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">133</td>
+            <td class="headerCovTableEntry">272</td>
+            <td class="headerCovTableEntryLo">48.9 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-05-05</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">13</td>
+            <td class="headerCovTableEntry">19</td>
+            <td class="headerCovTableEntryLo">68.4 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : /*---------------------------------------------------------------------------------------------*</a>
+<span class="lineNum">       2 </span>            :  * Copyright (C) 2012 Daniel Bolaños - www.bltek.com - Boulder Language Technologies           *
+<span class="lineNum">       3 </span>            :  *                                                                                             *
+<span class="lineNum">       4 </span>            :  * www.bavieca.org is the website of the Bavieca Speech Recognition Toolkit                    *
+<span class="lineNum">       5 </span>            :  *                                                                                             *
+<span class="lineNum">       6 </span>            :  * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);                             *
+<span class="lineNum">       7 </span>            :  * you may not use this file except in compliance with the License.                            *
+<span class="lineNum">       8 </span>            :  * You may obtain a copy of the License at                                                     *
+<span class="lineNum">       9 </span>            :  *                                                                                             *
+<span class="lineNum">      10 </span>            :  *         http://www.apache.org/licenses/LICENSE-2.0                                          *
+<span class="lineNum">      11 </span>            :  *                                                                                             *
+<span class="lineNum">      12 </span>            :  * Unless required by applicable law or agreed to in writing, software                         *
+<span class="lineNum">      13 </span>            :  * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,                           *
+<span class="lineNum">      14 </span>            :  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.                    *
+<span class="lineNum">      15 </span>            :  * See the License for the specific language governing permissions and                         *
+<span class="lineNum">      16 </span>            :  * limitations under the License.                                                              *
+<span class="lineNum">      17 </span>            :  *---------------------------------------------------------------------------------------------*/
+<span class="lineNum">      18 </span>            : 
+<span class="lineNum">      19 </span>            : 
+<span class="lineNum">      20 </span>            : #include &quot;ParameterManager.h&quot;
+<span class="lineNum">      21 </span>            : 
+<span class="lineNum">      22 </span>            : namespace Bavieca {
+<a name="23"><span class="lineNum">      23 </span>            : </a>
+<span class="lineNum">      24 </span>            : // constructor
+<span class="lineNum">      25 </span><span class="lineCov">          4 : ParameterManager::ParameterManager()</span>
+<span class="lineNum">      26 </span>            : {
+<span class="lineNum">      27 </span><span class="lineCov">          4 : }</span>
+<a name="28"><span class="lineNum">      28 </span>            : </a>
+<span class="lineNum">      29 </span>            : // destructor
+<span class="lineNum">      30 </span><span class="lineCov">          8 : ParameterManager::~ParameterManager()</span>
+<span class="lineNum">      31 </span>            : {
+<span class="lineNum">      32 </span><span class="lineCov">         56 :         for(MParameter::iterator it = m_mParameter.begin() ; it != m_mParameter.end() ; ++it) {</span>
+<span class="lineNum">      33 </span><span class="lineCov">         52 :                 if (it-&gt;second-&gt;vAllowedValues != NULL) {</span>
+<span class="lineNum">      34 </span><span class="lineCov">          9 :                         delete it-&gt;second-&gt;vAllowedValues;</span>
+<span class="lineNum">      35 </span>            :                 }
+<span class="lineNum">      36 </span><span class="lineCov">         52 :                 if (it-&gt;second-&gt;allowedRange != NULL) {</span>
+<span class="lineNum">      37 </span><span class="lineCov">          1 :                         delete it-&gt;second-&gt;allowedRange;</span>
+<span class="lineNum">      38 </span>            :                 }
+<span class="lineNum">      39 </span><span class="lineCov">         52 :                 delete it-&gt;second;</span>
+<span class="lineNum">      40 </span>            :         }
+<span class="lineNum">      41 </span><span class="lineCov">          4 :         for(VIncompatibility::iterator it = m_vIncompatibility.begin() ; it != m_vIncompatibility.end() ; ++it) {</span>
+<span class="lineNum">      42 </span><span class="lineNoCov">          0 :                 delete (*it).vParameters;</span>
+<span class="lineNum">      43 </span>            :         }
+<span class="lineNum">      44 </span><span class="lineCov">          4 : }</span>
+<a name="45"><span class="lineNum">      45 </span>            : </a>
+<span class="lineNum">      46 </span>            : // define a command line parameter
+<span class="lineNum">      47 </span><span class="lineCov">         52 : bool ParameterManager::defineParameter(const char *strName, const char *strDescription, char iType, </span>
+<span class="lineNum">      48 </span>            :         bool bOptional, const char *strValueConstraints, const char *strDefaultValue) {
+<span class="lineNum">      49 </span>            : 
+<span class="lineNum">      50 </span>            :         // check valid type
+<span class="lineNum">      51 </span><span class="lineCov">         52 :         if ((iType != PARAMETER_TYPE_STRING) &amp;&amp; (iType != PARAMETER_TYPE_BOOLEAN) &amp;&amp; </span>
+<span class="lineNum">      52 </span><span class="lineCov">         24 :                 (iType != PARAMETER_TYPE_INTEGER) &amp;&amp; (iType != PARAMETER_TYPE_FLOAT) &amp;&amp; </span>
+<span class="lineNum">      53 </span><span class="lineCov">          4 :                 (iType != PARAMETER_TYPE_FILE) &amp;&amp; (iType != PARAMETER_TYPE_FOLDER)) {</span>
+<span class="lineNum">      54 </span><span class="lineNoCov">          0 :                 return false;</span>
+<span class="lineNum">      55 </span>            :         }
+<span class="lineNum">      56 </span>            :         
+<span class="lineNum">      57 </span>            :         // check that the parameter does not already exist
+<span class="lineNum">      58 </span><span class="lineCov">         52 :         if (m_mParameter.find(strName) != m_mParameter.end()) {</span>
+<span class="lineNum">      59 </span><span class="lineNoCov">          0 :                 return false;</span>
+<span class="lineNum">      60 </span>            :         }       
+<span class="lineNum">      61 </span>            :         
+<span class="lineNum">      62 </span>            :         // check length
+<span class="lineNum">      63 </span><span class="lineCov">         52 :         if (strlen(strName) &gt; MAX_PARAMETER_NAME_LENGTH) {</span>
+<span class="lineNum">      64 </span><span class="lineNoCov">          0 :                 return false;</span>
+<span class="lineNum">      65 </span>            :         }
+<span class="lineNum">      66 </span>            :         
+<span class="lineNum">      67 </span><span class="lineCov">         52 :         Parameter *parameter = new Parameter;</span>
+<span class="lineNum">      68 </span><span class="lineCov">         52 :         parameter-&gt;iOrder = (int)m_mParameter.size();</span>
+<span class="lineNum">      69 </span><span class="lineCov">         52 :         parameter-&gt;strName = strName;</span>
+<span class="lineNum">      70 </span><span class="lineCov">         52 :         parameter-&gt;strDescription = strDescription;</span>
+<span class="lineNum">      71 </span><span class="lineCov">         52 :         parameter-&gt;strValue = &quot;&quot;;</span>
+<span class="lineNum">      72 </span><span class="lineCov">         52 :         parameter-&gt;iType = iType;</span>
+<span class="lineNum">      73 </span><span class="lineCov">         52 :         parameter-&gt;bOptional = bOptional;</span>
+<span class="lineNum">      74 </span><span class="lineCov">         52 :         if (strDefaultValue != NULL) {</span>
+<span class="lineNum">      75 </span><span class="lineCov">         19 :                 parameter-&gt;strDefaultValue = strDefaultValue;</span>
+<span class="lineNum">      76 </span>            :         } else {
+<span class="lineNum">      77 </span><span class="lineCov">         33 :                 strDefaultValue = &quot;&quot;;</span>
+<span class="lineNum">      78 </span>            :         }
+<span class="lineNum">      79 </span><span class="lineCov">         52 :         parameter-&gt;vAllowedValues = NULL;</span>
+<span class="lineNum">      80 </span><span class="lineCov">         52 :         parameter-&gt;allowedRange = NULL;      </span>
+<span class="lineNum">      81 </span>            :         // there can be two types of contraints: allowed values or a range
+<span class="lineNum">      82 </span><span class="lineCov">         52 :         if (strValueConstraints != NULL) {</span>
+<span class="lineNum">      83 </span>            :                 // is it a range?
+<span class="lineNum">      84 </span><span class="lineCov">         10 :                 if (strValueConstraints[0] == '[') {</span>
+<span class="lineNum">      85 </span><span class="lineCov">          1 :                         parameter-&gt;allowedRange = getRange(strValueConstraints);</span>
+<span class="lineNum">      86 </span><span class="lineCov">          1 :                         if (parameter-&gt;allowedRange == NULL) {</span>
+<span class="lineNum">      87 </span><span class="lineNoCov">          0 :                                 return false;</span>
+<span class="lineNum">      88 </span>            :                         }
+<span class="lineNum">      89 </span>            :                 } 
+<span class="lineNum">      90 </span>            :                 // it is a set of allowed values
+<span class="lineNum">      91 </span>            :                 else {
+<span class="lineNum">      92 </span><span class="lineCov">          9 :                         parameter-&gt;vAllowedValues = getItemList(strValueConstraints);</span>
+<span class="lineNum">      93 </span><span class="lineCov">          9 :                         if (parameter-&gt;vAllowedValues == NULL) {</span>
+<span class="lineNum">      94 </span><span class="lineNoCov">          0 :                                 return false;</span>
+<span class="lineNum">      95 </span>            :                         }
+<span class="lineNum">      96 </span>            :                 }       
+<span class="lineNum">      97 </span>            :         }       
+<span class="lineNum">      98 </span>            :         
+<span class="lineNum">      99 </span><span class="lineCov">         52 :         m_mParameter.insert(MParameter::value_type(strName,parameter));</span>
+<span class="lineNum">     100 </span>            : 
+<span class="lineNum">     101 </span><span class="lineCov">         52 :         return true;</span>
+<span class="lineNum">     102 </span>            : }
+<a name="103"><span class="lineNum">     103 </span>            : </a>
+<span class="lineNum">     104 </span>            : // parse the given parameter-value types
+<span class="lineNum">     105 </span><span class="lineCov">          3 : void ParameterManager::parse(VParameterValue &amp;vParameterValue) {</span>
+<span class="lineNum">     106 </span>            : 
+<span class="lineNum">     107 </span>            :         // (1) checks
+<span class="lineNum">     108 </span><span class="lineCov">          3 :         if (m_mParameter.empty()) {</span>
+<span class="lineNum">     109 </span><span class="lineNoCov">          0 :                 BVC_ERROR &lt;&lt; &quot;no parameter definition found&quot;;</span>
+<span class="lineNum">     110 </span>            :         }
+<span class="lineNum">     111 </span>            : 
+<span class="lineNum">     112 </span>            :         // (2) read command line parameters 
+<span class="lineNum">     113 </span><span class="lineCov">         45 :         for(VParameterValue::iterator it = vParameterValue.begin() ; it != vParameterValue.end() ; ++it) {      </span>
+<span class="lineNum">     114 </span>            :                 // check if it is a valid parameter
+<span class="lineNum">     115 </span><span class="lineCov">         42 :                 MParameter::iterator jt = m_mParameter.find((*it).strParameter);</span>
+<span class="lineNum">     116 </span><span class="lineCov">         42 :                 if (jt == m_mParameter.end()) {</span>
+<span class="lineNum">     117 </span><span class="lineNoCov">          0 :                         BVC_ERROR &lt;&lt; &quot;unrecognized parameter: &quot; &lt;&lt; (*it).strParameter;</span>
+<span class="lineNum">     118 </span>            :                 }
+<span class="lineNum">     119 </span>            :                 // check that the parameter is assigned a value just once
+<span class="lineNum">     120 </span><span class="lineCov">         42 :                 if (jt-&gt;second-&gt;strValue.compare(&quot;&quot;) != 0) {</span>
+<span class="lineNum">     121 </span><span class="lineNoCov">          0 :                         BVC_ERROR &lt;&lt; &quot;parameter &quot; &lt;&lt; (*it).strParameter &lt;&lt; &quot; defined multiple times&quot;;</span>
+<span class="lineNum">     122 </span>            :                 }
+<span class="lineNum">     123 </span>            :                 // keep the parameter value
+<span class="lineNum">     124 </span><span class="lineCov">         42 :                 jt-&gt;second-&gt;strValue = (*it).strValue;</span>
+<span class="lineNum">     125 </span>            :         }
+<span class="lineNum">     126 </span>            : 
+<span class="lineNum">     127 </span>            :         // (3) check that all the required command-line parameters receive a value
+<span class="lineNum">     128 </span><span class="lineCov">         52 :         for(MParameter::iterator it = m_mParameter.begin() ; it != m_mParameter.end() ; ++it) {</span>
+<span class="lineNum">     129 </span>            :                 // check value
+<span class="lineNum">     130 </span><span class="lineCov">         49 :                 if (it-&gt;second-&gt;strValue.compare(&quot;&quot;) == 0) {</span>
+<span class="lineNum">     131 </span><span class="lineCov">          7 :                         if (it-&gt;second-&gt;bOptional == false) {</span>
+<span class="lineNum">     132 </span><span class="lineNoCov">          0 :                                 BVC_ERROR &lt;&lt; &quot;undefined parameter &quot; &lt;&lt; it-&gt;first &lt;&lt; &quot; is required&quot;;</span>
+<span class="lineNum">     133 </span>            :                         } else {
+<span class="lineNum">     134 </span><span class="lineCov">          7 :                                 it-&gt;second-&gt;strValue = it-&gt;second-&gt;strDefaultValue;</span>
+<span class="lineNum">     135 </span>            :                         }
+<span class="lineNum">     136 </span>            :                 } else {
+<span class="lineNum">     137 </span>            :                         // check type
+<span class="lineNum">     138 </span><span class="lineCov">         42 :                         switch(it-&gt;second-&gt;iType) {</span>
+<span class="lineNum">     139 </span>            :                                 case PARAMETER_TYPE_STRING: {
+<span class="lineNum">     140 </span><span class="lineCov">          7 :                                         break;</span>
+<span class="lineNum">     141 </span>            :                                 }
+<span class="lineNum">     142 </span>            :                                 case PARAMETER_TYPE_BOOLEAN: {
+<span class="lineNum">     143 </span><span class="lineCov">          5 :                                         if (!isBoolean(it-&gt;second-&gt;strValue.c_str())) {</span>
+<span class="lineNum">     144 </span><span class="lineNoCov">          0 :                                                 BVC_ERROR &lt;&lt; &quot;parameter type mismatch: \&quot;&quot; &lt;&lt; it-&gt;second-&gt;strName &lt;&lt; &quot; = &quot; &lt;&lt; it-&gt;second-&gt;strValue &lt;&lt; &quot;\&quot;&quot;;</span>
+<span class="lineNum">     145 </span>            :                                         }
+<span class="lineNum">     146 </span><span class="lineCov">          5 :                                         break;</span>
+<span class="lineNum">     147 </span>            :                                 }
+<span class="lineNum">     148 </span>            :                                 case PARAMETER_TYPE_INTEGER: {
+<span class="lineNum">     149 </span><span class="lineCov">         14 :                                         if (!isInteger(it-&gt;second-&gt;strValue.c_str())) {</span>
+<span class="lineNum">     150 </span><span class="lineNoCov">          0 :                                                 BVC_ERROR &lt;&lt; &quot;parameter type mismatch: \&quot;&quot; &lt;&lt; it-&gt;second-&gt;strName &lt;&lt; &quot; = &quot; &lt;&lt; it-&gt;second-&gt;strValue &lt;&lt; &quot;\&quot;&quot;;</span>
+<span class="lineNum">     151 </span>            :                                         }
+<span class="lineNum">     152 </span><span class="lineCov">         14 :                                         break;</span>
+<span class="lineNum">     153 </span>            :                                 }
+<span class="lineNum">     154 </span>            :                                 case PARAMETER_TYPE_FLOAT: {
+<span class="lineNum">     155 </span><span class="lineCov">          7 :                                         if (!isFloat(it-&gt;second-&gt;strValue.c_str())) {</span>
+<span class="lineNum">     156 </span><span class="lineNoCov">          0 :                                                 BVC_ERROR &lt;&lt; &quot;parameter type mismatch: \&quot;&quot; &lt;&lt; it-&gt;second-&gt;strName &lt;&lt; &quot; = &quot; &lt;&lt; it-&gt;second-&gt;strValue &lt;&lt; &quot;\&quot;&quot;;</span>
+<span class="lineNum">     157 </span>            :                                         }
+<span class="lineNum">     158 </span><span class="lineCov">          7 :                                         break;</span>
+<span class="lineNum">     159 </span>            :                                 }
+<span class="lineNum">     160 </span>            :                                 case PARAMETER_TYPE_FILE: {
+<span class="lineNum">     161 </span><span class="lineCov">          9 :                                         break;</span>
+<span class="lineNum">     162 </span>            :                                 }
+<span class="lineNum">     163 </span>            :                                 case PARAMETER_TYPE_FOLDER: {
+<span class="lineNum">     164 </span><span class="lineNoCov">          0 :                                         break;</span>
+<span class="lineNum">     165 </span>            :                                 }
+<span class="lineNum">     166 </span>            :                         }
+<span class="lineNum">     167 </span>            :                         // check allowed values
+<span class="lineNum">     168 </span><span class="lineCov">         42 :                         if (it-&gt;second-&gt;vAllowedValues != NULL) {</span>
+<span class="lineNum">     169 </span><span class="lineCov">          9 :                                 bool bMatch = false;</span>
+<span class="lineNum">     170 </span><span class="lineCov">         17 :                                 for(VString::iterator jt = it-&gt;second-&gt;vAllowedValues-&gt;begin() ; jt != it-&gt;second-&gt;vAllowedValues-&gt;end() ; ++jt) {</span>
+<span class="lineNum">     171 </span><span class="lineCov">         17 :                                         if (it-&gt;second-&gt;strValue.compare(*jt) == 0) {</span>
+<span class="lineNum">     172 </span><span class="lineCov">          9 :                                                 bMatch = true;</span>
+<span class="lineNum">     173 </span><span class="lineCov">          9 :                                                 break;</span>
+<span class="lineNum">     174 </span>            :                                         }       
+<span class="lineNum">     175 </span>            :                                 }
+<span class="lineNum">     176 </span><span class="lineCov">          9 :                                 if (bMatch == false) {</span>
+<span class="lineNum">     177 </span><span class="lineNoCov">          0 :                                         BVC_ERROR &lt;&lt; &quot;parameter &quot; &lt;&lt; it-&gt;second-&gt;strName &lt;&lt; &quot; receives an invalid value: \&quot;&quot; </span>
+<span class="lineNum">     178 </span><span class="lineNoCov">          0 :                                                 &lt;&lt; it-&gt;second-&gt;strValue &lt;&lt; &quot;\&quot;&quot;;</span>
+<span class="lineNum">     179 </span>            :                                 }
+<span class="lineNum">     180 </span>            :                         }
+<span class="lineNum">     181 </span>            :                         // check allowed range          
+<span class="lineNum">     182 </span><span class="lineCov">         42 :                         if (it-&gt;second-&gt;allowedRange != NULL) {</span>
+<span class="lineNum">     183 </span><span class="lineNoCov">          0 :                                 if (it-&gt;second-&gt;iType == PARAMETER_TYPE_INTEGER) {</span>
+<span class="lineNum">     184 </span><span class="lineNoCov">          0 :                                         int iValue = atoi(it-&gt;second-&gt;strValue.c_str());</span>
+<span class="lineNum">     185 </span>            :                                         // if a minimum value is defined make the corresponding check
+<span class="lineNum">     186 </span><span class="lineNoCov">          0 :                                         if (it-&gt;second-&gt;allowedRange-&gt;strMinimumValue.compare(&quot;&quot;) != 0) {</span>
+<span class="lineNum">     187 </span><span class="lineNoCov">          0 :                                                 int iMinimumValue = atoi(it-&gt;second-&gt;allowedRange-&gt;strMinimumValue.c_str());</span>
+<span class="lineNum">     188 </span><span class="lineNoCov">          0 :                                                 if (iValue &lt; iMinimumValue) {</span>
+<span class="lineNum">     189 </span><span class="lineNoCov">          0 :                                                         BVC_ERROR &lt;&lt; &quot;parameter &quot; &lt;&lt; it-&gt;second-&gt;strName &lt;&lt; &quot; receives a value out of range: &quot; &lt;&lt; it-&gt;second-&gt;strValue.c_str();</span>
+<span class="lineNum">     190 </span>            :                                                 }
+<span class="lineNum">     191 </span>            :                                         }
+<span class="lineNum">     192 </span>            :                                         // if a maximum value is defined make the corresponding check
+<span class="lineNum">     193 </span><span class="lineNoCov">          0 :                                         if (it-&gt;second-&gt;allowedRange-&gt;strMaximumValue.compare(&quot;&quot;) != 0) {</span>
+<span class="lineNum">     194 </span><span class="lineNoCov">          0 :                                                 int iMaximumValue = atoi(it-&gt;second-&gt;allowedRange-&gt;strMaximumValue.c_str());</span>
+<span class="lineNum">     195 </span><span class="lineNoCov">          0 :                                                 if (iValue &gt; iMaximumValue) {</span>
+<span class="lineNum">     196 </span><span class="lineNoCov">          0 :                                                         BVC_ERROR &lt;&lt; &quot;parameter &quot; &lt;&lt; it-&gt;second-&gt;strName &lt;&lt; &quot; receives a value out of range: &quot; &lt;&lt; it-&gt;second-&gt;strValue.c_str();</span>
+<span class="lineNum">     197 </span>            :                                                 }
+<span class="lineNum">     198 </span>            :                                         }
+<span class="lineNum">     199 </span><span class="lineNoCov">          0 :                                 } else if (it-&gt;second-&gt;iType == PARAMETER_TYPE_FLOAT) {</span>
+<span class="lineNum">     200 </span><span class="lineNoCov">          0 :                                         float fValue = (float)atof(it-&gt;second-&gt;strValue.c_str());</span>
+<span class="lineNum">     201 </span>            :                                         // if a minimum value is defined make the corresponding check
+<span class="lineNum">     202 </span><span class="lineNoCov">          0 :                                         if (it-&gt;second-&gt;allowedRange-&gt;strMinimumValue.compare(&quot;&quot;) != 0) {</span>
+<span class="lineNum">     203 </span><span class="lineNoCov">          0 :                                                 float fMinimumValue = (float)atof(it-&gt;second-&gt;allowedRange-&gt;strMinimumValue.c_str());</span>
+<span class="lineNum">     204 </span><span class="lineNoCov">          0 :                                                 if (fValue &lt; fMinimumValue) {</span>
+<span class="lineNum">     205 </span><span class="lineNoCov">          0 :                                                         BVC_ERROR &lt;&lt; &quot;parameter &quot; &lt;&lt; it-&gt;second-&gt;strName &lt;&lt; &quot; receives a value out of range&quot;;</span>
+<span class="lineNum">     206 </span>            :                                                 }
+<span class="lineNum">     207 </span>            :                                         }
+<span class="lineNum">     208 </span>            :                                         // if a minimum value is defined make the corresponding check
+<span class="lineNum">     209 </span><span class="lineNoCov">          0 :                                         if (it-&gt;second-&gt;allowedRange-&gt;strMaximumValue.compare(&quot;&quot;) != 0) {</span>
+<span class="lineNum">     210 </span><span class="lineNoCov">          0 :                                                 float fMaximumValue = (float)atof(it-&gt;second-&gt;allowedRange-&gt;strMaximumValue.c_str());</span>
+<span class="lineNum">     211 </span><span class="lineNoCov">          0 :                                                 if (fValue &gt; fMaximumValue) {</span>
+<span class="lineNum">     212 </span><span class="lineNoCov">          0 :                                                         BVC_ERROR &lt;&lt; &quot;parameter &quot; &lt;&lt; it-&gt;second-&gt;strName &lt;&lt; &quot; receives a value out of range&quot;;</span>
+<span class="lineNum">     213 </span>            :                                                 }
+<span class="lineNum">     214 </span>            :                                         }
+<span class="lineNum">     215 </span>            :                                 } else {
+<span class="lineNum">     216 </span><span class="lineNoCov">          0 :                                         assert(0);</span>
+<span class="lineNum">     217 </span>            :                                 }
+<span class="lineNum">     218 </span>            :                         }
+<span class="lineNum">     219 </span>            :                 }
+<span class="lineNum">     220 </span>            :         }
+<span class="lineNum">     221 </span>            :         
+<span class="lineNum">     222 </span>            :         // (5) check incompatibilities
+<span class="lineNum">     223 </span><span class="lineCov">          3 :         for(VIncompatibility::iterator it = m_vIncompatibility.begin() ; it != m_vIncompatibility.end() ; ++it) {</span>
+<span class="lineNum">     224 </span>            :         
+<span class="lineNum">     225 </span>            :                 // if one parameter is set, none of the others can be set
+<span class="lineNum">     226 </span><span class="lineNoCov">          0 :                 bool bOneDefined = true;</span>
+<span class="lineNum">     227 </span><span class="lineNoCov">          0 :                 for(VString::iterator jt = (*it).vParameters-&gt;begin() ; jt != (*it).vParameters-&gt;end() ; ++jt) {</span>
+<span class="lineNum">     228 </span><span class="lineNoCov">          0 :                         if (m_mParameter[*jt]-&gt;strValue.compare(&quot;&quot;) != 0) {</span>
+<span class="lineNum">     229 </span><span class="lineNoCov">          0 :                                 VString::iterator kt = jt;</span>
+<span class="lineNum">     230 </span><span class="lineNoCov">          0 :                                 ++kt;</span>
+<span class="lineNum">     231 </span><span class="lineNoCov">          0 :                                 for( ; kt != (*it).vParameters-&gt;end() ; ++kt) {</span>
+<span class="lineNum">     232 </span><span class="lineNoCov">          0 :                                         if (m_mParameter[*kt]-&gt;strValue.compare(&quot;&quot;) != 0) {</span>
+<span class="lineNum">     233 </span><span class="lineNoCov">          0 :                                                 BVC_ERROR &lt;&lt; &quot;parameters &quot; &lt;&lt; *jt &lt;&lt; &quot; and &quot; &lt;&lt; *kt &lt;&lt; &quot; cannot be simultaneously defined&quot;;</span>
+<span class="lineNum">     234 </span>            :                                         }
+<span class="lineNum">     235 </span>            :                                 }
+<span class="lineNum">     236 </span>            :                         }       
+<span class="lineNum">     237 </span>            :                 }
+<span class="lineNum">     238 </span><span class="lineNoCov">          0 :                 if (((*it).bOneRequired) &amp;&amp; (bOneDefined == false)) {</span>
+<span class="lineNum">     239 </span><span class="lineNoCov">          0 :                         string str = &quot;one of these parameters needs to be defined:&quot;;</span>
+<span class="lineNum">     240 </span><span class="lineNoCov">          0 :                         for(VString::iterator jt = (*it).vParameters-&gt;begin() ; jt != (*it).vParameters-&gt;end() ; ++jt) {</span>
+<span class="lineNum">     241 </span><span class="lineNoCov">          0 :                                 str += &quot; &quot; + *jt;</span>
+<span class="lineNum">     242 </span>            :                         }
+<span class="lineNum">     243 </span><span class="lineNoCov">          0 :                         BVC_ERROR &lt;&lt; str;</span>
+<span class="lineNum">     244 </span>            :                 }       
+<span class="lineNum">     245 </span>            :         }
+<span class="lineNum">     246 </span>            :         
+<span class="lineNum">     247 </span>            :         // (6) check dependencies
+<span class="lineNum">     248 </span><span class="lineCov">          3 :         for(VDependency::iterator it = m_vDependency.begin() ; it != m_vDependency.end() ; ++it) {      </span>
+<span class="lineNum">     249 </span>            :                 // find the parameter
+<span class="lineNum">     250 </span><span class="lineNoCov">          0 :                 if (m_mParameter[(*it).strParameter]-&gt;strValue.compare(&quot;&quot;) == 0) {</span>
+<span class="lineNum">     251 </span><span class="lineNoCov">          0 :                         continue;</span>
+<span class="lineNum">     252 </span>            :                 }
+<span class="lineNum">     253 </span><span class="lineNoCov">          0 :                 bool bDependencyMet = false;</span>
+<span class="lineNum">     254 </span><span class="lineNoCov">          0 :                 for(VParameterValue::iterator kt = (*it).vParameterValue.begin() ; kt != (*it).vParameterValue.end() ; ++kt ) {</span>
+<span class="lineNum">     255 </span><span class="lineNoCov">          0 :                         if (m_mParameter[(*kt).strParameter]-&gt;strValue.compare((*kt).strValue) != 0) {</span>
+<span class="lineNum">     256 </span><span class="lineNoCov">          0 :                                 bDependencyMet = true;</span>
+<span class="lineNum">     257 </span><span class="lineNoCov">          0 :                                 break;</span>
+<span class="lineNum">     258 </span>            :                         }
+<span class="lineNum">     259 </span>            :                 }
+<span class="lineNum">     260 </span><span class="lineNoCov">          0 :                 if (bDependencyMet == false) {</span>
+<span class="lineNum">     261 </span><span class="lineNoCov">          0 :                         stringstream oss;       </span>
+<span class="lineNum">     262 </span><span class="lineNoCov">          0 :                         oss &lt;&lt; &quot;parameter: &quot; &lt;&lt; (*it).strParameter &lt;&lt; &quot; cannot be defined unless one of the following parameters is defined: &quot; &lt;&lt; endl;</span>
+<span class="lineNum">     263 </span><span class="lineNoCov">          0 :                         for(VParameterValue::iterator kt = (*it).vParameterValue.begin() ; kt != (*it).vParameterValue.end() ; ++kt ) {</span>
+<span class="lineNum">     264 </span><span class="lineNoCov">          0 :                                 oss &lt;&lt; (*kt).strParameter.c_str() &lt;&lt; &quot;(&quot; &lt;&lt; (*kt).strValue.c_str() &lt;&lt; &quot;)&quot; &lt;&lt; endl;</span>
+<span class="lineNum">     265 </span>            :                         }
+<span class="lineNum">     266 </span><span class="lineNoCov">          0 :                         BVC_ERROR &lt;&lt; oss;</span>
+<span class="lineNum">     267 </span>            :                 }
+<span class="lineNum">     268 </span>            :         }
+<span class="lineNum">     269 </span><span class="lineCov">          3 : }</span>
+<a name="270"><span class="lineNum">     270 </span>            :                 </a>
+<span class="lineNum">     271 </span>            : // set a parameter value
+<span class="lineNum">     272 </span><span class="lineNoCov">          0 : void ParameterManager::setParameterValue(const char *strName, const char *strValue) {</span>
+<span class="lineNum">     273 </span>            : 
+<span class="lineNum">     274 </span><span class="lineNoCov">          0 :         MParameter::iterator it = m_mParameter.find(strName);</span>
+<span class="lineNum">     275 </span><span class="lineNoCov">          0 :         if (it == m_mParameter.end()) {</span>
+<span class="lineNum">     276 </span><span class="lineNoCov">          0 :                 BVC_ERROR &lt;&lt; &quot;parameter \&quot;&quot; &lt;&lt; strName &lt;&lt; &quot;\&quot; does not exist&quot;;</span>
+<span class="lineNum">     277 </span>            :         }       
+<span class="lineNum">     278 </span><span class="lineNoCov">          0 :         it-&gt;second-&gt;strValue = strValue;</span>
+<span class="lineNum">     279 </span><span class="lineNoCov">          0 : }</span>
+<a name="280"><span class="lineNum">     280 </span>            : </a>
+<span class="lineNum">     281 </span>            : // return a parameter value
+<span class="lineNum">     282 </span><span class="lineCov">          4 : const char *ParameterManager::getParameterValue(const char *strName) {</span>
+<span class="lineNum">     283 </span>            : 
+<span class="lineNum">     284 </span><span class="lineCov">          4 :         MParameter::iterator it = m_mParameter.find(strName);</span>
+<span class="lineNum">     285 </span><span class="lineCov">          4 :         if (it == m_mParameter.end()) {</span>
+<span class="lineNum">     286 </span><span class="lineNoCov">          0 :                 return NULL;</span>
+<span class="lineNum">     287 </span>            :         }       
+<span class="lineNum">     288 </span><span class="lineCov">          4 :         if (isParameterSet(strName) == false) {</span>
+<span class="lineNum">     289 </span><span class="lineNoCov">          0 :                 return NULL;</span>
+<span class="lineNum">     290 </span>            :         }
+<span class="lineNum">     291 </span><span class="lineCov">          4 :         return it-&gt;second-&gt;strValue.c_str();</span>
+<span class="lineNum">     292 </span>            : }
+<a name="293"><span class="lineNum">     293 </span>            : </a>
+<span class="lineNum">     294 </span>            : // return whether a parameter value is set
+<span class="lineNum">     295 </span><span class="lineCov">         10 : bool ParameterManager::isParameterSet(const char *strParameter) {</span>
+<span class="lineNum">     296 </span>            : 
+<span class="lineNum">     297 </span><span class="lineCov">         10 :         MParameter::iterator it = m_mParameter.find(strParameter);</span>
+<span class="lineNum">     298 </span><span class="lineCov">         10 :         if (it == m_mParameter.end()) {</span>
+<span class="lineNum">     299 </span><span class="lineNoCov">          0 :                 return false;</span>
+<span class="lineNum">     300 </span>            :         }
+<span class="lineNum">     301 </span>            : 
+<span class="lineNum">     302 </span><span class="lineCov">         10 :         return (it-&gt;second-&gt;strValue.compare(&quot;&quot;) != 0);</span>
+<span class="lineNum">     303 </span>            : }
+<a name="304"><span class="lineNum">     304 </span>            : </a>
+<span class="lineNum">     305 </span>            : // print parameters
+<span class="lineNum">     306 </span><span class="lineNoCov">          0 : void ParameterManager::print() {</span>
+<span class="lineNum">     307 </span>            : 
+<span class="lineNum">     308 </span><span class="lineNoCov">          0 :         cout &lt;&lt; &quot; ------ parameters ---------------------------------------------------------\n&quot;;</span>
+<span class="lineNum">     309 </span><span class="lineNoCov">          0 :         for(MParameter::iterator it = m_mParameter.begin() ; it != m_mParameter.end() ; ++it) {</span>
+<span class="lineNum">     310 </span><span class="lineNoCov">          0 :                 printf(&quot;%10s = %s\n&quot;,it-&gt;first.c_str(),it-&gt;second-&gt;strValue.c_str());</span>
+<span class="lineNum">     311 </span>            :         }
+<span class="lineNum">     312 </span><span class="lineNoCov">          0 :         cout &lt;&lt; &quot; ----------------------------------------------------------------------------\n&quot;;</span>
+<span class="lineNum">     313 </span><span class="lineNoCov">          0 : }</span>
+<span class="lineNum">     314 </span>            : 
+<span class="lineNum">     315 </span>            : // set allowed values for the given parameter
+<span class="lineNum">     316 </span>            : /*bool ParameterManager::setParameterAllowedValues(const char *strParameter, const char *strAllowedValues) {
+<span class="lineNum">     317 </span>            : 
+<span class="lineNum">     318 </span>            :         // (1) find the parameter
+<span class="lineNum">     319 </span>            :         MParameter::iterator it = m_mParameter.find(strParameter);
+<span class="lineNum">     320 </span>            :         if (it == m_mParameter.end()) {
+<span class="lineNum">     321 </span>            :                 return false;
+<span class="lineNum">     322 </span>            :         }
+<span class="lineNum">     323 </span>            :         it-&gt;second-&gt;vAllowedValues = getItemList(strAllowedValues);
+<span class="lineNum">     324 </span>            :         if ((it-&gt;second-&gt;vAllowedValues == NULL) || (it-&gt;second-&gt;vAllowedValues-&gt;size() &lt; 2)) {
+<span class="lineNum">     325 </span>            :                 return false;
+<span class="lineNum">     326 </span>            :         }
+<span class="lineNum">     327 </span>            : 
+<span class="lineNum">     328 </span>            :         return true;
+<span class="lineNum">     329 </span>            : }
+<span class="lineNum">     330 </span>            : 
+<span class="lineNum">     331 </span>            : // set the allowed range for a parameter value 
+<span class="lineNum">     332 </span>            : bool ParameterManager::setParameterAllowedRange(const char *strParameter, const char *strMinimumValue, const char *strMaximumValue) {
+<span class="lineNum">     333 </span>            : 
+<span class="lineNum">     334 </span>            :         // (1) find the parameter
+<span class="lineNum">     335 </span>            :         MParameter::iterator it = m_mParameter.find(strParameter);
+<span class="lineNum">     336 </span>            :         if (it == m_mParameter.end()) {
+<span class="lineNum">     337 </span>            :                 return false;
+<span class="lineNum">     338 </span>            :         }
+<span class="lineNum">     339 </span>            :         
+<span class="lineNum">     340 </span>            :         // (2) make sure the parameter is of type integer or float
+<span class="lineNum">     341 </span>            :         if ((it-&gt;second-&gt;iType != PARAMETER_TYPE_INTEGER) &amp;&amp; (it-&gt;second-&gt;iType != PARAMETER_TYPE_FLOAT)) {
+<span class="lineNum">     342 </span>            :                 return false;
+<span class="lineNum">     343 </span>            :         }
+<span class="lineNum">     344 </span>            :                 
+<span class="lineNum">     345 </span>            :         // (3) keep the allowed range
+<span class="lineNum">     346 </span>            :         assert(it-&gt;second-&gt;allowedRange == NULL);
+<span class="lineNum">     347 </span>            :         it-&gt;second-&gt;allowedRange = new AllowedRange;
+<span class="lineNum">     348 </span>            :         it-&gt;second-&gt;allowedRange-&gt;strMinimumValue = strMinimumValue;
+<span class="lineNum">     349 </span>            :         it-&gt;second-&gt;allowedRange-&gt;strMaximumValue = strMaximumValue;   
+<span class="lineNum">     350 </span>            : 
+<span class="lineNum">     351 </span>            :         return true;
+<span class="lineNum">     352 </span>            : }
+<span class="lineNum">     353 </span>            : */
+<a name="354"><span class="lineNum">     354 </span>            : </a>
+<span class="lineNum">     355 </span>            : // return the list of items from a string of characters of the form &quot;item1|item2|...|itemN&quot;
+<span class="lineNum">     356 </span><span class="lineCov">          9 : VString *ParameterManager::getItemList(const char *strItems) {</span>
+<span class="lineNum">     357 </span>            : 
+<span class="lineNum">     358 </span><span class="lineCov">          9 :         VString *vString = new VString;</span>
+<span class="lineNum">     359 </span>            :         
+<span class="lineNum">     360 </span>            :         // parse the string of allowed values
+<span class="lineNum">     361 </span><span class="lineCov">          9 :         unsigned int iLength = (unsigned int)strlen(strItems);</span>
+<span class="lineNum">     362 </span>            :         char strValue[1000];
+<span class="lineNum">     363 </span><span class="lineCov">          9 :         int iCharacters = 0;</span>
+<span class="lineNum">     364 </span><span class="lineCov">        124 :         for(unsigned int i=0 ; i&lt;iLength ; ++i) {</span>
+<span class="lineNum">     365 </span><span class="lineCov">        115 :                 if (isspace(strItems[i]) != 0) {</span>
+<span class="lineNum">     366 </span><span class="lineNoCov">          0 :                         return NULL;</span>
+<span class="lineNum">     367 </span>            :                 }
+<span class="lineNum">     368 </span><span class="lineCov">        115 :                 if (strItems[i] == '|') {</span>
+<span class="lineNum">     369 </span><span class="lineCov">         13 :                         if (iCharacters &lt;= 0) {</span>
+<span class="lineNum">     370 </span><span class="lineNoCov">          0 :                                 return NULL;</span>
+<span class="lineNum">     371 </span>            :                         }
+<span class="lineNum">     372 </span><span class="lineCov">         13 :                         strValue[iCharacters] = 0;</span>
+<span class="lineNum">     373 </span><span class="lineCov">         13 :                         vString-&gt;push_back(strValue);</span>
+<span class="lineNum">     374 </span><span class="lineCov">         13 :                         iCharacters = 0;</span>
+<span class="lineNum">     375 </span>            :                 } else {
+<span class="lineNum">     376 </span><span class="lineCov">        102 :                         strValue[iCharacters++] = strItems[i];</span>
+<span class="lineNum">     377 </span>            :                 }
+<span class="lineNum">     378 </span>            :         }
+<span class="lineNum">     379 </span><span class="lineCov">          9 :         if (iCharacters &gt; 0) {</span>
+<span class="lineNum">     380 </span><span class="lineCov">          9 :                 strValue[iCharacters] = 0;</span>
+<span class="lineNum">     381 </span><span class="lineCov">          9 :                 vString-&gt;push_back(strValue);</span>
+<span class="lineNum">     382 </span>            :         }       
+<span class="lineNum">     383 </span>            : 
+<span class="lineNum">     384 </span><span class="lineCov">          9 :         return vString;</span>
+<span class="lineNum">     385 </span>            : }
+<a name="386"><span class="lineNum">     386 </span>            : </a>
+<span class="lineNum">     387 </span>            : // return the range of values from the given string
+<span class="lineNum">     388 </span><span class="lineCov">          1 : AllowedRange *ParameterManager::getRange(const char *strRange) {</span>
+<span class="lineNum">     389 </span>            :         
+<span class="lineNum">     390 </span><span class="lineCov">          1 :         unsigned int iLength = (unsigned int)strlen(strRange);</span>
+<span class="lineNum">     391 </span><span class="lineCov">          1 :         if ((strRange[0] != '[') || (strRange[iLength-1] != ']')) {</span>
+<span class="lineNum">     392 </span><span class="lineNoCov">          0 :                 return NULL;</span>
+<span class="lineNum">     393 </span>            :         }
+<span class="lineNum">     394 </span><span class="lineCov">          1 :         const char *strSeparator = strchr(strRange,'|');</span>
+<span class="lineNum">     395 </span><span class="lineCov">          1 :         if (strSeparator == NULL) {</span>
+<span class="lineNum">     396 </span><span class="lineNoCov">          0 :                 return NULL;</span>
+<span class="lineNum">     397 </span>            :         }
+<span class="lineNum">     398 </span><span class="lineCov">          1 :         int iLenMin = (int)(strSeparator-strRange-1);</span>
+<span class="lineNum">     399 </span><span class="lineCov">          1 :         int iLenMax = iLength-iLenMin-3;</span>
+<span class="lineNum">     400 </span><span class="lineCov">          1 :         if ((iLenMin &lt; 1) || (iLenMax &lt; 1)) {</span>
+<span class="lineNum">     401 </span><span class="lineNoCov">          0 :                 return NULL;</span>
+<span class="lineNum">     402 </span>            :         }
+<span class="lineNum">     403 </span>            :         
+<span class="lineNum">     404 </span><span class="lineCov">          1 :         char *strMin = new char[iLenMin+1];</span>
+<span class="lineNum">     405 </span><span class="lineCov">          1 :         char *strMax = new char[iLenMax+1];</span>
+<span class="lineNum">     406 </span><span class="lineCov">          1 :         strncpy(strMin,strRange+1,iLenMin);</span>
+<span class="lineNum">     407 </span><span class="lineCov">          1 :         strMin[iLenMin] = 0;</span>
+<span class="lineNum">     408 </span><span class="lineCov">          1 :         strncpy(strMax,strSeparator+1,iLenMax);</span>
+<span class="lineNum">     409 </span><span class="lineCov">          1 :         strMax[iLenMax] = 0;    </span>
+<span class="lineNum">     410 </span><span class="lineCov">          1 :         AllowedRange *allowedRange = new AllowedRange;</span>
+<span class="lineNum">     411 </span><span class="lineCov">          1 :         allowedRange-&gt;strMinimumValue = strMin;</span>
+<span class="lineNum">     412 </span><span class="lineCov">          1 :         allowedRange-&gt;strMaximumValue = strMax;</span>
+<span class="lineNum">     413 </span><span class="lineCov">          1 :         delete [] strMin;</span>
+<span class="lineNum">     414 </span><span class="lineCov">          1 :         delete [] strMax;</span>
+<span class="lineNum">     415 </span>            :         
+<span class="lineNum">     416 </span><span class="lineCov">          1 :         return allowedRange;</span>
+<span class="lineNum">     417 </span>            : }
+<a name="418"><span class="lineNum">     418 </span>            : </a>
+<span class="lineNum">     419 </span>            : // define an incompatibility between parameters (if one is set, any of the others can be set)
+<span class="lineNum">     420 </span><span class="lineNoCov">          0 : bool ParameterManager::defineIncompatibility(const char *strParameters, bool bOneRequired) {</span>
+<span class="lineNum">     421 </span>            : 
+<span class="lineNum">     422 </span>            :         Incompatibility incompatibility;
+<span class="lineNum">     423 </span>            : 
+<span class="lineNum">     424 </span>            :         // get the list of incompatible parameters
+<span class="lineNum">     425 </span><span class="lineNoCov">          0 :         incompatibility.vParameters = getItemList(strParameters);</span>
+<span class="lineNum">     426 </span><span class="lineNoCov">          0 :         if ((incompatibility.vParameters == NULL) || (incompatibility.vParameters-&gt;size() &lt; 2)) {</span>
+<span class="lineNum">     427 </span><span class="lineNoCov">          0 :                 return false;</span>
+<span class="lineNum">     428 </span>            :         }
+<span class="lineNum">     429 </span>            : 
+<span class="lineNum">     430 </span>            :         // make sure all the parameters exist
+<span class="lineNum">     431 </span><span class="lineNoCov">          0 :         for(VString::iterator it = incompatibility.vParameters-&gt;begin() ; it != incompatibility.vParameters-&gt;end() ; ++it) {</span>
+<span class="lineNum">     432 </span><span class="lineNoCov">          0 :                 if (m_mParameter.find(*it) == m_mParameter.end()) {</span>
+<span class="lineNum">     433 </span><span class="lineNoCov">          0 :                         return false;</span>
+<span class="lineNum">     434 </span>            :                 }
+<span class="lineNum">     435 </span>            :         }
+<span class="lineNum">     436 </span>            :         
+<span class="lineNum">     437 </span><span class="lineNoCov">          0 :         incompatibility.bOneRequired = bOneRequired;</span>
+<span class="lineNum">     438 </span><span class="lineNoCov">          0 :         m_vIncompatibility.push_back(incompatibility);</span>
+<span class="lineNum">     439 </span>            : 
+<span class="lineNum">     440 </span><span class="lineNoCov">          0 :         return true;</span>
+<span class="lineNum">     441 </span>            : }
+<span class="lineNum">     442 </span>            : 
+<a name="443"><span class="lineNum">     443 </span>            : // define a dependency of one parameter respect to the other parameters and their respective values</a>
+<span class="lineNum">     444 </span>            : // the parameters and values are expressed as follows: parameter1(value1)|...|parameterN(valueN)
+<span class="lineNum">     445 </span><span class="lineNoCov">          0 : bool ParameterManager::defineDependency(const char *strParameter, const char *strParametersAndValues) {</span>
+<span class="lineNum">     446 </span>            : 
+<span class="lineNum">     447 </span>            :         // (1) make sure the parameter exists
+<span class="lineNum">     448 </span><span class="lineNoCov">          0 :         MParameter::iterator it = m_mParameter.find(strParameter);</span>
+<span class="lineNum">     449 </span><span class="lineNoCov">          0 :         if (it == m_mParameter.end()) {</span>
+<span class="lineNum">     450 </span><span class="lineNoCov">          0 :                 return false;</span>
+<span class="lineNum">     451 </span>            :         }
+<span class="lineNum">     452 </span>            :         
+<span class="lineNum">     453 </span><span class="lineNoCov">          0 :         Dependency dependency;</span>
+<span class="lineNum">     454 </span><span class="lineNoCov">          0 :         dependency.strParameter = strParameter;</span>
+<span class="lineNum">     455 </span>            :         
+<span class="lineNum">     456 </span>            :         // (2) parse the parameter(value) items
+<span class="lineNum">     457 </span><span class="lineNoCov">          0 :         ParameterValue parameterValue;</span>
+<span class="lineNum">     458 </span><span class="lineNoCov">          0 :         VString *vString = getItemList(strParametersAndValues);</span>
+<span class="lineNum">     459 </span><span class="lineNoCov">          0 :         for(VString::iterator it = vString-&gt;begin() ; it != vString-&gt;end() ; ++it) {</span>
+<span class="lineNum">     460 </span><span class="lineNoCov">          0 :                 size_t iOpen = (*it).find(&quot;(&quot;);</span>
+<span class="lineNum">     461 </span><span class="lineNoCov">          0 :                 size_t iClose = (*it).rfind(&quot;)&quot;);     </span>
+<span class="lineNum">     462 </span>            :                 // just a parameter
+<span class="lineNum">     463 </span><span class="lineNoCov">          0 :                 if (iOpen == string::npos) {</span>
+<span class="lineNum">     464 </span><span class="lineNoCov">          0 :                         if (iClose != string::npos) {</span>
+<span class="lineNum">     465 </span><span class="lineNoCov">          0 :                                 return false;</span>
+<span class="lineNum">     466 </span>            :                         }
+<span class="lineNum">     467 </span><span class="lineNoCov">          0 :                         parameterValue.strParameter = *it;</span>
+<span class="lineNum">     468 </span><span class="lineNoCov">          0 :                         parameterValue.strValue = &quot;&quot;;</span>
+<span class="lineNum">     469 </span>            :                 } 
+<span class="lineNum">     470 </span>            :                 // a parameter with its corresponding value
+<span class="lineNum">     471 </span>            :                 else {
+<span class="lineNum">     472 </span><span class="lineNoCov">          0 :                         if (((*it).rfind(&quot;(&quot;) != iOpen) || ((*it).find(&quot;)&quot;) != iClose) || (iClose-iOpen &lt; 2) || (iClose+1 != (*it).length())) {</span>
+<span class="lineNum">     473 </span><span class="lineNoCov">          0 :                                 return false;</span>
+<span class="lineNum">     474 </span>            :                         }
+<span class="lineNum">     475 </span><span class="lineNoCov">          0 :                         parameterValue.strParameter = (*it).substr(0,iOpen);</span>
+<span class="lineNum">     476 </span><span class="lineNoCov">          0 :                         parameterValue.strValue = (*it).substr(iOpen+1,iClose-(iOpen+1));</span>
+<span class="lineNum">     477 </span>            :                         //printf(&quot;%s %s\n&quot;,parameterValue.strParameter.c_str(),parameterValue.strValue.c_str());
+<span class="lineNum">     478 </span>            :                 }
+<span class="lineNum">     479 </span>            :                 // check that the parameter actually exists
+<span class="lineNum">     480 </span><span class="lineNoCov">          0 :                 MParameter::iterator jt = m_mParameter.find(parameterValue.strParameter);</span>
+<span class="lineNum">     481 </span><span class="lineNoCov">          0 :                 if (jt == m_mParameter.end()) {</span>
+<span class="lineNum">     482 </span><span class="lineNoCov">          0 :                         return false;</span>
+<span class="lineNum">     483 </span>            :                 }
+<span class="lineNum">     484 </span>            :                 // check that the parameter is different from the dependent parameter
+<span class="lineNum">     485 </span><span class="lineNoCov">          0 :                 if (parameterValue.strParameter.compare(strParameter) == 0) {</span>
+<span class="lineNum">     486 </span><span class="lineNoCov">          0 :                         return false;</span>
+<span class="lineNum">     487 </span>            :                 }
+<span class="lineNum">     488 </span><span class="lineNoCov">          0 :                 dependency.vParameterValue.push_back(parameterValue);   </span>
+<span class="lineNum">     489 </span>            :         }
+<span class="lineNum">     490 </span><span class="lineNoCov">          0 :         delete vString;</span>
+<span class="lineNum">     491 </span>            : 
+<span class="lineNum">     492 </span><span class="lineNoCov">          0 :         m_vDependency.push_back(dependency);    </span>
+<span class="lineNum">     493 </span>            : 
+<span class="lineNum">     494 </span><span class="lineNoCov">          0 :         return true;</span>
+<span class="lineNum">     495 </span>            : }
+<a name="496"><span class="lineNum">     496 </span>            : </a>
+<span class="lineNum">     497 </span>            : // checks whether a string of characters represents a floating point number
+<span class="lineNum">     498 </span><span class="lineCov">          7 : bool ParameterManager::isFloat(const char *strSource) {</span>
+<span class="lineNum">     499 </span>            : 
+<span class="lineNum">     500 </span><span class="lineCov">          7 :         errno = 0;</span>
+<span class="lineNum">     501 </span><span class="lineCov">          7 :         char *strAux = (char*)strSource;        </span>
+<span class="lineNum">     502 </span><span class="lineCov">          7 :         /*float fValue = */strtof(strSource,&amp;strAux);</span>
+<span class="lineNum">     503 </span><span class="lineCov">         14 :         if ((errno != 0) ||                                     // conversion failed (EINVAL, ERANGE)</span>
+<span class="lineNum">     504 </span><span class="lineCov">         14 :                 (strSource == strAux) ||                // conversion failed (no characters consumed)</span>
+<span class="lineNum">     505 </span><span class="lineCov">          7 :                 (*strAux != 0))                                 // conversion failed (trailing data)</span>
+<span class="lineNum">     506 </span>            :                 {
+<span class="lineNum">     507 </span><span class="lineNoCov">          0 :                 return false;   </span>
+<span class="lineNum">     508 </span>            :         }       
+<span class="lineNum">     509 </span>            :         
+<span class="lineNum">     510 </span><span class="lineCov">          7 :         return true;</span>
+<span class="lineNum">     511 </span>            : }
+<a name="512"><span class="lineNum">     512 </span>            : </a>
+<span class="lineNum">     513 </span>            : // checks whether a string of characters represents an integer
+<span class="lineNum">     514 </span><span class="lineCov">         14 : bool ParameterManager::isInteger(const char *strSource) {</span>
+<span class="lineNum">     515 </span>            : 
+<span class="lineNum">     516 </span><span class="lineCov">         14 :         errno = 0;</span>
+<span class="lineNum">     517 </span><span class="lineCov">         14 :         char *strAux = (char*)strSource;        </span>
+<span class="lineNum">     518 </span><span class="lineCov">         14 :         /*long int lValue = */strtol(strSource,&amp;strAux,10);</span>
+<span class="lineNum">     519 </span><span class="lineCov">         28 :         if ((errno != 0) ||                                     // conversion failed (EINVAL, ERANGE)</span>
+<span class="lineNum">     520 </span><span class="lineCov">         28 :                 (strSource == strAux) ||                // conversion failed (no characters consumed)</span>
+<span class="lineNum">     521 </span><span class="lineCov">         14 :                 (*strAux != 0))                                 // conversion failed (trailing data)</span>
+<span class="lineNum">     522 </span>            :                 {
+<span class="lineNum">     523 </span><span class="lineNoCov">          0 :                 return false;   </span>
+<span class="lineNum">     524 </span>            :         }       
+<span class="lineNum">     525 </span>            :         
+<span class="lineNum">     526 </span><span class="lineCov">         14 :         return true;</span>
+<span class="lineNum">     527 </span>            : }
+<a name="528"><span class="lineNum">     528 </span>            : </a>
+<span class="lineNum">     529 </span>            : // checks whether a string of characters represents an integer
+<span class="lineNum">     530 </span><span class="lineCov">          5 : bool ParameterManager::isBoolean(const char *strSource) {</span>
+<span class="lineNum">     531 </span>            : 
+<span class="lineNum">     532 </span><span class="lineCov">          5 :         if ((strcmp(strSource,&quot;yes&quot;) == 0) || (strcmp(strSource,&quot;no&quot;) == 0)) {</span>
+<span class="lineNum">     533 </span><span class="lineCov">          5 :                 return true;</span>
+<span class="lineNum">     534 </span>            :         }
+<span class="lineNum">     535 </span>            :         
+<span class="lineNum">     536 </span><span class="lineNoCov">          0 :         return false;</span>
+<span class="lineNum">     537 </span>            : }
+<a name="538"><span class="lineNum">     538 </span>            : </a>
+<span class="lineNum">     539 </span>            : // return the parameter type in string format
+<span class="lineNum">     540 </span><span class="lineNoCov">          0 : const char *ParameterManager::getStrParameterType(char iType) {</span>
+<span class="lineNum">     541 </span>            : 
+<span class="lineNum">     542 </span><span class="lineNoCov">          0 :         switch(iType) {</span>
+<span class="lineNum">     543 </span>            :                 case PARAMETER_TYPE_STRING: {
+<span class="lineNum">     544 </span><span class="lineNoCov">          0 :                         return STR_PARAMETER_TYPE_STRING;</span>
+<span class="lineNum">     545 </span>            :                 }
+<span class="lineNum">     546 </span>            :                 case PARAMETER_TYPE_BOOLEAN: {
+<span class="lineNum">     547 </span><span class="lineNoCov">          0 :                         return STR_PARAMETER_TYPE_BOOLEAN;</span>
+<span class="lineNum">     548 </span>            :                 }
+<span class="lineNum">     549 </span>            :                 case PARAMETER_TYPE_INTEGER: {
+<span class="lineNum">     550 </span><span class="lineNoCov">          0 :                         return STR_PARAMETER_TYPE_INTEGER;</span>
+<span class="lineNum">     551 </span>            :                 }
+<span class="lineNum">     552 </span>            :                 case PARAMETER_TYPE_FLOAT: {
+<span class="lineNum">     553 </span><span class="lineNoCov">          0 :                         return STR_PARAMETER_TYPE_FLOAT;</span>
+<span class="lineNum">     554 </span>            :                 }
+<span class="lineNum">     555 </span>            :                 case PARAMETER_TYPE_FILE: {
+<span class="lineNum">     556 </span><span class="lineNoCov">          0 :                         return STR_PARAMETER_TYPE_FILE;</span>
+<span class="lineNum">     557 </span>            :                 }
+<span class="lineNum">     558 </span>            :                 case PARAMETER_TYPE_FOLDER: {
+<span class="lineNum">     559 </span><span class="lineNoCov">          0 :                         return STR_PARAMETER_TYPE_FOLDER;</span>
+<span class="lineNum">     560 </span>            :                 }
+<span class="lineNum">     561 </span>            :                 default: {
+<span class="lineNum">     562 </span><span class="lineNoCov">          0 :                         assert(0);</span>
+<span class="lineNum">     563 </span>            :                         return NULL;
+<span class="lineNum">     564 </span>            :                 }
+<span class="lineNum">     565 </span>            :         }
+<span class="lineNum">     566 </span>            : }
+<a name="567"><span class="lineNum">     567 </span>            : </a>
+<span class="lineNum">     568 </span>            : // print a dependency
+<span class="lineNum">     569 </span><span class="lineNoCov">          0 : void ParameterManager::print(Dependency *dependency) {</span>
+<span class="lineNum">     570 </span>            : 
+<span class="lineNum">     571 </span><span class="lineNoCov">          0 :         printf(&quot;parameter: %s\n&quot;,dependency-&gt;strParameter.c_str());</span>
+<span class="lineNum">     572 </span><span class="lineNoCov">          0 :         for(VParameterValue::iterator it = dependency-&gt;vParameterValue.begin() ; it != dependency-&gt;vParameterValue.end() ; ++it) {</span>
+<span class="lineNum">     573 </span><span class="lineNoCov">          0 :                 printf(&quot;-&gt; parameter: %20s value: %20s\n&quot;,(*it).strParameter.c_str(),(*it).strValue.c_str());      </span>
+<span class="lineNum">     574 </span>            :         }
+<a name="575"><span class="lineNum">     575 </span><span class="lineNoCov">          0 : }</span></a>
+<span class="lineNum">     576 </span>            : 
+<span class="lineNum">     577 </span><span class="lineCov">          6 : };      // end-of-namespace</span>
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.10</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

@@ -1,0 +1,454 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - dyna analysis - /usr/include/c++/4.4.6/tr1_impl/unordered_map</title>
+  <link rel="stylesheet" type="text/css" href="../../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../../index.html">top level</a> - <a href="index.html">usr/include/c++/4.4.6/tr1_impl</a> - unordered_map<span style="font-size: 80%;"> (source / <a href="unordered_map.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">dyna analysis</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">8</td>
+            <td class="headerCovTableEntry">8</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2017-08-07 01:33:08</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">24</td>
+            <td class="headerCovTableEntry">24</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : // TR1 unordered_map -*- C++ -*-</a>
+<span class="lineNum">       2 </span>            : 
+<span class="lineNum">       3 </span>            : // Copyright (C) 2007, 2009 Free Software Foundation, Inc.
+<span class="lineNum">       4 </span>            : //
+<span class="lineNum">       5 </span>            : // This file is part of the GNU ISO C++ Library.  This library is free
+<span class="lineNum">       6 </span>            : // software; you can redistribute it and/or modify it under the
+<span class="lineNum">       7 </span>            : // terms of the GNU General Public License as published by the
+<span class="lineNum">       8 </span>            : // Free Software Foundation; either version 3, or (at your option)
+<span class="lineNum">       9 </span>            : // any later version.
+<span class="lineNum">      10 </span>            : 
+<span class="lineNum">      11 </span>            : // This library is distributed in the hope that it will be useful,
+<span class="lineNum">      12 </span>            : // but WITHOUT ANY WARRANTY; without even the implied warranty of
+<span class="lineNum">      13 </span>            : // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<span class="lineNum">      14 </span>            : // GNU General Public License for more details.
+<span class="lineNum">      15 </span>            : 
+<span class="lineNum">      16 </span>            : // Under Section 7 of GPL version 3, you are granted additional
+<span class="lineNum">      17 </span>            : // permissions described in the GCC Runtime Library Exception, version
+<span class="lineNum">      18 </span>            : // 3.1, as published by the Free Software Foundation.
+<span class="lineNum">      19 </span>            : 
+<span class="lineNum">      20 </span>            : // You should have received a copy of the GNU General Public License and
+<span class="lineNum">      21 </span>            : // a copy of the GCC Runtime Library Exception along with this program;
+<span class="lineNum">      22 </span>            : // see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
+<span class="lineNum">      23 </span>            : // &lt;http://www.gnu.org/licenses/&gt;.
+<span class="lineNum">      24 </span>            : 
+<span class="lineNum">      25 </span>            : /** @file tr1_impl/unordered_map
+<span class="lineNum">      26 </span>            :  *  This is an internal header file, included by other library headers.
+<span class="lineNum">      27 </span>            :  *  You should not attempt to use it directly.
+<span class="lineNum">      28 </span>            :  */
+<span class="lineNum">      29 </span>            : 
+<span class="lineNum">      30 </span>            : namespace std
+<span class="lineNum">      31 </span>            : {
+<span class="lineNum">      32 </span>            : _GLIBCXX_BEGIN_NAMESPACE_TR1
+<span class="lineNum">      33 </span>            : 
+<span class="lineNum">      34 </span>            :   // XXX When we get typedef templates these class definitions
+<span class="lineNum">      35 </span>            :   // will be unnecessary.
+<span class="lineNum">      36 </span>            :   template&lt;class _Key, class _Tp,
+<span class="lineNum">      37 </span>            :            class _Hash = hash&lt;_Key&gt;,
+<span class="lineNum">      38 </span>            :            class _Pred = std::equal_to&lt;_Key&gt;,
+<span class="lineNum">      39 </span>            :            class _Alloc = std::allocator&lt;std::pair&lt;const _Key, _Tp&gt; &gt;,
+<span class="lineNum">      40 </span>            :            bool __cache_hash_code = false&gt;
+<span class="lineNum">      41 </span>            :     class __unordered_map
+<span class="lineNum">      42 </span>            :     : public _Hashtable&lt;_Key, std::pair&lt;const _Key, _Tp&gt;, _Alloc,
+<span class="lineNum">      43 </span>            :                         std::_Select1st&lt;std::pair&lt;const _Key, _Tp&gt; &gt;, _Pred, 
+<span class="lineNum">      44 </span>            :                         _Hash, __detail::_Mod_range_hashing,
+<span class="lineNum">      45 </span>            :                         __detail::_Default_ranged_hash,
+<a name="46"><span class="lineNum">      46 </span>            :                         __detail::_Prime_rehash_policy,</a>
+<span class="lineNum">      47 </span>            :                         __cache_hash_code, false, true&gt;
+<span class="lineNum">      48 </span><span class="lineCov">         18 :     {</span>
+<span class="lineNum">      49 </span>            :       typedef _Hashtable&lt;_Key, std::pair&lt;const _Key, _Tp&gt;, _Alloc,
+<span class="lineNum">      50 </span>            :                          std::_Select1st&lt;std::pair&lt;const _Key, _Tp&gt; &gt;, _Pred,
+<span class="lineNum">      51 </span>            :                          _Hash, __detail::_Mod_range_hashing,
+<span class="lineNum">      52 </span>            :                          __detail::_Default_ranged_hash,
+<span class="lineNum">      53 </span>            :                          __detail::_Prime_rehash_policy,
+<span class="lineNum">      54 </span>            :                          __cache_hash_code, false, true&gt;
+<span class="lineNum">      55 </span>            :         _Base;
+<span class="lineNum">      56 </span>            : 
+<span class="lineNum">      57 </span>            :     public:
+<span class="lineNum">      58 </span>            :       typedef typename _Base::size_type       size_type;
+<span class="lineNum">      59 </span>            :       typedef typename _Base::hasher          hasher;
+<span class="lineNum">      60 </span>            :       typedef typename _Base::key_equal       key_equal;
+<span class="lineNum">      61 </span>            :       typedef typename _Base::allocator_type  allocator_type;
+<a name="62"><span class="lineNum">      62 </span>            : </a>
+<span class="lineNum">      63 </span>            :       explicit
+<span class="lineNum">      64 </span><span class="lineCov">         18 :       __unordered_map(size_type __n = 10,</span>
+<span class="lineNum">      65 </span>            :                       const hasher&amp; __hf = hasher(),
+<span class="lineNum">      66 </span>            :                       const key_equal&amp; __eql = key_equal(),
+<span class="lineNum">      67 </span>            :                       const allocator_type&amp; __a = allocator_type())
+<span class="lineNum">      68 </span>            :       : _Base(__n, __hf, __detail::_Mod_range_hashing(),
+<span class="lineNum">      69 </span>            :               __detail::_Default_ranged_hash(),
+<span class="lineNum">      70 </span><span class="lineCov">         18 :               __eql, std::_Select1st&lt;std::pair&lt;const _Key, _Tp&gt; &gt;(), __a)</span>
+<span class="lineNum">      71 </span><span class="lineCov">         18 :       { }</span>
+<span class="lineNum">      72 </span>            : 
+<span class="lineNum">      73 </span>            :       template&lt;typename _InputIterator&gt;
+<span class="lineNum">      74 </span>            :         __unordered_map(_InputIterator __f, _InputIterator __l, 
+<span class="lineNum">      75 </span>            :                         size_type __n = 10,
+<span class="lineNum">      76 </span>            :                         const hasher&amp; __hf = hasher(), 
+<span class="lineNum">      77 </span>            :                         const key_equal&amp; __eql = key_equal(), 
+<span class="lineNum">      78 </span>            :                         const allocator_type&amp; __a = allocator_type())
+<span class="lineNum">      79 </span>            :         : _Base(__f, __l, __n, __hf, __detail::_Mod_range_hashing(),
+<span class="lineNum">      80 </span>            :                 __detail::_Default_ranged_hash(),
+<span class="lineNum">      81 </span>            :                 __eql, std::_Select1st&lt;std::pair&lt;const _Key, _Tp&gt; &gt;(), __a)
+<span class="lineNum">      82 </span>            :         { }
+<span class="lineNum">      83 </span>            : 
+<span class="lineNum">      84 </span>            : #ifdef _GLIBCXX_INCLUDE_AS_CXX0X
+<span class="lineNum">      85 </span>            :       __unordered_map(__unordered_map&amp;&amp; __x)
+<span class="lineNum">      86 </span>            :       : _Base(std::forward&lt;_Base&gt;(__x)) { }
+<span class="lineNum">      87 </span>            : #endif
+<span class="lineNum">      88 </span>            :     };
+<span class="lineNum">      89 </span>            :   
+<span class="lineNum">      90 </span>            :   template&lt;class _Key, class _Tp,
+<span class="lineNum">      91 </span>            :            class _Hash = hash&lt;_Key&gt;,
+<span class="lineNum">      92 </span>            :            class _Pred = std::equal_to&lt;_Key&gt;,
+<span class="lineNum">      93 </span>            :            class _Alloc = std::allocator&lt;std::pair&lt;const _Key, _Tp&gt; &gt;,
+<span class="lineNum">      94 </span>            :            bool __cache_hash_code = false&gt;
+<span class="lineNum">      95 </span>            :     class __unordered_multimap
+<span class="lineNum">      96 </span>            :     : public _Hashtable&lt;_Key, std::pair&lt;const _Key, _Tp&gt;,
+<span class="lineNum">      97 </span>            :                         _Alloc,
+<span class="lineNum">      98 </span>            :                         std::_Select1st&lt;std::pair&lt;const _Key, _Tp&gt; &gt;, _Pred,
+<span class="lineNum">      99 </span>            :                         _Hash, __detail::_Mod_range_hashing,
+<span class="lineNum">     100 </span>            :                         __detail::_Default_ranged_hash,
+<span class="lineNum">     101 </span>            :                         __detail::_Prime_rehash_policy,
+<span class="lineNum">     102 </span>            :                         __cache_hash_code, false, false&gt;
+<span class="lineNum">     103 </span>            :     {
+<span class="lineNum">     104 </span>            :       typedef _Hashtable&lt;_Key, std::pair&lt;const _Key, _Tp&gt;,
+<span class="lineNum">     105 </span>            :                          _Alloc,
+<span class="lineNum">     106 </span>            :                          std::_Select1st&lt;std::pair&lt;const _Key, _Tp&gt; &gt;, _Pred,
+<span class="lineNum">     107 </span>            :                          _Hash, __detail::_Mod_range_hashing,
+<span class="lineNum">     108 </span>            :                          __detail::_Default_ranged_hash,
+<span class="lineNum">     109 </span>            :                          __detail::_Prime_rehash_policy,
+<span class="lineNum">     110 </span>            :                          __cache_hash_code, false, false&gt;
+<span class="lineNum">     111 </span>            :         _Base;
+<span class="lineNum">     112 </span>            : 
+<span class="lineNum">     113 </span>            :     public:
+<span class="lineNum">     114 </span>            :       typedef typename _Base::size_type       size_type;
+<span class="lineNum">     115 </span>            :       typedef typename _Base::hasher          hasher;
+<span class="lineNum">     116 </span>            :       typedef typename _Base::key_equal       key_equal;
+<span class="lineNum">     117 </span>            :       typedef typename _Base::allocator_type  allocator_type;
+<span class="lineNum">     118 </span>            :       
+<span class="lineNum">     119 </span>            :       explicit
+<span class="lineNum">     120 </span>            :       __unordered_multimap(size_type __n = 10,
+<span class="lineNum">     121 </span>            :                            const hasher&amp; __hf = hasher(),
+<span class="lineNum">     122 </span>            :                            const key_equal&amp; __eql = key_equal(),
+<span class="lineNum">     123 </span>            :                            const allocator_type&amp; __a = allocator_type())
+<span class="lineNum">     124 </span>            :       : _Base(__n, __hf, __detail::_Mod_range_hashing(),
+<span class="lineNum">     125 </span>            :               __detail::_Default_ranged_hash(),
+<span class="lineNum">     126 </span>            :               __eql, std::_Select1st&lt;std::pair&lt;const _Key, _Tp&gt; &gt;(), __a)
+<span class="lineNum">     127 </span>            :       { }
+<span class="lineNum">     128 </span>            : 
+<span class="lineNum">     129 </span>            : 
+<span class="lineNum">     130 </span>            :       template&lt;typename _InputIterator&gt;
+<span class="lineNum">     131 </span>            :         __unordered_multimap(_InputIterator __f, _InputIterator __l, 
+<span class="lineNum">     132 </span>            :                              typename _Base::size_type __n = 0,
+<span class="lineNum">     133 </span>            :                              const hasher&amp; __hf = hasher(), 
+<span class="lineNum">     134 </span>            :                              const key_equal&amp; __eql = key_equal(), 
+<span class="lineNum">     135 </span>            :                              const allocator_type&amp; __a = allocator_type())
+<span class="lineNum">     136 </span>            :         : _Base(__f, __l, __n, __hf, __detail::_Mod_range_hashing(),
+<span class="lineNum">     137 </span>            :                 __detail::_Default_ranged_hash(),
+<span class="lineNum">     138 </span>            :                 __eql, std::_Select1st&lt;std::pair&lt;const _Key, _Tp&gt; &gt;(), __a)
+<span class="lineNum">     139 </span>            :         { }
+<span class="lineNum">     140 </span>            : 
+<span class="lineNum">     141 </span>            : #ifdef _GLIBCXX_INCLUDE_AS_CXX0X
+<span class="lineNum">     142 </span>            :       __unordered_multimap(__unordered_multimap&amp;&amp; __x)
+<span class="lineNum">     143 </span>            :       : _Base(std::forward&lt;_Base&gt;(__x)) { }
+<span class="lineNum">     144 </span>            : #endif
+<span class="lineNum">     145 </span>            :     };
+<span class="lineNum">     146 </span>            : 
+<span class="lineNum">     147 </span>            :   template&lt;class _Key, class _Tp, class _Hash, class _Pred, class _Alloc,
+<span class="lineNum">     148 </span>            :            bool __cache_hash_code&gt;
+<span class="lineNum">     149 </span>            :     inline void
+<span class="lineNum">     150 </span>            :     swap(__unordered_map&lt;_Key, _Tp, _Hash, _Pred,
+<span class="lineNum">     151 </span>            :          _Alloc, __cache_hash_code&gt;&amp; __x,
+<span class="lineNum">     152 </span>            :          __unordered_map&lt;_Key, _Tp, _Hash, _Pred,
+<span class="lineNum">     153 </span>            :          _Alloc, __cache_hash_code&gt;&amp; __y)
+<span class="lineNum">     154 </span>            :     { __x.swap(__y); }
+<span class="lineNum">     155 </span>            : 
+<span class="lineNum">     156 </span>            :   template&lt;class _Key, class _Tp, class _Hash, class _Pred, class _Alloc,
+<span class="lineNum">     157 </span>            :            bool __cache_hash_code&gt;
+<span class="lineNum">     158 </span>            :     inline void
+<span class="lineNum">     159 </span>            :     swap(__unordered_multimap&lt;_Key, _Tp, _Hash, _Pred,
+<span class="lineNum">     160 </span>            :          _Alloc, __cache_hash_code&gt;&amp; __x,
+<span class="lineNum">     161 </span>            :          __unordered_multimap&lt;_Key, _Tp, _Hash, _Pred,
+<span class="lineNum">     162 </span>            :          _Alloc, __cache_hash_code&gt;&amp; __y)
+<span class="lineNum">     163 </span>            :     { __x.swap(__y); }
+<span class="lineNum">     164 </span>            : 
+<span class="lineNum">     165 </span>            : 
+<span class="lineNum">     166 </span>            :   /**
+<span class="lineNum">     167 </span>            :    *  @brief A standard container composed of unique keys (containing
+<span class="lineNum">     168 </span>            :    *  at most one of each key value) that associates values of another type
+<span class="lineNum">     169 </span>            :    *  with the keys.
+<span class="lineNum">     170 </span>            :    *
+<span class="lineNum">     171 </span>            :    *  @ingroup unordered_associative_containers
+<span class="lineNum">     172 </span>            :    *
+<span class="lineNum">     173 </span>            :    *  Meets the requirements of a &lt;a href=&quot;tables.html#65&quot;&gt;container&lt;/a&gt;, and
+<span class="lineNum">     174 </span>            :    *  &lt;a href=&quot;tables.html#xx&quot;&gt;unordered associative container&lt;/a&gt;
+<span class="lineNum">     175 </span>            :    *
+<span class="lineNum">     176 </span>            :    *  @param  Key  Type of key objects.
+<span class="lineNum">     177 </span>            :    *  @param  Tp  Type of mapped objects.
+<span class="lineNum">     178 </span>            :    *  @param  Hash  Hashing function object type, defaults to hash&lt;Value&gt;.
+<span class="lineNum">     179 </span>            :    *  @param  Pred  Predicate function object type, defaults to equal_to&lt;Value&gt;.
+<span class="lineNum">     180 </span>            :    *  @param  Alloc  Allocator type, defaults to allocator&lt;Key&gt;.
+<span class="lineNum">     181 </span>            :    *
+<span class="lineNum">     182 </span>            :    * The resulting value type of the container is std::pair&lt;const Key, Tp&gt;.
+<span class="lineNum">     183 </span>            :    */
+<span class="lineNum">     184 </span>            :   template&lt;class _Key, class _Tp,
+<span class="lineNum">     185 </span>            :            class _Hash = hash&lt;_Key&gt;,
+<span class="lineNum">     186 </span>            :            class _Pred = std::equal_to&lt;_Key&gt;,
+<span class="lineNum">     187 </span>            :            class _Alloc = std::allocator&lt;std::pair&lt;const _Key, _Tp&gt; &gt; &gt;
+<a name="188"><span class="lineNum">     188 </span>            :     class unordered_map</a>
+<span class="lineNum">     189 </span>            :     : public __unordered_map&lt;_Key, _Tp, _Hash, _Pred, _Alloc&gt;
+<span class="lineNum">     190 </span><span class="lineCov">         18 :     {</span>
+<span class="lineNum">     191 </span>            :       typedef __unordered_map&lt;_Key, _Tp, _Hash, _Pred, _Alloc&gt;  _Base;
+<span class="lineNum">     192 </span>            : 
+<span class="lineNum">     193 </span>            :     public:
+<span class="lineNum">     194 </span>            :       typedef typename _Base::value_type      value_type;
+<span class="lineNum">     195 </span>            :       typedef typename _Base::size_type       size_type;
+<span class="lineNum">     196 </span>            :       typedef typename _Base::hasher          hasher;
+<span class="lineNum">     197 </span>            :       typedef typename _Base::key_equal       key_equal;
+<span class="lineNum">     198 </span>            :       typedef typename _Base::allocator_type  allocator_type;
+<a name="199"><span class="lineNum">     199 </span>            : </a>
+<span class="lineNum">     200 </span>            :       explicit
+<span class="lineNum">     201 </span><span class="lineCov">         18 :       unordered_map(size_type __n = 10,</span>
+<span class="lineNum">     202 </span>            :                     const hasher&amp; __hf = hasher(),
+<span class="lineNum">     203 </span>            :                     const key_equal&amp; __eql = key_equal(),
+<span class="lineNum">     204 </span>            :                     const allocator_type&amp; __a = allocator_type())
+<span class="lineNum">     205 </span><span class="lineCov">         18 :       : _Base(__n, __hf, __eql, __a)</span>
+<span class="lineNum">     206 </span><span class="lineCov">         18 :       { }</span>
+<span class="lineNum">     207 </span>            : 
+<span class="lineNum">     208 </span>            :       template&lt;typename _InputIterator&gt;
+<span class="lineNum">     209 </span>            :         unordered_map(_InputIterator __f, _InputIterator __l, 
+<span class="lineNum">     210 </span>            :                       size_type __n = 10,
+<span class="lineNum">     211 </span>            :                       const hasher&amp; __hf = hasher(), 
+<span class="lineNum">     212 </span>            :                       const key_equal&amp; __eql = key_equal(), 
+<span class="lineNum">     213 </span>            :                       const allocator_type&amp; __a = allocator_type())
+<span class="lineNum">     214 </span>            :         : _Base(__f, __l, __n, __hf, __eql, __a)
+<span class="lineNum">     215 </span>            :         { }
+<span class="lineNum">     216 </span>            : 
+<span class="lineNum">     217 </span>            : #ifdef _GLIBCXX_INCLUDE_AS_CXX0X
+<span class="lineNum">     218 </span>            :       unordered_map(unordered_map&amp;&amp; __x)
+<span class="lineNum">     219 </span>            :       : _Base(std::forward&lt;_Base&gt;(__x)) { }
+<span class="lineNum">     220 </span>            : 
+<span class="lineNum">     221 </span>            :       unordered_map(initializer_list&lt;value_type&gt; __l,
+<span class="lineNum">     222 </span>            :                     size_type __n = 10,
+<span class="lineNum">     223 </span>            :                     const hasher&amp; __hf = hasher(),
+<span class="lineNum">     224 </span>            :                     const key_equal&amp; __eql = key_equal(),
+<span class="lineNum">     225 </span>            :                     const allocator_type&amp; __a = allocator_type())
+<span class="lineNum">     226 </span>            :         : _Base(__l.begin(), __l.end(), __n, __hf, __eql, __a)
+<span class="lineNum">     227 </span>            :       { }
+<span class="lineNum">     228 </span>            : 
+<span class="lineNum">     229 </span>            :       unordered_map&amp;
+<span class="lineNum">     230 </span>            :       operator=(unordered_map&amp;&amp; __x)
+<span class="lineNum">     231 </span>            :       {
+<span class="lineNum">     232 </span>            :         // NB: DR 675.
+<span class="lineNum">     233 </span>            :         this-&gt;clear();
+<span class="lineNum">     234 </span>            :         this-&gt;swap(__x); 
+<span class="lineNum">     235 </span>            :         return *this;   
+<span class="lineNum">     236 </span>            :       }
+<span class="lineNum">     237 </span>            : 
+<span class="lineNum">     238 </span>            :       unordered_map&amp;
+<span class="lineNum">     239 </span>            :       operator=(initializer_list&lt;value_type&gt; __l)
+<span class="lineNum">     240 </span>            :       {
+<span class="lineNum">     241 </span>            :         this-&gt;clear();
+<span class="lineNum">     242 </span>            :         this-&gt;insert(__l.begin(), __l.end());
+<span class="lineNum">     243 </span>            :         return *this;
+<span class="lineNum">     244 </span>            :       }
+<span class="lineNum">     245 </span>            : #endif
+<span class="lineNum">     246 </span>            :     };
+<span class="lineNum">     247 </span>            :   
+<span class="lineNum">     248 </span>            :   /**
+<span class="lineNum">     249 </span>            :    *  @brief A standard container composed of equivalent keys
+<span class="lineNum">     250 </span>            :    *  (possibly containing multiple of each key value) that associates
+<span class="lineNum">     251 </span>            :    *  values of another type with the keys.
+<span class="lineNum">     252 </span>            :    *
+<span class="lineNum">     253 </span>            :    *  @ingroup unordered_associative_containers
+<span class="lineNum">     254 </span>            :    *
+<span class="lineNum">     255 </span>            :    *  Meets the requirements of a &lt;a href=&quot;tables.html#65&quot;&gt;container&lt;/a&gt;, and
+<span class="lineNum">     256 </span>            :    *  &lt;a href=&quot;tables.html#xx&quot;&gt;unordered associative container&lt;/a&gt;
+<span class="lineNum">     257 </span>            :    *
+<span class="lineNum">     258 </span>            :    *  @param  Key  Type of key objects.
+<span class="lineNum">     259 </span>            :    *  @param  Tp  Type of mapped objects.
+<span class="lineNum">     260 </span>            :    *  @param  Hash  Hashing function object type, defaults to hash&lt;Value&gt;.
+<span class="lineNum">     261 </span>            :    *  @param  Pred  Predicate function object type, defaults to equal_to&lt;Value&gt;.
+<span class="lineNum">     262 </span>            :    *  @param  Alloc  Allocator type, defaults to allocator&lt;Key&gt;.
+<span class="lineNum">     263 </span>            :    *
+<span class="lineNum">     264 </span>            :    * The resulting value type of the container is std::pair&lt;const Key, Tp&gt;.
+<span class="lineNum">     265 </span>            :    */
+<span class="lineNum">     266 </span>            :   template&lt;class _Key, class _Tp,
+<span class="lineNum">     267 </span>            :            class _Hash = hash&lt;_Key&gt;,
+<span class="lineNum">     268 </span>            :            class _Pred = std::equal_to&lt;_Key&gt;,
+<span class="lineNum">     269 </span>            :            class _Alloc = std::allocator&lt;std::pair&lt;const _Key, _Tp&gt; &gt; &gt;
+<span class="lineNum">     270 </span>            :     class unordered_multimap
+<span class="lineNum">     271 </span>            :     : public __unordered_multimap&lt;_Key, _Tp, _Hash, _Pred, _Alloc&gt;
+<span class="lineNum">     272 </span>            :     {
+<span class="lineNum">     273 </span>            :       typedef __unordered_multimap&lt;_Key, _Tp, _Hash, _Pred, _Alloc&gt;  _Base;
+<span class="lineNum">     274 </span>            : 
+<span class="lineNum">     275 </span>            :     public:
+<span class="lineNum">     276 </span>            :       typedef typename _Base::value_type      value_type;
+<span class="lineNum">     277 </span>            :       typedef typename _Base::size_type       size_type;
+<span class="lineNum">     278 </span>            :       typedef typename _Base::hasher          hasher;
+<span class="lineNum">     279 </span>            :       typedef typename _Base::key_equal       key_equal;
+<span class="lineNum">     280 </span>            :       typedef typename _Base::allocator_type  allocator_type;
+<span class="lineNum">     281 </span>            :       
+<span class="lineNum">     282 </span>            :       explicit
+<span class="lineNum">     283 </span>            :       unordered_multimap(size_type __n = 10,
+<span class="lineNum">     284 </span>            :                          const hasher&amp; __hf = hasher(),
+<span class="lineNum">     285 </span>            :                          const key_equal&amp; __eql = key_equal(),
+<span class="lineNum">     286 </span>            :                          const allocator_type&amp; __a = allocator_type())
+<span class="lineNum">     287 </span>            :       : _Base(__n, __hf, __eql, __a)
+<span class="lineNum">     288 </span>            :       { }
+<span class="lineNum">     289 </span>            : 
+<span class="lineNum">     290 </span>            : 
+<span class="lineNum">     291 </span>            :       template&lt;typename _InputIterator&gt;
+<span class="lineNum">     292 </span>            :         unordered_multimap(_InputIterator __f, _InputIterator __l, 
+<span class="lineNum">     293 </span>            :                            typename _Base::size_type __n = 0,
+<span class="lineNum">     294 </span>            :                            const hasher&amp; __hf = hasher(), 
+<span class="lineNum">     295 </span>            :                            const key_equal&amp; __eql = key_equal(), 
+<span class="lineNum">     296 </span>            :                            const allocator_type&amp; __a = allocator_type())
+<span class="lineNum">     297 </span>            :         : _Base(__f, __l, __n, __hf, __eql, __a)
+<span class="lineNum">     298 </span>            :         { }
+<span class="lineNum">     299 </span>            : 
+<span class="lineNum">     300 </span>            : #ifdef _GLIBCXX_INCLUDE_AS_CXX0X
+<span class="lineNum">     301 </span>            :       unordered_multimap(unordered_multimap&amp;&amp; __x)
+<span class="lineNum">     302 </span>            :       : _Base(std::forward&lt;_Base&gt;(__x)) { }
+<span class="lineNum">     303 </span>            : 
+<span class="lineNum">     304 </span>            :       unordered_multimap(initializer_list&lt;value_type&gt; __l,
+<span class="lineNum">     305 </span>            :                          size_type __n = 10,
+<span class="lineNum">     306 </span>            :                          const hasher&amp; __hf = hasher(),
+<span class="lineNum">     307 </span>            :                          const key_equal&amp; __eql = key_equal(),
+<span class="lineNum">     308 </span>            :                          const allocator_type&amp; __a = allocator_type())
+<span class="lineNum">     309 </span>            :         : _Base(__l.begin(), __l.end(), __n, __hf, __eql, __a)
+<span class="lineNum">     310 </span>            :       { }
+<span class="lineNum">     311 </span>            : 
+<span class="lineNum">     312 </span>            :       unordered_multimap&amp;
+<span class="lineNum">     313 </span>            :       operator=(unordered_multimap&amp;&amp; __x)
+<span class="lineNum">     314 </span>            :       {
+<span class="lineNum">     315 </span>            :         // NB: DR 675.
+<span class="lineNum">     316 </span>            :         this-&gt;clear();
+<span class="lineNum">     317 </span>            :         this-&gt;swap(__x); 
+<span class="lineNum">     318 </span>            :         return *this;   
+<span class="lineNum">     319 </span>            :       }
+<span class="lineNum">     320 </span>            : 
+<span class="lineNum">     321 </span>            :       unordered_multimap&amp;
+<span class="lineNum">     322 </span>            :       operator=(initializer_list&lt;value_type&gt; __l)
+<span class="lineNum">     323 </span>            :       {
+<span class="lineNum">     324 </span>            :         this-&gt;clear();
+<span class="lineNum">     325 </span>            :         this-&gt;insert(__l.begin(), __l.end());
+<span class="lineNum">     326 </span>            :         return *this;
+<span class="lineNum">     327 </span>            :       }
+<span class="lineNum">     328 </span>            : #endif
+<span class="lineNum">     329 </span>            :     };
+<span class="lineNum">     330 </span>            : 
+<span class="lineNum">     331 </span>            :   template&lt;class _Key, class _Tp, class _Hash, class _Pred, class _Alloc&gt;
+<span class="lineNum">     332 </span>            :     inline void
+<span class="lineNum">     333 </span>            :     swap(unordered_map&lt;_Key, _Tp, _Hash, _Pred, _Alloc&gt;&amp; __x,
+<span class="lineNum">     334 </span>            :          unordered_map&lt;_Key, _Tp, _Hash, _Pred, _Alloc&gt;&amp; __y)
+<span class="lineNum">     335 </span>            :     { __x.swap(__y); }
+<span class="lineNum">     336 </span>            : 
+<span class="lineNum">     337 </span>            :   template&lt;class _Key, class _Tp, class _Hash, class _Pred, class _Alloc&gt;
+<span class="lineNum">     338 </span>            :     inline void
+<span class="lineNum">     339 </span>            :     swap(unordered_multimap&lt;_Key, _Tp, _Hash, _Pred, _Alloc&gt;&amp; __x,
+<span class="lineNum">     340 </span>            :          unordered_multimap&lt;_Key, _Tp, _Hash, _Pred, _Alloc&gt;&amp; __y)
+<span class="lineNum">     341 </span>            :     { __x.swap(__y); }
+<span class="lineNum">     342 </span>            : 
+<span class="lineNum">     343 </span>            : #ifdef _GLIBCXX_INCLUDE_AS_CXX0X
+<span class="lineNum">     344 </span>            :   template&lt;class _Key, class _Tp, class _Hash, class _Pred, class _Alloc&gt;
+<span class="lineNum">     345 </span>            :     inline void
+<span class="lineNum">     346 </span>            :     swap(unordered_map&lt;_Key, _Tp, _Hash, _Pred, _Alloc&gt;&amp;&amp; __x,
+<span class="lineNum">     347 </span>            :          unordered_map&lt;_Key, _Tp, _Hash, _Pred, _Alloc&gt;&amp; __y)
+<span class="lineNum">     348 </span>            :     { __x.swap(__y); }
+<span class="lineNum">     349 </span>            : 
+<span class="lineNum">     350 </span>            :   template&lt;class _Key, class _Tp, class _Hash, class _Pred, class _Alloc&gt;
+<span class="lineNum">     351 </span>            :     inline void
+<span class="lineNum">     352 </span>            :     swap(unordered_map&lt;_Key, _Tp, _Hash, _Pred, _Alloc&gt;&amp; __x,
+<span class="lineNum">     353 </span>            :          unordered_map&lt;_Key, _Tp, _Hash, _Pred, _Alloc&gt;&amp;&amp; __y)
+<span class="lineNum">     354 </span>            :     { __x.swap(__y); }
+<span class="lineNum">     355 </span>            : 
+<span class="lineNum">     356 </span>            :   template&lt;class _Key, class _Tp, class _Hash, class _Pred, class _Alloc&gt;
+<span class="lineNum">     357 </span>            :     inline void
+<span class="lineNum">     358 </span>            :     swap(unordered_multimap&lt;_Key, _Tp, _Hash, _Pred, _Alloc&gt;&amp;&amp; __x,
+<span class="lineNum">     359 </span>            :          unordered_multimap&lt;_Key, _Tp, _Hash, _Pred, _Alloc&gt;&amp; __y)
+<span class="lineNum">     360 </span>            :     { __x.swap(__y); }
+<span class="lineNum">     361 </span>            : 
+<span class="lineNum">     362 </span>            :   template&lt;class _Key, class _Tp, class _Hash, class _Pred, class _Alloc&gt;
+<span class="lineNum">     363 </span>            :     inline void
+<span class="lineNum">     364 </span>            :     swap(unordered_multimap&lt;_Key, _Tp, _Hash, _Pred, _Alloc&gt;&amp; __x,
+<span class="lineNum">     365 </span>            :          unordered_multimap&lt;_Key, _Tp, _Hash, _Pred, _Alloc&gt;&amp;&amp; __y)
+<span class="lineNum">     366 </span>            :     { __x.swap(__y); }
+<span class="lineNum">     367 </span>            : #endif
+<span class="lineNum">     368 </span>            : 
+<span class="lineNum">     369 </span>            : _GLIBCXX_END_NAMESPACE_TR1
+<span class="lineNum">     370 </span>            : }
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.13</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

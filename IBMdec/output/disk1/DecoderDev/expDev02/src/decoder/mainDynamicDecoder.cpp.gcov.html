@@ -1,0 +1,442 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - dyna analysis - /disk1/DecoderDev/expDev02/src/decoder/mainDynamicDecoder.cpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../../index.html">top level</a> - <a href="index.html">disk1/DecoderDev/expDev02/src/decoder</a> - mainDynamicDecoder.cpp<span style="font-size: 80%;"> (source / <a href="mainDynamicDecoder.cpp.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">dyna analysis</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">122</td>
+            <td class="headerCovTableEntry">139</td>
+            <td class="headerCovTableEntryMed">87.8 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2017-07-03 01:01:36</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">3</td>
+            <td class="headerCovTableEntry">3</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : #include &lt;stdexcept&gt;</a>
+<span class="lineNum">       2 </span>            : #include &lt;iostream&gt;
+<span class="lineNum">       3 </span>            : #include &lt;cstdlib&gt;
+<span class="lineNum">       4 </span>            : #include &quot;FileOutput.h&quot;
+<span class="lineNum">       5 </span>            : #include &quot;AudioFile.h&quot;
+<span class="lineNum">       6 </span>            : #include &quot;BatchFile.h&quot;
+<span class="lineNum">       7 </span>            : #include &quot;BestPath.h&quot;
+<span class="lineNum">       8 </span>            : #include &quot;CommandLineManager.h&quot;
+<span class="lineNum">       9 </span>            : #include &quot;ConfigurationDynamicDecoder.h&quot;
+<span class="lineNum">      10 </span>            : #include &quot;ConfigurationFeatures.h&quot;
+<span class="lineNum">      11 </span>            : #include &quot;DynamicNetworkX.h&quot;
+<span class="lineNum">      12 </span>            : #include &quot;DynamicDecoderX.h&quot;
+<span class="lineNum">      13 </span>            : #include &quot;NetworkBuilderX.h&quot;
+<span class="lineNum">      14 </span>            : #include &quot;FeatureExtractor.h&quot;
+<span class="lineNum">      15 </span>            : #include &quot;FeatureFile.h&quot;
+<span class="lineNum">      16 </span>            : #include &quot;FileUtils.h&quot;
+<span class="lineNum">      17 </span>            : #include &quot;FillerManager.h&quot;
+<span class="lineNum">      18 </span>            : #include &quot;HMMManager.h&quot;
+<span class="lineNum">      19 </span>            : #include &quot;LexiconManager.h&quot;
+<span class="lineNum">      20 </span>            : #include &quot;LexUnitsFile.h&quot;
+<span class="lineNum">      21 </span>            : #include &quot;LMManager.h&quot;
+<span class="lineNum">      22 </span>            : #include &quot;PhoneSet.h&quot;
+<span class="lineNum">      23 </span>            : #include &quot;TimeUtils.h&quot;
+<span class="lineNum">      24 </span>            : 
+<span class="lineNum">      25 </span>            : #include &lt;iostream&gt;// std::cout, std::hex, std::endl
+<span class="lineNum">      26 </span>            : #include &lt;iomanip&gt; // std::setiosflags
+<span class="lineNum">      27 </span>            : 
+<span class="lineNum">      28 </span>            : using namespace std;
+<span class="lineNum">      29 </span>            : 
+<span class="lineNum">      30 </span>            : #include &lt;string&gt;
+<span class="lineNum">      31 </span>            : 
+<span class="lineNum">      32 </span>            : using namespace Bavieca;
+<a name="33"><span class="lineNum">      33 </span>            : </a>
+<span class="lineNum">      34 </span>            : // main for the tool &quot;dynamicdecoder&quot;
+<span class="lineNum">      35 </span><span class="lineCov">          1 : int main(int argc, char *argv[]) {</span>
+<span class="lineNum">      36 </span>            : 
+<span class="lineNum">      37 </span>            :         try {
+<span class="lineNum">      38 </span>            : 
+<span class="lineNum">      39 </span>            :                 // (1) define command line parameters
+<span class="lineNum">      40 </span><span class="lineCov">          1 :                 CommandLineManager commandLineManager(&quot;dynamicdecoder&quot;,SYSTEM_VERSION,SYSTEM_AUTHOR,SYSTEM_DATE);     </span>
+<span class="lineNum">      41 </span><span class="lineCov">          1 :                 commandLineManager.defineParameter(&quot;-cfg&quot;,&quot;configuration file&quot;,PARAMETER_TYPE_FILE,false);</span>
+<span class="lineNum">      42 </span><span class="lineCov">          1 :                 commandLineManager.defineParameter(&quot;-hyp&quot;,&quot;hypothesis file&quot;,PARAMETER_TYPE_FILE,false);</span>
+<span class="lineNum">      43 </span>            :                 commandLineManager.defineParameter(&quot;-bat&quot;,&quot;batch file with entries [rawFile/featureFile utteranceId]&quot;,
+<span class="lineNum">      44 </span><span class="lineCov">          1 :                         PARAMETER_TYPE_FILE,false);</span>
+<span class="lineNum">      45 </span>            :                         
+<span class="lineNum">      46 </span>            :                 // (2) process command line parameters
+<span class="lineNum">      47 </span><span class="lineCov">          1 :                 if (commandLineManager.parseParameters(argc,argv) == false) {</span>
+<span class="lineNum">      48 </span><span class="lineNoCov">          0 :                         return -1;</span>
+<span class="lineNum">      49 </span>            :                 }
+<span class="lineNum">      50 </span>            :                 
+<span class="lineNum">      51 </span>            :                 // get command line parameters
+<span class="lineNum">      52 </span><span class="lineCov">          1 :                 const char *strFileConfiguration = commandLineManager.getParameterValue(&quot;-cfg&quot;);</span>
+<span class="lineNum">      53 </span><span class="lineCov">          1 :                 const char *strFileControl = commandLineManager.getParameterValue(&quot;-bat&quot;);</span>
+<span class="lineNum">      54 </span><span class="lineCov">          1 :                 const char *strFileHypothesis = commandLineManager.getParameterValue(&quot;-hyp&quot;);</span>
+<span class="lineNum">      55 </span>            :                 
+<span class="lineNum">      56 </span>            :                 // load the configuration file
+<span class="lineNum">      57 </span><span class="lineCov">          1 :                 ConfigurationDynamicDecoder configuration(strFileConfiguration);</span>
+<span class="lineNum">      58 </span><span class="lineCov">          1 :                 configuration.load();</span>
+<span class="lineNum">      59 </span>            :                 
+<span class="lineNum">      60 </span>            :                 // configuration.ConfigurationFile::print();            
+<span class="lineNum">      61 </span>            :                 // get parameters from the configuration file
+<span class="lineNum">      62 </span>            :         
+<span class="lineNum">      63 </span>            :                 // feature extraction
+<span class="lineNum">      64 </span>            :                 const char *strFileConfigurationFeatures = 
+<span class="lineNum">      65 </span><span class="lineCov">          1 :                         configuration.getStrParameterValue(&quot;feature.configurationFile&quot;);</span>
+<span class="lineNum">      66 </span>            :                 const char *strCepstralNormalizationMode =
+<span class="lineNum">      67 </span><span class="lineCov">          1 :                         configuration.getStrParameterValue(&quot;feature.cepstralNormalization.mode&quot;);</span>
+<span class="lineNum">      68 </span>            :                 const char *strCepstralNormalizationMethod =
+<span class="lineNum">      69 </span><span class="lineCov">          1 :                         configuration.getStrParameterValue(&quot;feature.cepstralNormalization.method&quot;);</span>
+<span class="lineNum">      70 </span>            :                 int iCepstralNormalizationBufferSize = 
+<span class="lineNum">      71 </span><span class="lineCov">          1 :                         configuration.getIntParameterValue(&quot;feature.cepstralNormalization.bufferSize&quot;);</span>
+<span class="lineNum">      72 </span><span class="lineCov">          1 :                 float fWarpFactor = 1.0;</span>
+<span class="lineNum">      73 </span><span class="lineCov">          1 :                 if (configuration.isParameterSet(&quot;feature.warpFactor&quot;)) {</span>
+<span class="lineNum">      74 </span><span class="lineCov">          1 :                         fWarpFactor = atof(configuration.getParameterValue(&quot;feature.warpFactor&quot;));</span>
+<span class="lineNum">      75 </span>            :                 }
+<span class="lineNum">      76 </span><span class="lineCov">          1 :                 const char *strFileFeatureTransform = NULL;</span>
+<span class="lineNum">      77 </span><span class="lineCov">          1 :                 if (configuration.isParameterSet(&quot;feature.transformFile&quot;)) {</span>
+<span class="lineNum">      78 </span><span class="lineNoCov">          0 :                         strFileFeatureTransform = configuration.getParameterValue(&quot;feature.transformFile&quot;);</span>
+<span class="lineNum">      79 </span>            :                 }
+<span class="lineNum">      80 </span>            :                         
+<span class="lineNum">      81 </span>            :                 // phone set
+<span class="lineNum">      82 </span>            :                 const char *strFilePhoneSet = 
+<span class="lineNum">      83 </span><span class="lineCov">          1 :                         configuration.getStrParameterValue(&quot;phoneticSymbolSet.file&quot;);</span>
+<span class="lineNum">      84 </span>            :                 
+<span class="lineNum">      85 </span>            :                 // acoustic models
+<span class="lineNum">      86 </span>            :                 const char *strFileAcousticModels = 
+<span class="lineNum">      87 </span><span class="lineCov">          1 :                         configuration.getStrParameterValue(&quot;acousticModels.file&quot;); </span>
+<span class="lineNum">      88 </span>            :                 
+<span class="lineNum">      89 </span>            :                 // language model
+<span class="lineNum">      90 </span>            :                 const char *strLanguageModelFile = 
+<span class="lineNum">      91 </span><span class="lineCov">          1 :                         configuration.getStrParameterValue(&quot;languageModel.file&quot;); </span>
+<span class="lineNum">      92 </span>            :                 const char *strLanguageModelFormat = 
+<span class="lineNum">      93 </span><span class="lineCov">          1 :                         configuration.getStrParameterValue(&quot;languageModel.format&quot;); </span>
+<span class="lineNum">      94 </span>            :                 const char *strLanguageModelType = 
+<span class="lineNum">      95 </span><span class="lineCov">          1 :                         configuration.getStrParameterValue(&quot;languageModel.type&quot;); </span>
+<span class="lineNum">      96 </span>            :                 float fLanguageModelScalingFactor = 
+<span class="lineNum">      97 </span><span class="lineCov">          1 :                         configuration.getFloatParameterValue(&quot;languageModel.scalingFactor&quot;); </span>
+<span class="lineNum">      98 </span>            :                 //bool bLanguageCrossUtterance = 
+<span class="lineNum">      99 </span>            :                 //      configuration.getBoolParameterValue(&quot;languageModel.crossUtterance&quot;);
+<span class="lineNum">     100 </span>            :                         
+<span class="lineNum">     101 </span>            :                 // lexicon
+<span class="lineNum">     102 </span>            :                 const char *strFileLexicon = 
+<span class="lineNum">     103 </span><span class="lineCov">          1 :                         configuration.getStrParameterValue(&quot;lexicon.file&quot;); </span>
+<span class="lineNum">     104 </span>            :                         
+<span class="lineNum">     105 </span>            :                 // insertion penalty
+<span class="lineNum">     106 </span>            :                 float fInsertionPenaltyStandard = 
+<span class="lineNum">     107 </span><span class="lineCov">          1 :                         configuration.getFloatParameterValue(&quot;insertionPenalty.standard&quot;); </span>
+<span class="lineNum">     108 </span>            :                 float fInsertionPenaltyFiller = 
+<span class="lineNum">     109 </span><span class="lineCov">          1 :                         configuration.getFloatParameterValue(&quot;insertionPenalty.filler&quot;); </span>
+<span class="lineNum">     110 </span>            :                 const char *strFileInsertionPenaltyFiller = 
+<span class="lineNum">     111 </span><span class="lineCov">          1 :                         configuration.getStrParameterValue(&quot;insertionPenalty.filler.file&quot;); </span>
+<span class="lineNum">     112 </span>            :                 
+<span class="lineNum">     113 </span>            :                 // pruning parameters
+<span class="lineNum">     114 </span><span class="lineCov">          1 :                 int iMaxActiveArcs = configuration.getIntParameterValue(&quot;pruning.maxActiveArcs&quot;);</span>
+<span class="lineNum">     115 </span><span class="lineCov">          1 :                 int iMaxActiveArcsWE = configuration.getIntParameterValue(&quot;pruning.maxActiveArcsWE&quot;);</span>
+<span class="lineNum">     116 </span><span class="lineCov">          1 :                 int iMaxActiveTokensArc = configuration.getIntParameterValue(&quot;pruning.maxActiveTokensArc&quot;);   </span>
+<span class="lineNum">     117 </span><span class="lineCov">          1 :                 float fBeamWidthArcs = configuration.getFloatParameterValue(&quot;pruning.likelihoodBeam&quot;);</span>
+<span class="lineNum">     118 </span><span class="lineCov">          1 :                 float fBeamWidthArcsWE = configuration.getFloatParameterValue(&quot;pruning.likelihoodBeamWE&quot;);</span>
+<span class="lineNum">     119 </span><span class="lineCov">          1 :                 float fBeamWidthTokensArc = configuration.getFloatParameterValue(&quot;pruning.likelihoodBeamTokensArc&quot;);</span>
+<span class="lineNum">     120 </span>            :                 
+<span class="lineNum">     121 </span>            :                 // output lattice?
+<span class="lineNum">     122 </span><span class="lineCov">          1 :                 bool bLatticeGeneration = configuration.isParameterSet(&quot;output.lattice.folder&quot;);      </span>
+<span class="lineNum">     123 </span><span class="lineCov">          1 :                 const char *strFolderLattices = NULL;</span>
+<span class="lineNum">     124 </span><span class="lineCov">          1 :                 int iMaxWordSequencesState = -1;</span>
+<span class="lineNum">     125 </span><span class="lineCov">          1 :                 if (bLatticeGeneration) {</span>
+<span class="lineNum">     126 </span><span class="lineNoCov">          0 :                         strFolderLattices = configuration.getStrParameterValue(&quot;output.lattice.folder&quot;); </span>
+<span class="lineNum">     127 </span>            :                         iMaxWordSequencesState = 
+<span class="lineNum">     128 </span><span class="lineNoCov">          0 :                                 configuration.getIntParameterValue(&quot;output.lattice.maxWordSequencesState&quot;);</span>
+<span class="lineNum">     129 </span>            :                 }
+<span class="lineNum">     130 </span>            :                 
+<span class="lineNum">     131 </span>            :                 // output features?
+<span class="lineNum">     132 </span><span class="lineCov">          1 :                 bool bOutputFeatures = configuration.isParameterSet(&quot;output.features.folder&quot;);</span>
+<span class="lineNum">     133 </span><span class="lineCov">          1 :                 const char *strFolderFeatures = NULL;</span>
+<span class="lineNum">     134 </span><span class="lineCov">          1 :                 if (bOutputFeatures) {</span>
+<span class="lineNum">     135 </span><span class="lineNoCov">          0 :                         strFolderFeatures = configuration.getStrParameterValue(&quot;output.features.folder&quot;); ;</span>
+<span class="lineNum">     136 </span>            :                 }
+<span class="lineNum">     137 </span>            :                 
+<span class="lineNum">     138 </span>            :                 // output alignment?
+<span class="lineNum">     139 </span><span class="lineCov">          1 :                 bool bOutputAlignment = configuration.isParameterSet(&quot;output.alignment.folder&quot;);</span>
+<span class="lineNum">     140 </span><span class="lineCov">          1 :                 const char *strFolderAlignments = NULL;</span>
+<span class="lineNum">     141 </span><span class="lineCov">          1 :                 if (bOutputAlignment) {</span>
+<span class="lineNum">     142 </span><span class="lineNoCov">          0 :                         strFolderAlignments = configuration.getStrParameterValue(&quot;output.alignment.folder&quot;); ;</span>
+<span class="lineNum">     143 </span>            :                 }
+<span class="lineNum">     144 </span>            :         
+<span class="lineNum">     145 </span>            :                 // output audio?
+<span class="lineNum">     146 </span><span class="lineCov">          1 :                 bool bOutputAudio = configuration.isParameterSet(&quot;output.audio.folder&quot;);</span>
+<span class="lineNum">     147 </span><span class="lineCov">          1 :                 const char *strFolderAudio = NULL;</span>
+<span class="lineNum">     148 </span><span class="lineCov">          1 :                 if (bOutputAudio) {</span>
+<span class="lineNum">     149 </span><span class="lineNoCov">          0 :                         strFolderAudio = configuration.getStrParameterValue(&quot;output.audio.folder&quot;);</span>
+<span class="lineNum">     150 </span>            :                 }
+<span class="lineNum">     151 </span>            :         
+<span class="lineNum">     152 </span>            :                 // load the phone set
+<span class="lineNum">     153 </span><span class="lineCov">          1 :                 PhoneSet phoneSet(strFilePhoneSet);</span>
+<span class="lineNum">     154 </span><span class="lineCov">          1 :                 phoneSet.load();</span>
+<span class="lineNum">     155 </span>            :         
+<span class="lineNum">     156 </span>            :                 // load the lexicon
+<span class="lineNum">     157 </span><span class="lineCov">          1 :                 LexiconManager lexiconManager(strFileLexicon,&amp;phoneSet); </span>
+<span class="lineNum">     158 </span><span class="lineCov">          1 :                 lexiconManager.load();</span>
+<span class="lineNum">     159 </span><span class="lineCov">          1 :                 lexiconManager.attachLexUnitPenalties(fInsertionPenaltyStandard,fInsertionPenaltyFiller);</span>
+<span class="lineNum">     160 </span>            :                 
+<span class="lineNum">     161 </span><span class="lineCov">          1 :                 FillerManager fillerManager(strFileInsertionPenaltyFiller);     </span>
+<span class="lineNum">     162 </span><span class="lineCov">          1 :                 fillerManager.load();</span>
+<span class="lineNum">     163 </span><span class="lineCov">          1 :                 fillerManager.attachInsertionPenaltyFillers(&amp;lexiconManager);</span>
+<span class="lineNum">     164 </span>            :                 
+<span class="lineNum">     165 </span>            :                 // load the feature configuration
+<span class="lineNum">     166 </span><span class="lineCov">          1 :                 ConfigurationFeatures configurationFeatures(strFileConfigurationFeatures);</span>
+<span class="lineNum">     167 </span><span class="lineCov">          1 :                 configurationFeatures.load();</span>
+<span class="lineNum">     168 </span>            :                 
+<span class="lineNum">     169 </span>            :                 // get the feature normalization mode and method
+<span class="lineNum">     170 </span><span class="lineCov">          1 :                 int iCepstralNormalizationMode = FeatureExtractor::getNormalizationMode(strCepstralNormalizationMode);</span>
+<span class="lineNum">     171 </span><span class="lineCov">          1 :                 int iCepstralNormalizationMethod = FeatureExtractor::getNormalizationMethod(strCepstralNormalizationMethod);</span>
+<span class="lineNum">     172 </span>            :                 
+<span class="lineNum">     173 </span>            :                 // create the feature extractor
+<span class="lineNum">     174 </span>            :                 FeatureExtractor featureExtractor(&amp;configurationFeatures,fWarpFactor,
+<span class="lineNum">     175 </span><span class="lineCov">          1 :                         iCepstralNormalizationBufferSize,iCepstralNormalizationMode,iCepstralNormalizationMethod);</span>
+<span class="lineNum">     176 </span><span class="lineCov">          1 :                 featureExtractor.initialize();</span>
+<span class="lineNum">     177 </span>            :         
+<span class="lineNum">     178 </span>            :                 // load the feature transforms
+<span class="lineNum">     179 </span>            :                 //VTransform vTransformFeatures;
+<span class="lineNum">     180 </span>            :                 //if (strFileFeatureTransform) {
+<span class="lineNum">     181 </span>            :                 //      BatchFile batchFile(strFileFeatureTransform,&quot;transform&quot;);
+<span class="lineNum">     182 </span>            :                 //      batchFile.load();
+<span class="lineNum">     183 </span>            :                 //      for(unsigned int i=0 ; i &lt; batchFile.size() ; ++i) {
+<span class="lineNum">     184 </span>            :                 //              Transform *transform = new Transform();
+<span class="lineNum">     185 </span>            :                 //              transform-&gt;load(batchFile.getField(i,0u));
+<span class="lineNum">     186 </span>            :                 //              vTransformFeatures.push_back(transform);
+<span class="lineNum">     187 </span>            :                 //      }       
+<span class="lineNum">     188 </span>            :                 //}
+<span class="lineNum">     189 </span>            :                         
+<span class="lineNum">     190 </span>            :                 // load the HMMs used for the estimation
+<span class="lineNum">     191 </span><span class="lineCov">          1 :                 HMMManager hmmManager(&amp;phoneSet,HMM_PURPOSE_EVALUATION);</span>
+<span class="lineNum">     192 </span><span class="lineCov">          1 :                 hmmManager.load(strFileAcousticModels);</span>
+<span class="lineNum">     193 </span><span class="lineCov">          1 :                 hmmManager.initializeDecoding();</span>
+<span class="lineNum">     194 </span>            :                 
+<span class="lineNum">     195 </span>            :                 // create the aligner object?
+<span class="lineNum">     196 </span>            :                 //Viterbi *viterbi = NULL;
+<span class="lineNum">     197 </span>            :                 //if (bOutputAlignment) {
+<span class="lineNum">     198 </span>            :                 //      viterbi = new Viterbi(&amp;phoneSet,&amp;hmmManager,&amp;lexiconManager);       
+<span class="lineNum">     199 </span>            :                 //}
+<span class="lineNum">     200 </span>            :                 
+<span class="lineNum">     201 </span>            :                 // load the language model
+<span class="lineNum">     202 </span>            :                 LMManager lmManager(&amp;lexiconManager,
+<span class="lineNum">     203 </span>            :                                                                         strLanguageModelFile,
+<span class="lineNum">     204 </span>            :                                                                         strLanguageModelFormat,
+<span class="lineNum">     205 </span><span class="lineCov">          1 :                                                                         strLanguageModelType); </span>
+<span class="lineNum">     206 </span><span class="lineCov">          1 :                 lmManager.load();</span>
+<span class="lineNum">     207 </span>            :                 
+<span class="lineNum">     208 </span><span class="lineCov">          1 :                 NetworkBuilderX networkBuilder(&amp;phoneSet,&amp;hmmManager,&amp;lexiconManager);</span>
+<span class="lineNum">     209 </span>            :                 
+<span class="lineNum">     210 </span>            :                 // build the decoding network
+<span class="lineNum">     211 </span><span class="lineCov">          1 :                 DynamicNetworkX *network = networkBuilder.build();</span>
+<span class="lineNum">     212 </span><span class="lineCov">          1 :                 if (!network) {</span>
+<span class="lineNum">     213 </span><span class="lineNoCov">          0 :                         BVC_ERROR &lt;&lt; &quot;unable to build the decoding network&quot;;</span>
+<span class="lineNum">     214 </span>            :                 }
+<span class="lineNum">     215 </span>            :         
+<span class="lineNum">     216 </span>            :                 DynamicDecoderX decoder(&amp;phoneSet,&amp;hmmManager,&amp;lexiconManager,
+<span class="lineNum">     217 </span>            :                                 &amp;lmManager,fLanguageModelScalingFactor,network,iMaxActiveArcs,
+<span class="lineNum">     218 </span>            :                                 iMaxActiveArcsWE,iMaxActiveTokensArc,fBeamWidthArcs,fBeamWidthArcsWE,fBeamWidthTokensArc,
+<span class="lineNum">     219 </span><span class="lineCov">          1 :                                 bLatticeGeneration,iMaxWordSequencesState);</span>
+<span class="lineNum">     220 </span>            :         
+<span class="lineNum">     221 </span>            :                 // initialize the decoder
+<span class="lineNum">     222 </span><span class="lineCov">          1 :                 decoder.initialize();</span>
+<span class="lineNum">     223 </span>            :                 
+<span class="lineNum">     224 </span><span class="lineCov">          1 :                 double dTimeBegin = TimeUtils::getTimeMilliseconds();   </span>
+<span class="lineNum">     225 </span>            :                 
+<span class="lineNum">     226 </span><span class="lineCov">          1 :                 double dLikelihoodTotal = 0.0;</span>
+<span class="lineNum">     227 </span><span class="lineCov">          1 :                 int iFeatureVectorsTotal = 0;</span>
+<span class="lineNum">     228 </span>            :                 
+<span class="lineNum">     229 </span>            :                 // load the batch file
+<span class="lineNum">     230 </span><span class="lineCov">          1 :                 BatchFile batchFile(strFileControl,&quot;audio|id&quot;);</span>
+<span class="lineNum">     231 </span><span class="lineCov">          1 :                 batchFile.load();</span>
+<span class="lineNum">     232 </span>            :                 
+<span class="lineNum">     233 </span>            :                 // (4) extract session-data
+<span class="lineNum">     234 </span><span class="lineCov">          1 :                 VUtteranceData vUtteranceData;</span>
+<span class="lineNum">     235 </span><span class="lineCov">          3 :                 for(unsigned int iUtterance = 0 ; iUtterance &lt; batchFile.size() ; ++iUtterance) {</span>
+<span class="lineNum">     236 </span>            :                 
+<span class="lineNum">     237 </span>            :                         // load the raw audio
+<span class="lineNum">     238 </span><span class="lineCov">          2 :                         int iSamples = -1;</span>
+<span class="lineNum">     239 </span><span class="lineCov">          2 :                         short int *sSamples = AudioFile::load(batchFile.getField(iUtterance,&quot;audio&quot;),&amp;iSamples);</span>
+<span class="lineNum">     240 </span>            :                 
+<span class="lineNum">     241 </span>            :                         UtteranceData utteranceData;
+<span class="lineNum">     242 </span><span class="lineCov">          2 :                         utteranceData.samples.sSamples = sSamples;</span>
+<span class="lineNum">     243 </span><span class="lineCov">          2 :                         utteranceData.samples.iSamples = iSamples;</span>
+<span class="lineNum">     244 </span><span class="lineCov">          2 :                         utteranceData.mFeatures = NULL;</span>
+<span class="lineNum">     245 </span><span class="lineCov">          2 :                         vUtteranceData.push_back(utteranceData);</span>
+<span class="lineNum">     246 </span>            :                 }       
+<span class="lineNum">     247 </span>            :                 
+<span class="lineNum">     248 </span>            :                 // extract features
+<span class="lineNum">     249 </span><span class="lineCov">          1 :                 featureExtractor.extractFeaturesSession(vUtteranceData,true);</span>
+<span class="lineNum">     250 </span>            :                 
+<span class="lineNum">     251 </span>            :                 // apply feature transforms
+<span class="lineNum">     252 </span>            :                 //for(VTransform::iterator it = vTransformFeatures.begin() ; it != vTransformFeatures.end() ; ++it) {
+<span class="lineNum">     253 </span>            :                 //      BVC_VERB &lt;&lt; &quot;feature transform: (input dim: &quot; &lt;&lt; featureExtractor.getFeatureDim() 
+<span class="lineNum">     254 </span>            :                 //              &lt;&lt; &quot;) -&gt; (output dim: &quot; &lt;&lt; (*it)-&gt;getRows() &lt;&lt; &quot;)&quot;;
+<span class="lineNum">     255 </span>            :                 //      for(VUtteranceData::iterator jt = vUtteranceData.begin() ; jt != vUtteranceData.end() ; ++jt) {
+<span class="lineNum">     256 </span>            :                 //              Matrix&lt;float&gt; *mFeaturesX = (*it)-&gt;apply(*jt-&gt;mFeatures);
+<span class="lineNum">     257 </span>            :                 //              delete jt-&gt;mFeatures;
+<span class="lineNum">     258 </span>            :                 //              jt-&gt;mFeatures = mFeaturesX;
+<span class="lineNum">     259 </span>            :                 //      }
+<span class="lineNum">     260 </span>            :                 //}
+<span class="lineNum">     261 </span>            :                 
+<span class="lineNum">     262 </span><span class="lineCov">          1 :                 FileOutput fileHypothesis(strFileHypothesis,false);</span>
+<span class="lineNum">     263 </span><span class="lineCov">          1 :                 fileHypothesis.open();</span>
+<span class="lineNum">     264 </span><span class="lineCov">          1 :                 int iUtterance = 0;</span>
+<span class="lineNum">     265 </span><span class="lineCov">          3 :                 for(VUtteranceData::iterator it = vUtteranceData.begin() ; it != vUtteranceData.end() ; ++it, ++iUtterance) {</span>
+<span class="lineNum">     266 </span>            :                 
+<span class="lineNum">     267 </span><span class="lineCov">          2 :                         const char *strUtteranceId = batchFile.getField(iUtterance,&quot;id&quot;);</span>
+<span class="lineNum">     268 </span>            :                 
+<span class="lineNum">     269 </span><span class="lineCov">          2 :                         cout &lt;&lt; &quot;processing utterance: &quot; &lt;&lt; strUtteranceId &lt;&lt; endl;</span>
+<span class="lineNum">     270 </span>            :                         
+<span class="lineNum">     271 </span><span class="lineCov">          2 :                         iFeatureVectorsTotal += it-&gt;mFeatures-&gt;getRows();</span>
+<span class="lineNum">     272 </span><span class="lineCov">          2 :                         Matrix&lt;float&gt; *mFeatures = it-&gt;mFeatures;</span>
+<span class="lineNum">     273 </span>            :                         
+<span class="lineNum">     274 </span><span class="lineCov">          2 :                         if (hmmManager.getFeatureDim() != mFeatures-&gt;getCols()) {</span>
+<span class="lineNum">     275 </span>            :                                 BVC_ERROR &lt;&lt; &quot;inconsistent feature dimensionality, HMMs: &quot; &lt;&lt; hmmManager.getFeatureDim() 
+<span class="lineNum">     276 </span><span class="lineNoCov">          0 :                                         &lt;&lt; &quot;, features: &quot; &lt;&lt; mFeatures-&gt;getCols();</span>
+<span class="lineNum">     277 </span>            :                         }       
+<span class="lineNum">     278 </span>            :                         
+<span class="lineNum">     279 </span><span class="lineCov">          2 :                         decoder.beginUtterance();</span>
+<span class="lineNum">     280 </span><span class="lineCov">          2 :                         decoder.process(*mFeatures);</span>
+<span class="lineNum">     281 </span>            :                         
+<span class="lineNum">     282 </span>            :                         // best path
+<span class="lineNum">     283 </span><span class="lineCov">          2 :                         BestPath *bestPath = decoder.getBestPath();</span>
+<span class="lineNum">     284 </span><span class="lineCov">          2 :                         if (bestPath) { </span>
+<span class="lineNum">     285 </span>            :                                 // append the best path to a file (trn format)
+<span class="lineNum">     286 </span><span class="lineCov">          2 :                                 bestPath-&gt;write(fileHypothesis.getStream(),strUtteranceId);  </span>
+<span class="lineNum">     287 </span><span class="lineCov">          2 :                                 bestPath-&gt;print(true);</span>
+<span class="lineNum">     288 </span><span class="lineCov">          2 :                                 dLikelihoodTotal += bestPath-&gt;getPathScore();</span>
+<span class="lineNum">     289 </span>            :                         } else {
+<span class="lineNum">     290 </span><span class="lineNoCov">          0 :                                 cout &lt;&lt; &quot;no best path!!\n&quot;;</span>
+<span class="lineNum">     291 </span>            :                         }
+<span class="lineNum">     292 </span>            :                         
+<span class="lineNum">     293 </span>            :                          
+<span class="lineNum">     294 </span>            :                         
+<span class="lineNum">     295 </span><span class="lineCov">          2 :                         decoder.endUtterance(); </span>
+<span class="lineNum">     296 </span>            :                         
+<span class="lineNum">     297 </span>            :                         // output features?
+<span class="lineNum">     298 </span><span class="lineCov">          2 :                         if (bOutputFeatures) {</span>
+<span class="lineNum">     299 </span><span class="lineNoCov">          0 :                                 ostringstream ossFileFeatures;</span>
+<span class="lineNum">     300 </span><span class="lineNoCov">          0 :                                 ossFileFeatures &lt;&lt; strFolderFeatures &lt;&lt; PATH_SEPARATOR &lt;&lt; strUtteranceId &lt;&lt; &quot;.fea&quot;; </span>
+<span class="lineNum">     301 </span><span class="lineNoCov">          0 :                                 FeatureFile featureFile(ossFileFeatures.str().c_str(),MODE_WRITE);</span>
+<span class="lineNum">     302 </span><span class="lineNoCov">          0 :                                 featureFile.store(*mFeatures);</span>
+<span class="lineNum">     303 </span>            :                         }
+<span class="lineNum">     304 </span>            :                         
+<span class="lineNum">     305 </span>            :                         // output alignment?
+<span class="lineNum">     306 </span>            :                         //if (bOutputAlignment &amp;&amp; bestPath) {
+<span class="lineNum">     307 </span>            :                         //
+<span class="lineNum">     308 </span>            :                                 // create the state-level alignment and dump it to disk
+<span class="lineNum">     309 </span>            :                         //      VPhoneAlignment *vPhoneAlignment = viterbi-&gt;align(*mFeatures,bestPath);
+<span class="lineNum">     310 </span>            :                         //      if (vPhoneAlignment) {
+<span class="lineNum">     311 </span>            :                         //              AlignmentFile alignmentFile(&amp;phoneSet,&amp;lexiconManager);
+<span class="lineNum">     312 </span>            :                         //              ostringstream ossFileAlignment;
+<span class="lineNum">     313 </span>            :                         //              ossFileAlignment &lt;&lt; strFolderAlignments &lt;&lt; PATH_SEPARATOR &lt;&lt; strUtteranceId &lt;&lt; &quot;.ali&quot;;
+<span class="lineNum">     314 </span>            :                         //              alignmentFile.store(*vPhoneAlignment,ossFileAlignment.str().c_str());
+<span class="lineNum">     315 </span>            :                         //              AlignmentFile::destroyPhoneAlignment(vPhoneAlignment);
+<span class="lineNum">     316 </span>            :                         //      } else {
+<span class="lineNum">     317 </span>            :                         //              BVC_WARNING &lt;&lt; &quot;unable to perform the best-path alignment&quot;;
+<span class="lineNum">     318 </span>            :                         //      }                       
+<span class="lineNum">     319 </span>            :                         //}
+<span class="lineNum">     320 </span>            :                         
+<span class="lineNum">     321 </span>            :                         // clean-up
+<span class="lineNum">     322 </span><span class="lineCov">          2 :                         if (bestPath) {</span>
+<span class="lineNum">     323 </span><span class="lineCov">          2 :                                 delete bestPath;</span>
+<span class="lineNum">     324 </span>            :                         }       
+<span class="lineNum">     325 </span><span class="lineCov">          2 :                         delete [] it-&gt;samples.sSamples;</span>
+<span class="lineNum">     326 </span><span class="lineCov">          2 :                         delete it-&gt;mFeatures;</span>
+<span class="lineNum">     327 </span>            :                 }
+<span class="lineNum">     328 </span><span class="lineCov">          1 :                 fileHypothesis.close();</span>
+<span class="lineNum">     329 </span>            :                 
+<span class="lineNum">     330 </span><span class="lineCov">          1 :                 double dTimeEnd = TimeUtils::getTimeMilliseconds();</span>
+<span class="lineNum">     331 </span><span class="lineCov">          1 :                 double dTimeSeconds = (dTimeEnd-dTimeBegin)/1000.0;</span>
+<span class="lineNum">     332 </span><span class="lineCov">          1 :                 double dRTF = dTimeSeconds/(((float)iFeatureVectorsTotal)/100.0);</span>
+<span class="lineNum">     333 </span>            :                 
+<span class="lineNum">     334 </span><span class="lineCov">          1 :                 BVC_INFORMATION &lt;&lt; &quot;- summary ------------------------------------&quot;;</span>
+<span class="lineNum">     335 </span>            :                 BVC_INFORMATION &lt;&lt; &quot;# utterances: &quot; &lt;&lt; iUtterance &lt;&lt; &quot; speech time: &quot; &lt;&lt; FLT(8,2) &lt;&lt; 
+<span class="lineNum">     336 </span><span class="lineCov">          1 :                         ((float)iFeatureVectorsTotal)/100.0 &lt;&lt; &quot; seconds&quot;;</span>
+<span class="lineNum">     337 </span>            :                 BVC_INFORMATION &lt;&lt; &quot;decoding time: &quot; &lt;&lt; FLT(8,2) &lt;&lt; dTimeSeconds &lt;&lt; &quot; seconds (RTF: &quot; &lt;&lt; 
+<span class="lineNum">     338 </span><span class="lineCov">          1 :                         FLT(5,2) &lt;&lt; dRTF &lt;&lt; &quot;)&quot;;</span>
+<span class="lineNum">     339 </span>            :                 BVC_INFORMATION &lt;&lt; &quot;likelihood: &quot; &lt;&lt; FLT(12,4) &lt;&lt; dLikelihoodTotal &lt;&lt; &quot; (per frame: &quot; &lt;&lt; 
+<span class="lineNum">     340 </span><span class="lineCov">          1 :                         FLT(8,4) &lt;&lt; dLikelihoodTotal/((float)iFeatureVectorsTotal) &lt;&lt; &quot;)&quot;;</span>
+<span class="lineNum">     341 </span><span class="lineCov">          1 :                 BVC_INFORMATION &lt;&lt; &quot;----------------------------------------------&quot;;</span>
+<span class="lineNum">     342 </span>            :                 
+<span class="lineNum">     343 </span>            :                 // uninitialize the decoder
+<span class="lineNum">     344 </span><span class="lineCov">          1 :                 decoder.uninitialize();</span>
+<span class="lineNum">     345 </span>            :                 
+<span class="lineNum">     346 </span><span class="lineCov">          1 :                 delete network;</span>
+<span class="lineNum">     347 </span>            :                 //if (bOutputAlignment) {
+<span class="lineNum">     348 </span>            :                 //      delete viterbi;
+<span class="lineNum">     349 </span>            :                 //}
+<span class="lineNum">     350 </span>            :         } 
+<span class="lineNum">     351 </span><span class="lineNoCov">          0 :         catch (std::runtime_error &amp;e) {</span>
+<span class="lineNum">     352 </span>            :         
+<span class="lineNum">     353 </span><span class="lineNoCov">          0 :                 std::cerr &lt;&lt; e.what() &lt;&lt; std::endl;</span>
+<span class="lineNum">     354 </span><span class="lineNoCov">          0 :                 return -1;</span>
+<span class="lineNum">     355 </span>            :         }       
+<a name="356"><span class="lineNum">     356 </span>            :         </a>
+<span class="lineNum">     357 </span><span class="lineCov">          1 :         return 0;</span>
+<span class="lineNum">     358 </span><span class="lineCov">          3 : }</span>
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.13</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

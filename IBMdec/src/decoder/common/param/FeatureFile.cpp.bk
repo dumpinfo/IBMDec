@@ -1,0 +1,36 @@
+#include <iomanip>
+#include "FeatureFile.h"
+#include "FileInput.h"
+#include "FileOutput.h"
+#include "IOBase.h"
+
+namespace Bavieca {
+
+// constructor
+FeatureFile::FeatureFile(const char *strFile, const char iMode, const char iFormat, int iDim) { 
+}
+
+// destructor
+FeatureFile::~FeatureFile() {
+
+}
+
+// load the features
+void FeatureFile::load() { 
+}
+
+// store the features 
+void FeatureFile::store(MatrixBase<float> &mFeatures) { 
+}
+
+// return a reference to the features
+Matrix<float> *FeatureFile::getFeatureVectors() {
+	
+	return m_mFeatures;
+}
+
+// print the features (debugging)
+void FeatureFile::print(MatrixBase<float> &mFeatures, unsigned int iDelta) { 
+}
+
+};	// end-of-namespace

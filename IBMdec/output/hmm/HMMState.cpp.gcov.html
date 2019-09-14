@@ -1,0 +1,233 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - dyna analysis - hmm/HMMState.cpp</title>
+  <link rel="stylesheet" type="text/css" href="../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../index.html">top level</a> - <a href="index.html">hmm</a> - HMMState.cpp<span style="font-size: 80%;"> (source / <a href="HMMState.cpp.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">dyna analysis</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">1</td>
+            <td class="headerCovTableEntry">11</td>
+            <td class="headerCovTableEntryLo">9.1 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2017-08-05 05:15:38</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">2</td>
+            <td class="headerCovTableEntry">7</td>
+            <td class="headerCovTableEntryLo">28.6 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : /*---------------------------------------------------------------------------------------------*</a>
+<span class="lineNum">       2 </span>            :  * Copyright (C) 2012 Daniel Bolaños - www.bltek.com - Boulder Language Technologies           *
+<span class="lineNum">       3 </span>            :  *                                                                                             *
+<span class="lineNum">       4 </span>            :  * www.bavieca.org is the website of the Bavieca Speech Recognition Toolkit                    *
+<span class="lineNum">       5 </span>            :  *                                                                                             *
+<span class="lineNum">       6 </span>            :  * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);                             *
+<span class="lineNum">       7 </span>            :  * you may not use this file except in compliance with the License.                            *
+<span class="lineNum">       8 </span>            :  * You may obtain a copy of the License at                                                     *
+<span class="lineNum">       9 </span>            :  *                                                                                             *
+<span class="lineNum">      10 </span>            :  *         http://www.apache.org/licenses/LICENSE-2.0                                          *
+<span class="lineNum">      11 </span>            :  *                                                                                             *
+<span class="lineNum">      12 </span>            :  * Unless required by applicable law or agreed to in writing, software                         *
+<span class="lineNum">      13 </span>            :  * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,                           *
+<span class="lineNum">      14 </span>            :  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.                    *
+<span class="lineNum">      15 </span>            :  * See the License for the specific language governing permissions and                         *
+<span class="lineNum">      16 </span>            :  * limitations under the License.                                                              *
+<span class="lineNum">      17 </span>            :  *---------------------------------------------------------------------------------------------*/
+<span class="lineNum">      18 </span>            : 
+<span class="lineNum">      19 </span>            : 
+<span class="lineNum">      20 </span>            : #include &quot;HMMState.h&quot;
+<span class="lineNum">      21 </span>            : #include &quot;IOBase.h&quot;
+<span class="lineNum">      22 </span>            : #include &quot;PhoneSet.h&quot;
+<span class="lineNum">      23 </span>            : #include &quot;FileInput.h&quot;
+<span class="lineNum">      24 </span>            : #include &quot;FileOutput.h&quot;
+<span class="lineNum">      25 </span>            : 
+<span class="lineNum">      26 </span>            : namespace Bavieca {
+<a name="27"><span class="lineNum">      27 </span>            : </a>
+<span class="lineNum">      28 </span>            : // constructor
+<span class="lineNum">      29 </span><span class="lineNoCov">          0 : HMMState::HMMState(int iDim, int iCovarianceModeling, PhoneSet *phoneSet, int iPhone, </span>
+<span class="lineNum">      30 </span>            :         int iState, int iPosition, int iGaussianComponents, int iId)
+<span class="lineNum">      31 </span>            : {
+<span class="lineNum">      32 </span>            :         /*m_iDim = iDim;
+<span class="lineNum">      33 </span>            :         m_iCovarianceModeling = iCovarianceModeling;    
+<span class="lineNum">      34 </span>            :         m_phoneSet = phoneSet;
+<span class="lineNum">      35 </span>            :         
+<span class="lineNum">      36 </span>            :         // compute the number of elements in the covariance of each Gaussian component
+<span class="lineNum">      37 </span>            :         if (m_iCovarianceModeling == COVARIANCE_MODELLING_TYPE_DIAGONAL) {
+<span class="lineNum">      38 </span>            :                 m_iCovarianceElements = m_iDim;
+<span class="lineNum">      39 </span>            :         } 
+<span class="lineNum">      40 </span>            :         else {
+<span class="lineNum">      41 </span>            :                 assert(m_iCovarianceModeling == COVARIANCE_MODELLING_TYPE_FULL);
+<span class="lineNum">      42 </span>            :                 m_iCovarianceElements = m_iDim*(m_iDim+1)/2;
+<span class="lineNum">      43 </span>            :         }
+<span class="lineNum">      44 </span>            :         
+<span class="lineNum">      45 </span>            :         assert(iState &lt; NUMBER_HMM_STATES);
+<span class="lineNum">      46 </span>            :         
+<span class="lineNum">      47 </span>            :         // state identity
+<span class="lineNum">      48 </span>            :         m_iPhone = iPhone;
+<span class="lineNum">      49 </span>            :         m_iState = iState;
+<span class="lineNum">      50 </span>            :         m_iPosition = iPosition;
+<span class="lineNum">      51 </span>            :         m_iId = iId;
+<span class="lineNum">      52 </span>            :         
+<span class="lineNum">      53 </span>            :         // mixture
+<span class="lineNum">      54 </span>            :         m_gaussianMixture = new GaussianMixture(m_iDim,m_iCovarianceModeling,iGaussianComponents);*/
+<span class="lineNum">      55 </span><span class="lineNoCov">          0 : }</span>
+<a name="56"><span class="lineNum">      56 </span>            : </a>
+<span class="lineNum">      57 </span>            : // constructor (to be used when loading the HMM-state from a file)
+<span class="lineNum">      58 </span><span class="lineNoCov">          0 : HMMState::HMMState(int iDim, int iCovarianceModeling, PhoneSet *phoneSet, int iId)</span>
+<span class="lineNum">      59 </span>            : {
+<span class="lineNum">      60 </span>            :         /*m_iDim = iDim;
+<span class="lineNum">      61 </span>            :         m_iCovarianceModeling = iCovarianceModeling;
+<span class="lineNum">      62 </span>            :         m_phoneSet = phoneSet;
+<span class="lineNum">      63 </span>            :         m_iId = iId;
+<span class="lineNum">      64 </span>            :         
+<span class="lineNum">      65 </span>            :         // compute the number of elements in the covariance of each Gaussian component
+<span class="lineNum">      66 </span>            :         if (m_iCovarianceModeling == COVARIANCE_MODELLING_TYPE_DIAGONAL) {
+<span class="lineNum">      67 </span>            :                 m_iCovarianceElements = m_iDim;
+<span class="lineNum">      68 </span>            :         } 
+<span class="lineNum">      69 </span>            :         else {
+<span class="lineNum">      70 </span>            :                 assert(m_iCovarianceModeling == COVARIANCE_MODELLING_TYPE_FULL);
+<span class="lineNum">      71 </span>            :                 m_iCovarianceElements = (m_iDim*(m_iDim+1))/2;
+<span class="lineNum">      72 </span>            :         }
+<span class="lineNum">      73 </span>            :         
+<span class="lineNum">      74 </span>            :         // mixture
+<span class="lineNum">      75 </span>            :         m_gaussianMixture = new GaussianMixture(m_iDim,m_iCovarianceModeling,0);*/
+<span class="lineNum">      76 </span><span class="lineNoCov">          0 : }</span>
+<a name="77"><span class="lineNum">      77 </span>            : </a>
+<span class="lineNum">      78 </span>            : // destructor
+<span class="lineNum">      79 </span><span class="lineNoCov">          0 : HMMState::~HMMState()</span>
+<span class="lineNum">      80 </span>            : {
+<span class="lineNum">      81 </span>            : //      delete m_gaussianMixture;
+<span class="lineNum">      82 </span><span class="lineNoCov">          0 : }</span>
+<a name="83"><span class="lineNum">      83 </span>            : </a>
+<span class="lineNum">      84 </span>            : // store the HMM into a file
+<span class="lineNum">      85 </span><span class="lineNoCov">          0 : void HMMState::store(FileOutput &amp;file) {</span>
+<span class="lineNum">      86 </span>            :         
+<span class="lineNum">      87 </span>            : /*      // phonetic symbol
+<span class="lineNum">      88 </span>            :         char strPhone[MAX_PHONETIC_SYMBOL_LENGTH+1];
+<span class="lineNum">      89 </span>            :         memset(strPhone,0,MAX_PHONETIC_SYMBOL_LENGTH+1);
+<span class="lineNum">      90 </span>            :         strcpy(strPhone,m_phoneSet-&gt;getStrPhone(m_iPhone));  
+<span class="lineNum">      91 </span>            :         IOBase::writeBytes(file.getStream(),reinterpret_cast&lt;char*&gt;(strPhone),MAX_PHONETIC_SYMBOL_LENGTH+1);
+<span class="lineNum">      92 </span>            :         
+<span class="lineNum">      93 </span>            :         // state
+<span class="lineNum">      94 </span>            :         IOBase::write(file.getStream(),m_iState);
+<span class="lineNum">      95 </span>            :         
+<span class="lineNum">      96 </span>            :         // within word position (DEPRECATED)
+<span class="lineNum">      97 </span>            :         IOBase::write(file.getStream(),m_iPosition);
+<span class="lineNum">      98 </span>            : 
+<span class="lineNum">      99 </span>            :         // Gaussian components
+<span class="lineNum">     100 </span>            :         int iGaussianComponents = m_gaussianMixture-&gt;getNumberComponents();
+<span class="lineNum">     101 </span>            :         IOBase::write(file.getStream(),iGaussianComponents);
+<span class="lineNum">     102 </span>            :         for(int iGaussian = 0 ; iGaussian &lt; iGaussianComponents ; ++iGaussian) {
+<span class="lineNum">     103 </span>            :                 Gaussian *gaussian = (*m_gaussianMixture)(iGaussian); 
+<span class="lineNum">     104 </span>            :                 IOBase::write(file.getStream(),gaussian-&gt;weight());
+<span class="lineNum">     105 </span>            :                 gaussian-&gt;mean().writeData(file.getStream());
+<span class="lineNum">     106 </span>            :                 if (m_iCovarianceModeling == COVARIANCE_MODELLING_TYPE_DIAGONAL) {
+<span class="lineNum">     107 </span>            :                         gaussian-&gt;covarianceDiag().writeData(file.getStream());
+<span class="lineNum">     108 </span>            :                 } else {
+<span class="lineNum">     109 </span>            :                         gaussian-&gt;covarianceFull().writeData(file.getStream());
+<span class="lineNum">     110 </span>            :                 }
+<span class="lineNum">     111 </span>            :         }*/
+<span class="lineNum">     112 </span><span class="lineNoCov">          0 : }</span>
+<a name="113"><span class="lineNum">     113 </span>            : </a>
+<span class="lineNum">     114 </span>            : // load the HMM from a file
+<span class="lineNum">     115 </span><span class="lineNoCov">          0 : void HMMState::load(FileInput &amp;file, unsigned char iEstimationMethod) {</span>
+<span class="lineNum">     116 </span>            : 
+<span class="lineNum">     117 </span>            :         // phonetic symbol
+<span class="lineNum">     118 </span>            : /*      char strPhone[MAX_PHONETIC_SYMBOL_LENGTH+1];    
+<span class="lineNum">     119 </span>            :         IOBase::readBytes(file.getStream(),reinterpret_cast&lt;char*&gt;(strPhone),MAX_PHONETIC_SYMBOL_LENGTH+1);
+<span class="lineNum">     120 </span>            :         m_iPhone = m_phoneSet-&gt;getPhoneIndex(strPhone);
+<span class="lineNum">     121 </span>            :         assert(m_iPhone != UCHAR_MAX);
+<span class="lineNum">     122 </span>            :         
+<span class="lineNum">     123 </span>            :         // state
+<span class="lineNum">     124 </span>            :         IOBase::read(file.getStream(),&amp;m_iState);
+<span class="lineNum">     125 </span>            :         assert(m_iState &lt; NUMBER_HMM_STATES);
+<span class="lineNum">     126 </span>            :         
+<span class="lineNum">     127 </span>            :         // within word position (DEPRECATED)
+<span class="lineNum">     128 </span>            :         IOBase::read(file.getStream(),&amp;m_iPosition);
+<span class="lineNum">     129 </span>            :         
+<span class="lineNum">     130 </span>            :         // Gaussian components
+<span class="lineNum">     131 </span>            :         int iGaussianComponents = -1;
+<span class="lineNum">     132 </span>            :         IOBase::read(file.getStream(),&amp;iGaussianComponents);
+<span class="lineNum">     133 </span>            :         for(int iGaussian = 0 ; iGaussian &lt; iGaussianComponents ; ++iGaussian) {
+<span class="lineNum">     134 </span>            :         
+<span class="lineNum">     135 </span>            :                 Gaussian *gaussian = new Gaussian(m_iDim,m_iCovarianceModeling);        
+<span class="lineNum">     136 </span>            :                 
+<span class="lineNum">     137 </span>            :                 IOBase::read(file.getStream(),&amp;gaussian-&gt;weight());
+<span class="lineNum">     138 </span>            :                 gaussian-&gt;mean().readData(file.getStream());         
+<span class="lineNum">     139 </span>            :                 if (m_iCovarianceModeling == COVARIANCE_MODELLING_TYPE_DIAGONAL) {
+<span class="lineNum">     140 </span>            :                         gaussian-&gt;covarianceDiag().readData(file.getStream());
+<span class="lineNum">     141 </span>            :                 } else {
+<span class="lineNum">     142 </span>            :                         gaussian-&gt;covarianceFull().readData(file.getStream());
+<span class="lineNum">     143 </span>            :                 }       
+<span class="lineNum">     144 </span>            :                 m_gaussianMixture-&gt;addGaussianComponent(gaussian);
+<span class="lineNum">     145 </span>            :         }*/
+<a name="146"><span class="lineNum">     146 </span><span class="lineNoCov">          0 : }</span></a>
+<span class="lineNum">     147 </span>            : 
+<span class="lineNum">     148 </span><span class="lineCov">          3 : };      // end-of-namespace</span>
+<span class="lineNum">     149 </span>            : 
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.13</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

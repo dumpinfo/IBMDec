@@ -1,0 +1,729 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - dyna analysis - param/FeatureExtractor.cpp</title>
+  <link rel="stylesheet" type="text/css" href="../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../index.html">top level</a> - <a href="index.html">param</a> - FeatureExtractor.cpp<span style="font-size: 80%;"> (source / <a href="FeatureExtractor.cpp.func.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">dyna analysis</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">252</td>
+            <td class="headerCovTableEntry">283</td>
+            <td class="headerCovTableEntryMed">89.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-05-05</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">17</td>
+            <td class="headerCovTableEntry">18</td>
+            <td class="headerCovTableEntryHi">94.4 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : #include &lt;stdexcept&gt;</a>
+<span class="lineNum">       2 </span>            : 
+<span class="lineNum">       3 </span>            : #include &quot;AudioFile.h&quot;
+<span class="lineNum">       4 </span>            : #include &quot;BatchFile.h&quot;
+<span class="lineNum">       5 </span>            : #include &quot;FeatureExtractor.h&quot;
+<span class="lineNum">       6 </span>            : #include &quot;Matrix.h&quot;
+<span class="lineNum">       7 </span>            : #include &quot;Vector.h&quot;
+<span class="lineNum">       8 </span>            : //#include &quot;MatrixStatic.h&quot;
+<span class="lineNum">       9 </span>            : #include &quot;Numeric.h&quot;
+<span class="lineNum">      10 </span>            : //#include &quot;Waveform.h&quot;
+<span class="lineNum">      11 </span>            : 
+<span class="lineNum">      12 </span>            : #include &quot;ConfigurationFeatures.h&quot;
+<span class="lineNum">      13 </span>            : 
+<span class="lineNum">      14 </span>            : namespace Bavieca {
+<span class="lineNum">      15 </span>            : 
+<span class="lineNum">      16 </span>            : // note: the bank of filters used comprises N filters that are equally spaced on the mel scale
+<span class="lineNum">      17 </span>            : // all the filters have the same height and each filter bounday coincides with the center
+<span class="lineNum">      18 </span>            : // frequency of the adjacent filter
+<a name="19"><span class="lineNum">      19 </span>            : </a>
+<span class="lineNum">      20 </span>            : // constructor
+<span class="lineNum">      21 </span><span class="lineCov">          1 : FeatureExtractor::FeatureExtractor(ConfigurationFeatures *configurationFeatures, float fWarpFactor, int iCepstralBufferSize, int iCepstralNormalizationMode, int iCepstralNormalizationMethod) {</span>
+<span class="lineNum">      22 </span>            : 
+<span class="lineNum">      23 </span><span class="lineCov">          1 :         m_iSamplingRate = configurationFeatures-&gt;getIntParameterValue(&quot;waveform.samplingRate&quot;);</span>
+<span class="lineNum">      24 </span><span class="lineCov">          1 :         m_iSampleSize = configurationFeatures-&gt;getIntParameterValue(&quot;waveform.sampleSize&quot;);</span>
+<span class="lineNum">      25 </span><span class="lineCov">          1 :         m_bDCRemoval = configurationFeatures-&gt;getBoolParameterValue(&quot;dcRemoval&quot;);</span>
+<span class="lineNum">      26 </span><span class="lineCov">          1 :         m_bPreemphasis = configurationFeatures-&gt;getBoolParameterValue(&quot;preemphasis&quot;);</span>
+<span class="lineNum">      27 </span><span class="lineCov">          1 :         m_iWindowWidth = configurationFeatures-&gt;getIntParameterValue(&quot;window.width&quot;);</span>
+<span class="lineNum">      28 </span><span class="lineCov">          1 :         m_iWindowShift = configurationFeatures-&gt;getIntParameterValue(&quot;window.shift&quot;);</span>
+<span class="lineNum">      29 </span><span class="lineCov">          1 :         m_iWindowTapering = getTaperingWindow(configurationFeatures-&gt;getStrParameterValue(&quot;window.tapering&quot;));</span>
+<span class="lineNum">      30 </span><span class="lineCov">          1 :         m_iType = getFeatureType(configurationFeatures-&gt;getStrParameterValue(&quot;features.type&quot;));</span>
+<span class="lineNum">      31 </span>            :         
+<span class="lineNum">      32 </span><span class="lineCov">          1 :         m_iFilterbankFrequencyMin = configurationFeatures-&gt;getIntParameterValue(&quot;filterbank.frequency.min&quot;);</span>
+<span class="lineNum">      33 </span><span class="lineCov">          1 :         m_iFilterbankFrequencyMax = configurationFeatures-&gt;getIntParameterValue(&quot;filterbank.frequency.max&quot;);</span>
+<span class="lineNum">      34 </span><span class="lineCov">          1 :         m_iFilterbankFilters = configurationFeatures-&gt;getIntParameterValue(&quot;filterbank.filters&quot;);</span>
+<span class="lineNum">      35 </span><span class="lineCov">          1 :         m_iCepstralCoefficients = configurationFeatures-&gt;getIntParameterValue(&quot;cepstralCoefficients&quot;);</span>
+<span class="lineNum">      36 </span><span class="lineCov">          1 :         m_bEnergy = configurationFeatures-&gt;getBoolParameterValue(&quot;energy&quot;);</span>
+<span class="lineNum">      37 </span><span class="lineCov">          1 :         m_fWarpFactor = fWarpFactor; </span>
+<span class="lineNum">      38 </span><span class="lineCov">          1 :         m_iDerivativesOrder = configurationFeatures-&gt;getIntParameterValue(&quot;derivatives.order&quot;);</span>
+<span class="lineNum">      39 </span><span class="lineCov">          1 :         m_iDerivativesDelta = configurationFeatures-&gt;getIntParameterValue(&quot;derivatives.delta&quot;);</span>
+<span class="lineNum">      40 </span>            :         
+<span class="lineNum">      41 </span>            :         //m_iSplicedSize = configurationFeatures-&gt;getIntParameterValue(&quot;spliced.size&quot;);
+<span class="lineNum">      42 </span><span class="lineCov">          1 :         m_iSplicedSize = -1;</span>
+<span class="lineNum">      43 </span>            :         
+<span class="lineNum">      44 </span><span class="lineCov">          1 :         m_iCepstralBufferSize = iCepstralBufferSize;</span>
+<span class="lineNum">      45 </span><span class="lineCov">          1 :         m_iCepstralNormalizationMode = iCepstralNormalizationMode;</span>
+<span class="lineNum">      46 </span><span class="lineCov">          1 :         m_iCepstralNormalizationMethod = iCepstralNormalizationMethod;  </span>
+<span class="lineNum">      47 </span><span class="lineCov">          1 :         m_bCepstralBufferFull = false;</span>
+<span class="lineNum">      48 </span>            :         
+<span class="lineNum">      49 </span><span class="lineCov">          1 :         if (m_bEnergy) {</span>
+<span class="lineNum">      50 </span><span class="lineCov">          1 :                 m_iCoefficients = m_iCepstralCoefficients+1;</span>
+<span class="lineNum">      51 </span>            :         } else {
+<span class="lineNum">      52 </span><span class="lineNoCov">          0 :                 m_iCoefficients = m_iCepstralCoefficients;</span>
+<span class="lineNum">      53 </span>            :         }
+<span class="lineNum">      54 </span><span class="lineCov">          1 :         m_iCoefficientsTotal = m_iCoefficients;</span>
+<span class="lineNum">      55 </span><span class="lineCov">          1 :         if (m_iDerivativesOrder &gt; 0) {</span>
+<span class="lineNum">      56 </span><span class="lineCov">          1 :                 m_iCoefficientsTotal = m_iCoefficients*(m_iDerivativesOrder+1);</span>
+<span class="lineNum">      57 </span><span class="lineNoCov">          0 :         } else if (m_iSplicedSize &gt; 0) {</span>
+<span class="lineNum">      58 </span><span class="lineNoCov">          0 :                 m_iCoefficientsTotal = m_iCoefficients*m_iSplicedSize;</span>
+<span class="lineNum">      59 </span>            :         }
+<span class="lineNum">      60 </span>            :                 
+<span class="lineNum">      61 </span>            :         // filterbanks
+<span class="lineNum">      62 </span><span class="lineCov">          1 :         m_dCenterFrequencyMel = NULL;</span>
+<span class="lineNum">      63 </span>            :                 
+<span class="lineNum">      64 </span>            :         // fft
+<span class="lineNum">      65 </span><span class="lineCov">          1 :         m_iFFTPoints = 0;</span>
+<span class="lineNum">      66 </span><span class="lineCov">          1 :         m_iFFTPointBin = NULL;</span>
+<span class="lineNum">      67 </span>            :         
+<span class="lineNum">      68 </span>            :         // cepstral buffer      
+<span class="lineNum">      69 </span><span class="lineCov">          1 :         m_iCepstralBufferPointer = 0;</span>
+<span class="lineNum">      70 </span><span class="lineCov">          1 :         m_mCepstralBuffer = NULL;</span>
+<span class="lineNum">      71 </span><span class="lineCov">          1 : }</span>
+<a name="72"><span class="lineNum">      72 </span>            : </a>
+<span class="lineNum">      73 </span>            : // destructor
+<span class="lineNum">      74 </span><span class="lineCov">          1 : FeatureExtractor::~FeatureExtractor()</span>
+<span class="lineNum">      75 </span>            : {
+<span class="lineNum">      76 </span><span class="lineCov">          1 :         if (m_dCenterFrequencyMel) {</span>
+<span class="lineNum">      77 </span><span class="lineCov">          1 :                 delete [] m_dCenterFrequencyMel;</span>
+<span class="lineNum">      78 </span>            :         }
+<span class="lineNum">      79 </span><span class="lineCov">          1 :         if (m_iFFTPointBin) {</span>
+<span class="lineNum">      80 </span><span class="lineCov">          1 :                 delete [] m_iFFTPointBin;</span>
+<span class="lineNum">      81 </span>            :         }
+<span class="lineNum">      82 </span><span class="lineCov">          1 :         if (m_dFFTPointGain) {</span>
+<span class="lineNum">      83 </span><span class="lineCov">          1 :                 delete [] m_dFFTPointGain;</span>
+<span class="lineNum">      84 </span>            :         }
+<span class="lineNum">      85 </span><span class="lineCov">          1 :         if (m_mCepstralBuffer) {</span>
+<span class="lineNum">      86 </span><span class="lineCov">          1 :                 delete m_mCepstralBuffer;</span>
+<span class="lineNum">      87 </span>            :         }
+<span class="lineNum">      88 </span><span class="lineCov">          1 :         if (m_sSamplesUsefulPrev) {</span>
+<span class="lineNum">      89 </span><span class="lineCov">          1 :                 delete [] m_sSamplesUsefulPrev;</span>
+<span class="lineNum">      90 </span>            :         }
+<span class="lineNum">      91 </span><span class="lineCov">          1 : }</span>
+<a name="92"><span class="lineNum">      92 </span>            : </a>
+<span class="lineNum">      93 </span>            : // initialization
+<span class="lineNum">      94 </span><span class="lineCov">          1 : void FeatureExtractor::initialize() {</span>
+<span class="lineNum">      95 </span>            : 
+<span class="lineNum">      96 </span>            :         // check parameters
+<span class="lineNum">      97 </span><span class="lineCov">          1 :         if (m_iCepstralNormalizationMode != CEPSTRAL_NORMALIZATION_MODE_NONE) {</span>
+<span class="lineNum">      98 </span><span class="lineCov">          1 :                 assert((m_iCepstralNormalizationMethod == CEPSTRAL_NORMALIZATION_METHOD_CMN) ||</span>
+<span class="lineNum">      99 </span><span class="lineCov">          1 :                         (m_iCepstralNormalizationMethod == CEPSTRAL_NORMALIZATION_METHOD_CMVN));                </span>
+<span class="lineNum">     100 </span>            :         }
+<span class="lineNum">     101 </span>            :         
+<span class="lineNum">     102 </span><span class="lineCov">          1 :         if (m_iSampleSize != 16) {</span>
+<span class="lineNum">     103 </span><span class="lineNoCov">          0 :                 BVC_ERROR &lt;&lt; &quot;currently sample sizes different than 16 bits are not supported&quot;;</span>
+<span class="lineNum">     104 </span>            :         }
+<span class="lineNum">     105 </span>            :         
+<span class="lineNum">     106 </span><span class="lineCov">          1 :         assert(m_iSamplingRate % 1000 == 0);</span>
+<span class="lineNum">     107 </span><span class="lineCov">          1 :         m_iSamplesFrame = (m_iSamplingRate/1000)*m_iWindowWidth;</span>
+<span class="lineNum">     108 </span><span class="lineCov">          1 :         m_iSamplesSkip = (m_iSamplingRate/1000)*m_iWindowShift;</span>
+<span class="lineNum">     109 </span>            : 
+<span class="lineNum">     110 </span>            :         // compute the number of points in the FFT (smaller power of two above the number of samples in the window)
+<span class="lineNum">     111 </span><span class="lineCov">          1 :         m_iFFTPoints = 2;</span>
+<span class="lineNum">     112 </span><span class="lineCov">         10 :         while(m_iFFTPoints &lt; m_iSamplesFrame) {</span>
+<span class="lineNum">     113 </span><span class="lineCov">          8 :                 m_iFFTPoints *= 2; </span>
+<span class="lineNum">     114 </span>            :         }
+<span class="lineNum">     115 </span>            : 
+<span class="lineNum">     116 </span>            :         // build the filterbank
+<span class="lineNum">     117 </span><span class="lineCov">          1 :         buildFilterBank();</span>
+<span class="lineNum">     118 </span>            :         
+<span class="lineNum">     119 </span>            :         // cepstral buffer
+<span class="lineNum">     120 </span><span class="lineCov">          1 :         if (m_iCepstralBufferSize != -1) {</span>
+<span class="lineNum">     121 </span><span class="lineCov">          1 :                 m_mCepstralBuffer = new Matrix&lt;float&gt;(m_iCepstralBufferSize,m_iCepstralCoefficients);</span>
+<span class="lineNum">     122 </span>            :         } else {
+<span class="lineNum">     123 </span><span class="lineNoCov">          0 :                 m_mCepstralBuffer = NULL;</span>
+<span class="lineNum">     124 </span>            :         }
+<span class="lineNum">     125 </span>            :         
+<span class="lineNum">     126 </span>            :         // stream mode feature extraction (might not be used)
+<span class="lineNum">     127 </span><span class="lineCov">          1 :         m_sSamplesUsefulPrev = new short[m_iSamplesFrame];</span>
+<span class="lineNum">     128 </span><span class="lineCov">          1 :         m_iSamplesUsefulPrev = 0;</span>
+<span class="lineNum">     129 </span><span class="lineCov">          1 :         m_iSamplesStream = 0;           </span>
+<span class="lineNum">     130 </span><span class="lineCov">          1 : }</span>
+<a name="131"><span class="lineNum">     131 </span>            : </a>
+<span class="lineNum">     132 </span>            : // build the filter bank (it takes into account the warp factor)
+<span class="lineNum">     133 </span><span class="lineCov">          1 : void FeatureExtractor::buildFilterBank() {</span>
+<span class="lineNum">     134 </span>            : 
+<span class="lineNum">     135 </span>            :         // (1) compute the center frequency of each filter in the filterbank
+<span class="lineNum">     136 </span>            :         
+<span class="lineNum">     137 </span>            :         // allocate memory to store the center frequencies
+<span class="lineNum">     138 </span><span class="lineCov">          1 :         m_dCenterFrequencyMel = new double[m_iFilterbankFilters+2];</span>
+<span class="lineNum">     139 </span>            :         
+<span class="lineNum">     140 </span>            :         // min and max allowed frequencies (for band-limited feature extraction)
+<span class="lineNum">     141 </span><span class="lineCov">          1 :         double dFrequencyMinMel = linearToMel((double)m_iFilterbankFrequencyMin);</span>
+<span class="lineNum">     142 </span><span class="lineCov">          1 :         double dFrequencyMaxMel = linearToMel((double)m_iFilterbankFrequencyMax);       </span>
+<span class="lineNum">     143 </span>            :                 
+<span class="lineNum">     144 </span>            :         // filterbank centers are equally spaced in the mel scale
+<span class="lineNum">     145 </span><span class="lineCov">          1 :         double dStepMel = (dFrequencyMaxMel-dFrequencyMinMel)/((double)(m_iFilterbankFilters+1));       </span>
+<span class="lineNum">     146 </span>            :         
+<span class="lineNum">     147 </span>            :         // note: an extra center frequency is computed for an imaginary n+1 filter, this center 
+<span class="lineNum">     148 </span>            :         // is necessary for the computations during binning
+<span class="lineNum">     149 </span><span class="lineCov">         22 :         for(int i=1 ; i &lt;= m_iFilterbankFilters+1 ; ++i) {</span>
+<span class="lineNum">     150 </span><span class="lineCov">         21 :                 m_dCenterFrequencyMel[i] = dFrequencyMinMel+(i*dStepMel);</span>
+<span class="lineNum">     151 </span>            :         }
+<span class="lineNum">     152 </span>            :         
+<span class="lineNum">     153 </span>            :         // warped features
+<span class="lineNum">     154 </span><span class="lineCov">          1 :         if (m_fWarpFactor != 1.0) { </span>
+<span class="lineNum">     155 </span>            :         }
+<span class="lineNum">     156 </span>            :         
+<span class="lineNum">     157 </span>            :         // (2) precompute constants for the application of the filterbank       
+<span class="lineNum">     158 </span><span class="lineCov">          1 :         computeFFTPointBin();</span>
+<span class="lineNum">     159 </span><span class="lineCov">          1 : }</span>
+<span class="lineNum">     160 </span>            : 
+<span class="lineNum">     161 </span>            :  
+<span class="lineNum">     162 </span>            : 
+<span class="lineNum">     163 </span>            : 
+<a name="164"><span class="lineNum">     164 </span>            : </a>
+<span class="lineNum">     165 </span>            : // extract features in  batch mode
+<span class="lineNum">     166 </span><span class="lineCov">          1 : void FeatureExtractor::extractFeaturesSession(VUtteranceData &amp;vUtteranceData, bool bHaltOnFailure) {</span>
+<span class="lineNum">     167 </span>            : 
+<span class="lineNum">     168 </span>            :         // session-based normalization
+<span class="lineNum">     169 </span><span class="lineCov">          1 :         if (m_iCepstralNormalizationMode == CEPSTRAL_NORMALIZATION_MODE_SESSION) {      </span>
+<span class="lineNum">     170 </span>            :                 
+<span class="lineNum">     171 </span>            :                 // compute the static coefficients
+<span class="lineNum">     172 </span><span class="lineCov">          1 :                 int iUtterance = 0;</span>
+<span class="lineNum">     173 </span><span class="lineCov">          3 :                 for(VUtteranceData::iterator it = vUtteranceData.begin() ; it != vUtteranceData.end() ; ++it, ++iUtterance) {</span>
+<span class="lineNum">     174 </span>            :                         
+<span class="lineNum">     175 </span>            :                         // extract static features
+<span class="lineNum">     176 </span><span class="lineCov">          2 :                         it-&gt;mFeatures = extractStaticFeatures(it-&gt;samples.sSamples,it-&gt;samples.iSamples);</span>
+<span class="lineNum">     177 </span><span class="lineCov">          2 :                         if (it-&gt;mFeatures == NULL) {</span>
+<span class="lineNum">     178 </span><span class="lineNoCov">          0 :                                 if (bHaltOnFailure) {</span>
+<span class="lineNum">     179 </span><span class="lineNoCov">          0 :                                         BVC_ERROR &lt;&lt; &quot;unable to extract static features from utterance: &quot; &lt;&lt; iUtterance;</span>
+<span class="lineNum">     180 </span>            :                                 } else {
+<span class="lineNum">     181 </span><span class="lineNoCov">          0 :                                         BVC_WARNING &lt;&lt; &quot;unable to extract static features from utterance: &quot; &lt;&lt; iUtterance;</span>
+<span class="lineNum">     182 </span>            :                                 }
+<span class="lineNum">     183 </span>            :                         }
+<span class="lineNum">     184 </span>            :                 }
+<span class="lineNum">     185 </span>            :                 
+<span class="lineNum">     186 </span>            :                 // allocate memory for the static coefficients
+<span class="lineNum">     187 </span><span class="lineCov">          1 :                 VUtteranceFeatures vUtteranceFeatures;</span>
+<span class="lineNum">     188 </span><span class="lineCov">          1 :                 iUtterance = 0;</span>
+<span class="lineNum">     189 </span><span class="lineCov">          3 :                 for(VUtteranceData::iterator it = vUtteranceData.begin() ; it != vUtteranceData.end() ; ++it, ++iUtterance) {</span>
+<span class="lineNum">     190 </span><span class="lineCov">          2 :                         vUtteranceFeatures.push_back(it-&gt;mFeatures);</span>
+<span class="lineNum">     191 </span>            :                 }       
+<span class="lineNum">     192 </span>            :         
+<span class="lineNum">     193 </span>            :                 // CMN
+<span class="lineNum">     194 </span><span class="lineCov">          1 :                 if (m_iCepstralNormalizationMethod == CEPSTRAL_NORMALIZATION_METHOD_CMN) {</span>
+<span class="lineNum">     195 </span><span class="lineCov">          1 :                         applyCMN(vUtteranceFeatures,m_iCepstralCoefficients);</span>
+<span class="lineNum">     196 </span>            :                 }
+<span class="lineNum">     197 </span>            :                 // CMVN
+<span class="lineNum">     198 </span>            :                 //else { 
+<span class="lineNum">     199 </span>            :                 //      assert(m_iCepstralNormalizationMethod == CEPSTRAL_NORMALIZATION_METHOD_CMVN);
+<span class="lineNum">     200 </span>            :                 //      applyCMVN(vUtteranceFeatures,m_iCepstralCoefficients);
+<span class="lineNum">     201 </span>            :                 //}
+<span class="lineNum">     202 </span>            :                 
+<span class="lineNum">     203 </span>            :                 // extract derivatives and create the final features
+<span class="lineNum">     204 </span><span class="lineCov">          3 :                 for(VUtteranceData::iterator it = vUtteranceData.begin() ; it != vUtteranceData.end() ; ++it) {</span>
+<span class="lineNum">     205 </span>            :                 
+<span class="lineNum">     206 </span><span class="lineCov">          2 :                         if (it-&gt;mFeatures == NULL) {</span>
+<span class="lineNum">     207 </span><span class="lineNoCov">          0 :                                 continue;</span>
+<span class="lineNum">     208 </span>            :                         }
+<span class="lineNum">     209 </span>            :                         
+<span class="lineNum">     210 </span><span class="lineCov">          2 :                         if (it-&gt;mFeatures-&gt;finite() == false) {</span>
+<span class="lineNum">     211 </span><span class="lineNoCov">          0 :                                 BVC_ERROR &lt;&lt; &quot;invalid MFCC features&quot;;</span>
+<span class="lineNum">     212 </span>            :                         }
+<span class="lineNum">     213 </span><span class="lineCov">          2 :                         Matrix&lt;float&gt; *mFeatures = computeDerivatives(*it-&gt;mFeatures);</span>
+<span class="lineNum">     214 </span><span class="lineCov">          2 :                         if (mFeatures == NULL) {</span>
+<span class="lineNum">     215 </span><span class="lineNoCov">          0 :                                 if (bHaltOnFailure) {</span>
+<span class="lineNum">     216 </span><span class="lineNoCov">          0 :                                         BVC_ERROR &lt;&lt; &quot;unable to compute derivatives&quot;;</span>
+<span class="lineNum">     217 </span>            :                                 } else {
+<span class="lineNum">     218 </span><span class="lineNoCov">          0 :                                         BVC_WARNING &lt;&lt; &quot;unable to compute derivatives&quot;;         </span>
+<span class="lineNum">     219 </span>            :                                 }
+<span class="lineNum">     220 </span>            :                         }
+<span class="lineNum">     221 </span><span class="lineCov">          2 :                         if (mFeatures-&gt;finite() == false) {</span>
+<span class="lineNum">     222 </span><span class="lineNoCov">          0 :                                 BVC_ERROR &lt;&lt; &quot;invalid MFCC features&quot;;</span>
+<span class="lineNum">     223 </span>            :                         }
+<span class="lineNum">     224 </span>            :                         
+<span class="lineNum">     225 </span><span class="lineCov">          2 :                         delete it-&gt;mFeatures;</span>
+<span class="lineNum">     226 </span><span class="lineCov">          2 :                         it-&gt;mFeatures = mFeatures;</span>
+<span class="lineNum">     227 </span><span class="lineCov">          1 :                 }</span>
+<span class="lineNum">     228 </span>            :         }
+<span class="lineNum">     229 </span><span class="lineCov">          1 : }</span>
+<span class="lineNum">     230 </span>            : 
+<span class="lineNum">     231 </span>            : 
+<a name="232"><span class="lineNum">     232 </span>            :   </a>
+<span class="lineNum">     233 </span>            : // extract static features
+<span class="lineNum">     234 </span><span class="lineCov">          2 : Matrix&lt;float&gt; *FeatureExtractor::extractStaticFeatures(short *sSamples, unsigned int iSamples) {</span>
+<span class="lineNum">     235 </span>            : 
+<span class="lineNum">     236 </span>            :         // mfcc
+<span class="lineNum">     237 </span><span class="lineCov">          2 :         if (m_iType == FEATURE_TYPE_MFCC) {</span>
+<span class="lineNum">     238 </span><span class="lineCov">          2 :                 return extractStaticFeaturesMFCC(sSamples,iSamples);</span>
+<span class="lineNum">     239 </span>            :         } 
+<span class="lineNum">     240 </span>            :         // plp
+<span class="lineNum">     241 </span><span class="lineNoCov">          0 :         else if (m_iType == FEATURE_TYPE_PLP) {</span>
+<span class="lineNum">     242 </span><span class="lineNoCov">          0 :                 return extractStaticFeaturesPLP(sSamples,iSamples);</span>
+<span class="lineNum">     243 </span>            :         } 
+<span class="lineNum">     244 </span>            :         // not supported
+<span class="lineNum">     245 </span>            :         else {
+<span class="lineNum">     246 </span><span class="lineNoCov">          0 :                 return NULL;</span>
+<span class="lineNum">     247 </span>            :         }
+<span class="lineNum">     248 </span>            : }
+<a name="249"><span class="lineNum">     249 </span>            : </a>
+<span class="lineNum">     250 </span>            : // extract MFCC features (only the static coefficients)
+<span class="lineNum">     251 </span><span class="lineCov">          2 : Matrix&lt;float&gt; *FeatureExtractor::extractStaticFeaturesMFCC(short *sSamplesOriginal, unsigned int iSamples) {</span>
+<span class="lineNum">     252 </span>            : 
+<span class="lineNum">     253 </span>            :         // (1) make a copy of the samples so they do not get modified
+<span class="lineNum">     254 </span><span class="lineCov">          2 :         short *sSamples = new short[iSamples];</span>
+<span class="lineNum">     255 </span><span class="lineCov">          2 :         memcpy(sSamples,sSamplesOriginal,iSamples*sizeof(short));</span>
+<span class="lineNum">     256 </span>            : 
+<span class="lineNum">     257 </span>            :         // (2) remove the DC mean
+<span class="lineNum">     258 </span><span class="lineCov">          2 :         if (m_bDCRemoval) {</span>
+<span class="lineNum">     259 </span><span class="lineCov">          2 :                 removeDC(sSamples,iSamples);</span>
+<span class="lineNum">     260 </span>            :         }
+<span class="lineNum">     261 </span>            :         
+<span class="lineNum">     262 </span>            :         // (3) pre-emphasis
+<span class="lineNum">     263 </span><span class="lineCov">          2 :         if (m_bPreemphasis) {</span>
+<span class="lineNum">     264 </span><span class="lineCov">          2 :                 applyPreemphasis(sSamples,iSamples);</span>
+<span class="lineNum">     265 </span>            :         }
+<span class="lineNum">     266 </span>            :         
+<span class="lineNum">     267 </span>            :         // check that the number of frames is positive, otherwise there are not enough samples available
+<span class="lineNum">     268 </span><span class="lineCov">          2 :         if (iSamples &lt; m_iSamplesFrame) {</span>
+<span class="lineNum">     269 </span><span class="lineNoCov">          0 :                 BVC_WARNING &lt;&lt; &quot;insufficient number of audio samples (available: &quot; &lt;&lt; iSamples </span>
+<span class="lineNum">     270 </span><span class="lineNoCov">          0 :                         &lt;&lt; &quot; required: &quot; &lt;&lt; m_iSamplesFrame &lt;&lt; &quot;)&quot;;</span>
+<span class="lineNum">     271 </span><span class="lineNoCov">          0 :                 return NULL;</span>
+<span class="lineNum">     272 </span>            :         }
+<span class="lineNum">     273 </span>            :         // compute the number of frames (feature vectors) to extract
+<span class="lineNum">     274 </span><span class="lineCov">          2 :         unsigned int iFrames = 1+(iSamples-m_iSamplesFrame)/m_iSamplesSkip;</span>
+<span class="lineNum">     275 </span>            :         // allocate memory for the frames
+<span class="lineNum">     276 </span><span class="lineCov">          2 :         Matrix&lt;float&gt; *mMFCC = new Matrix&lt;float&gt;(iFrames,m_iCoefficients);  </span>
+<span class="lineNum">     277 </span>            : 
+<span class="lineNum">     278 </span>            :         // allocate memory for the Fast Fourier Transform output (there has to be room for the real and the imaginary part)
+<span class="lineNum">     279 </span><span class="lineCov">          2 :         double *dFFT = new double[2*m_iFFTPoints+2];</span>
+<span class="lineNum">     280 </span><span class="lineCov">          2 :         double *dFFTMagnitude = new double[m_iFFTPoints];</span>
+<span class="lineNum">     281 </span>            :         
+<span class="lineNum">     282 </span>            :         // allocate memory for the bins
+<span class="lineNum">     283 </span><span class="lineCov">          2 :         double *dBins = new double[m_iFilterbankFilters+1];</span>
+<span class="lineNum">     284 </span>            :         
+<span class="lineNum">     285 </span>            :         // auxiliar buffer
+<span class="lineNum">     286 </span><span class="lineCov">          2 :         double *dSamplesFrame = new double[m_iSamplesFrame];</span>
+<span class="lineNum">     287 </span>            :         
+<span class="lineNum">     288 </span>            :         // process each window
+<span class="lineNum">     289 </span><span class="lineCov">       1880 :         for(unsigned int i = 0 ; i &lt; iFrames ; ++i) {</span>
+<span class="lineNum">     290 </span>            :         
+<span class="lineNum">     291 </span><span class="lineCov">     602838 :                 for(unsigned int j=0 ; j &lt; m_iSamplesFrame ; ++j) {</span>
+<span class="lineNum">     292 </span><span class="lineCov">     600960 :                         dSamplesFrame[j] = (double)sSamples[(i*m_iSamplesSkip)+j];</span>
+<span class="lineNum">     293 </span>            :                 }
+<span class="lineNum">     294 </span>            :         
+<span class="lineNum">     295 </span>            :                 // do window tapering if needed
+<span class="lineNum">     296 </span><span class="lineCov">       1878 :                 applyWindowTapering(dSamplesFrame,m_iSamplesFrame);</span>
+<span class="lineNum">     297 </span>            :                 
+<span class="lineNum">     298 </span>            :                 // compute the frame energy
+<span class="lineNum">     299 </span><span class="lineCov">       1878 :                 double dFrameEnergy = computeLogEnergy(dSamplesFrame,m_iSamplesFrame);</span>
+<span class="lineNum">     300 </span>            :                 
+<span class="lineNum">     301 </span>            :                 // apply the Fourier transform and get the frequencies
+<span class="lineNum">     302 </span><span class="lineCov">     602838 :                 for(unsigned int j = 0 ; j &lt; m_iSamplesFrame ; ++j) {</span>
+<span class="lineNum">     303 </span><span class="lineCov">     600960 :                         dFFT[j] = dSamplesFrame[j]; </span>
+<span class="lineNum">     304 </span>            :                 }
+<span class="lineNum">     305 </span><span class="lineCov">     366210 :                 for(unsigned int j = m_iSamplesFrame ; j &lt; m_iFFTPoints+2 ; ++j) {</span>
+<span class="lineNum">     306 </span><span class="lineCov">     364332 :                         dFFT[j] = 0.0; </span>
+<span class="lineNum">     307 </span>            :                 }       
+<span class="lineNum">     308 </span><span class="lineCov">       1878 :                 Numeric::fft(dFFT,m_iFFTPoints);</span>
+<span class="lineNum">     309 </span>            :                 
+<span class="lineNum">     310 </span>            :                 // compute the magnitude from the real and imaginary parts
+<span class="lineNum">     311 </span><span class="lineCov">       1878 :                 int iIndex = 2;</span>
+<span class="lineNum">     312 </span><span class="lineCov">     478890 :                 for(unsigned int j = 2 ; j &lt; m_iFFTPoints/2 ; ++j, iIndex+=2) {</span>
+<span class="lineNum">     313 </span><span class="lineCov">     477012 :                         double dReal = dFFT[iIndex];</span>
+<span class="lineNum">     314 </span><span class="lineCov">     477012 :                         double dImaginary = dFFT[iIndex+1];</span>
+<span class="lineNum">     315 </span><span class="lineCov">     477012 :                         dFFTMagnitude[j] = sqrt(dReal*dReal+dImaginary*dImaginary);</span>
+<span class="lineNum">     316 </span>            :                 }
+<span class="lineNum">     317 </span>            :                 
+<span class="lineNum">     318 </span>            :                 // apply the bank of filters (one bin per filter)
+<span class="lineNum">     319 </span><span class="lineCov">      41316 :                 for(int j=0 ; j &lt; m_iFilterbankFilters+1 ; ++j) {</span>
+<span class="lineNum">     320 </span><span class="lineCov">      39438 :                         dBins[j] = 0.0;</span>
+<span class="lineNum">     321 </span>            :                 }
+<span class="lineNum">     322 </span>            :                 // multiply the filter gain by the magnitude
+<span class="lineNum">     323 </span>            :                 // (every point in the FFT affects two bins (filters), since filters overlap)
+<span class="lineNum">     324 </span><span class="lineCov">     478890 :                 for(unsigned int j=2 ; j &lt; m_iFFTPoints/2 ; ++j) {</span>
+<span class="lineNum">     325 </span><span class="lineCov">     477012 :                         int iBin = m_iFFTPointBin[j];</span>
+<span class="lineNum">     326 </span><span class="lineCov">     477012 :                         if (iBin == -1) {       // ignore frequencies outside the filterbank</span>
+<span class="lineNum">     327 </span><span class="lineNoCov">          0 :                                 continue;</span>
+<span class="lineNum">     328 </span>            :                         }
+<span class="lineNum">     329 </span><span class="lineCov">     477012 :                         double dValue = m_dFFTPointGain[j]*dFFTMagnitude[j];</span>
+<span class="lineNum">     330 </span><span class="lineCov">     477012 :                         if (iBin &gt; 0) {</span>
+<span class="lineNum">     331 </span><span class="lineCov">     473256 :                                 dBins[iBin] += dValue;</span>
+<span class="lineNum">     332 </span>            :                         }
+<span class="lineNum">     333 </span><span class="lineCov">     477012 :                         if (iBin &lt; m_iFilterbankFilters) {</span>
+<span class="lineNum">     334 </span><span class="lineCov">     420672 :                                 dBins[iBin+1] += dFFTMagnitude[j]-dValue;</span>
+<span class="lineNum">     335 </span>            :                         }       
+<span class="lineNum">     336 </span>            :                 }
+<span class="lineNum">     337 </span>            :                 
+<span class="lineNum">     338 </span>            :                 // apply log compression
+<span class="lineNum">     339 </span><span class="lineCov">      41316 :                 for(int h=0 ; h &lt; m_iFilterbankFilters+1 ; ++h) {</span>
+<span class="lineNum">     340 </span><span class="lineCov">      39438 :                         if (dBins[h] &lt;= 1.0) {</span>
+<span class="lineNum">     341 </span><span class="lineCov">       1878 :                                 dBins[h] = 0.0;</span>
+<span class="lineNum">     342 </span>            :                         } else {
+<span class="lineNum">     343 </span><span class="lineCov">      37560 :                                 dBins[h] = log(dBins[h]);</span>
+<span class="lineNum">     344 </span>            :                         }
+<span class="lineNum">     345 </span>            :                 }
+<span class="lineNum">     346 </span>            :                 
+<span class="lineNum">     347 </span>            :                 // Discrete Cosine Transform (DCT): compute cepstral features from the log filterbank amplitudes
+<span class="lineNum">     348 </span>            :                 // note: we are ignoring c0
+<span class="lineNum">     349 </span><span class="lineCov">       1878 :                 float *fMFCCAux = mMFCC-&gt;getRow(i).getData();</span>
+<span class="lineNum">     350 </span><span class="lineCov">      24414 :                 for(int j=1 ; j &lt;= m_iCepstralCoefficients ; ++j) {</span>
+<span class="lineNum">     351 </span><span class="lineCov">      22536 :                         double dAux = 0.0;</span>
+<span class="lineNum">     352 </span><span class="lineCov">     473256 :                         for(int k=1 ; k &lt; m_iFilterbankFilters+1 ; ++k) {    </span>
+<span class="lineNum">     353 </span><span class="lineCov">     450720 :                                 dAux += dBins[k]*cos((PI_NUMBER*j*(((double)k)-0.5))/((double)m_iFilterbankFilters));</span>
+<span class="lineNum">     354 </span>            :                         }
+<span class="lineNum">     355 </span><span class="lineCov">      22536 :                         dAux *= sqrt(2.0/((double)m_iFilterbankFilters));</span>
+<span class="lineNum">     356 </span><span class="lineCov">      22536 :                         fMFCCAux[j-1] = (float)dAux;</span>
+<span class="lineNum">     357 </span>            :                 }
+<span class="lineNum">     358 </span><span class="lineCov">       1878 :                 fMFCCAux[m_iCepstralCoefficients] = (float)dFrameEnergy;</span>
+<span class="lineNum">     359 </span>            :         }
+<span class="lineNum">     360 </span>            :         
+<span class="lineNum">     361 </span>            :          
+<span class="lineNum">     362 </span>            :         
+<span class="lineNum">     363 </span>            :         // compute normalized log energy
+<span class="lineNum">     364 </span><span class="lineCov">          2 :         float fMinFrameEnergy = 10000.0;</span>
+<span class="lineNum">     365 </span><span class="lineCov">          2 :         float fMaxFrameEnergy = 0.0;</span>
+<span class="lineNum">     366 </span><span class="lineCov">       1880 :         for(unsigned int i=0 ; i &lt; mMFCC-&gt;getRows() ; ++i) {</span>
+<span class="lineNum">     367 </span><span class="lineCov">       1878 :                 fMaxFrameEnergy = std::max((*mMFCC)(i,m_iCepstralCoefficients),fMaxFrameEnergy);</span>
+<span class="lineNum">     368 </span><span class="lineCov">       1878 :                 fMinFrameEnergy = std::min((*mMFCC)(i,m_iCepstralCoefficients),fMinFrameEnergy);</span>
+<span class="lineNum">     369 </span>            :         }
+<span class="lineNum">     370 </span>            :         
+<span class="lineNum">     371 </span><span class="lineCov">       1880 :    for(unsigned int i=0 ; i &lt; mMFCC-&gt;getRows() ; i++) {</span>
+<span class="lineNum">     372 </span><span class="lineCov">       1878 :       (*mMFCC)(i,m_iCepstralCoefficients) += 1.0f-fMaxFrameEnergy;</span>
+<span class="lineNum">     373 </span><span class="lineCov">       1878 :       (*mMFCC)(i,m_iCepstralCoefficients) = std::max((*mMFCC)(i,m_iCepstralCoefficients),-5.0f);</span>
+<span class="lineNum">     374 </span>            :    }    
+<span class="lineNum">     375 </span>            :         
+<span class="lineNum">     376 </span>            :         // clean-up
+<span class="lineNum">     377 </span><span class="lineCov">          2 :         delete [] dBins;</span>
+<span class="lineNum">     378 </span><span class="lineCov">          2 :         delete [] dFFT;</span>
+<span class="lineNum">     379 </span><span class="lineCov">          2 :         delete [] dFFTMagnitude;</span>
+<span class="lineNum">     380 </span><span class="lineCov">          2 :         delete [] dSamplesFrame;</span>
+<span class="lineNum">     381 </span><span class="lineCov">          2 :         delete [] sSamples;</span>
+<span class="lineNum">     382 </span>            :         
+<span class="lineNum">     383 </span><span class="lineCov">          2 :         if (mMFCC-&gt;finite() == false) {              </span>
+<span class="lineNum">     384 </span><span class="lineNoCov">          0 :                 BVC_ERROR &lt;&lt; &quot;invalid MFCC features&quot;;</span>
+<span class="lineNum">     385 </span>            :         }
+<span class="lineNum">     386 </span>            : 
+<span class="lineNum">     387 </span><span class="lineCov">          2 :         return mMFCC;</span>
+<span class="lineNum">     388 </span>            : }
+<a name="389"><span class="lineNum">     389 </span>            : </a>
+<span class="lineNum">     390 </span>            : // extract PLP features (only the static coefficients)
+<span class="lineNum">     391 </span><span class="lineNoCov">          0 : Matrix&lt;float&gt; *FeatureExtractor::extractStaticFeaturesPLP(short *sSamples, unsigned int iSamples) {</span>
+<span class="lineNum">     392 </span>            : 
+<span class="lineNum">     393 </span><span class="lineNoCov">          0 :         return NULL;</span>
+<span class="lineNum">     394 </span>            : }
+<span class="lineNum">     395 </span>            : 
+<a name="396"><span class="lineNum">     396 </span>            : </a>
+<span class="lineNum">     397 </span>            : // remove the DC-mean
+<span class="lineNum">     398 </span><span class="lineCov">          2 : void FeatureExtractor::removeDC(short *sSamples, int iSamples) {</span>
+<span class="lineNum">     399 </span>            : 
+<span class="lineNum">     400 </span><span class="lineCov">          2 :         double *dSamples = new double[iSamples];</span>
+<span class="lineNum">     401 </span>            : 
+<span class="lineNum">     402 </span>            :         // compute the mean
+<span class="lineNum">     403 </span><span class="lineCov">          2 :         double dAcc = 0.0;</span>
+<span class="lineNum">     404 </span><span class="lineCov">     301027 :         for(int i=0 ; i &lt; iSamples ; ++i) {</span>
+<span class="lineNum">     405 </span><span class="lineCov">     301025 :                 dAcc += (double)sSamples[i];</span>
+<span class="lineNum">     406 </span>            :         }
+<span class="lineNum">     407 </span><span class="lineCov">          2 :         dAcc /= ((double)iSamples);</span>
+<span class="lineNum">     408 </span>            :         
+<span class="lineNum">     409 </span>            :         // substract the mean
+<span class="lineNum">     410 </span><span class="lineCov">     301027 :         for(int i=0 ; i &lt; iSamples ; ++i) {</span>
+<span class="lineNum">     411 </span><span class="lineCov">     301025 :                 dSamples[i] = ((double)sSamples[i])-dAcc;</span>
+<span class="lineNum">     412 </span>            :         }
+<span class="lineNum">     413 </span>            :         
+<span class="lineNum">     414 </span>            :         // convert back to short
+<span class="lineNum">     415 </span><span class="lineCov">          2 :         convert(dSamples,sSamples,iSamples);</span>
+<span class="lineNum">     416 </span>            :         
+<span class="lineNum">     417 </span><span class="lineCov">          2 :         delete [] dSamples;</span>
+<span class="lineNum">     418 </span><span class="lineCov">          2 : }</span>
+<a name="419"><span class="lineNum">     419 </span>            : </a>
+<span class="lineNum">     420 </span>            : // apply pre-emphasis to all the samples (note that some samples at the end may be discarded)
+<span class="lineNum">     421 </span><span class="lineCov">          2 : void FeatureExtractor::applyPreemphasis(short *sSamples, int iSamples) {</span>
+<span class="lineNum">     422 </span>            : 
+<span class="lineNum">     423 </span><span class="lineCov">     301025 :         for(int i=iSamples-1 ; i &gt; 0 ; --i) {</span>
+<span class="lineNum">     424 </span><span class="lineCov">     301023 :                 sSamples[i] = convert(((float)sSamples[i])-((float)PREEMPHASIS_COEFFICIENT*((float)sSamples[i-1])));</span>
+<span class="lineNum">     425 </span>            :         }
+<span class="lineNum">     426 </span><span class="lineCov">          2 :         sSamples[0] = convert(((float)sSamples[0])-((float)PREEMPHASIS_COEFFICIENT*((float)sSamples[0])));</span>
+<span class="lineNum">     427 </span><span class="lineCov">          2 : }</span>
+<a name="428"><span class="lineNum">     428 </span>            : </a>
+<span class="lineNum">     429 </span>            : // apply Window-tapering
+<span class="lineNum">     430 </span><span class="lineCov">       1878 : void FeatureExtractor::applyWindowTapering(double *dSamples, int iSamples) {</span>
+<span class="lineNum">     431 </span>            : 
+<span class="lineNum">     432 </span>            :         // Hamming window
+<span class="lineNum">     433 </span><span class="lineCov">       1878 :         if (m_iWindowTapering == WINDOW_TAPERING_METHOD_HAMMING) {</span>
+<span class="lineNum">     434 </span><span class="lineCov">       1878 :                 applyHammingWindow(dSamples,iSamples);</span>
+<span class="lineNum">     435 </span>            :         }
+<span class="lineNum">     436 </span>            :          
+<span class="lineNum">     437 </span>            :          
+<span class="lineNum">     438 </span>            :         // no window tapering
+<span class="lineNum">     439 </span>            :         else {
+<span class="lineNum">     440 </span><span class="lineNoCov">          0 :                 assert(m_iWindowTapering == WINDOW_TAPERING_METHOD_NONE);</span>
+<span class="lineNum">     441 </span>            :         }
+<span class="lineNum">     442 </span><span class="lineCov">       1878 : }</span>
+<a name="443"><span class="lineNum">     443 </span>            : </a>
+<span class="lineNum">     444 </span>            : // apply the Hamming window
+<span class="lineNum">     445 </span><span class="lineCov">       1878 : void FeatureExtractor::applyHammingWindow(double *dSamples, int iSamples) {</span>
+<span class="lineNum">     446 </span>            : 
+<span class="lineNum">     447 </span><span class="lineCov">       1878 :         double dConst = (2.0*PI_NUMBER)/((double)(iSamples-1));</span>
+<span class="lineNum">     448 </span>            : 
+<span class="lineNum">     449 </span><span class="lineCov">     602838 :         for(int i = 0 ; i &lt; iSamples ; ++i) {</span>
+<span class="lineNum">     450 </span><span class="lineCov">     600960 :                 dSamples[i] = dSamples[i]*(0.54-0.46*cos(dConst*i));</span>
+<span class="lineNum">     451 </span>            :         }
+<span class="lineNum">     452 </span><span class="lineCov">       1878 : }</span>
+<span class="lineNum">     453 </span>            : 
+<a name="454"><span class="lineNum">     454 </span>            :  </a>
+<span class="lineNum">     455 </span>            : // computes the log energy of a speech frame
+<span class="lineNum">     456 </span><span class="lineCov">       1878 : double FeatureExtractor::computeLogEnergy(double *dFrame, int iSamples){</span>
+<span class="lineNum">     457 </span>            : 
+<span class="lineNum">     458 </span><span class="lineCov">       1878 :    double dEnergy = 0.0; </span>
+<span class="lineNum">     459 </span><span class="lineCov">     602838 :    for(int i = 0 ; i &lt; iSamples ; i++) {</span>
+<span class="lineNum">     460 </span><span class="lineCov">     600960 :                 dEnergy += dFrame[i]*dFrame[i];</span>
+<span class="lineNum">     461 </span>            :    }
+<span class="lineNum">     462 </span>            : 
+<span class="lineNum">     463 </span><span class="lineCov">       1878 :    dEnergy /= ((double)iSamples);</span>
+<span class="lineNum">     464 </span><span class="lineCov">       1878 :    if (dEnergy &gt; 1.0) {</span>
+<span class="lineNum">     465 </span><span class="lineCov">       1878 :       dEnergy = log10(dEnergy);</span>
+<span class="lineNum">     466 </span>            :    } else {
+<span class="lineNum">     467 </span><span class="lineNoCov">          0 :       dEnergy = 0.0;</span>
+<span class="lineNum">     468 </span>            :    }
+<span class="lineNum">     469 </span>            : 
+<span class="lineNum">     470 </span><span class="lineCov">       1878 :    return dEnergy;</span>
+<span class="lineNum">     471 </span>            : }
+<span class="lineNum">     472 </span>            : 
+<span class="lineNum">     473 </span>            : // compute the lower bin connected to each FFT point
+<span class="lineNum">     474 </span>            : // note: all filters are equally spaced in the mel scale, a filter starts at the center 
+<span class="lineNum">     475 </span>            : //  freq of prev filter and ends at the center freq of the next filter so the right, then
+<a name="476"><span class="lineNum">     476 </span>            : //  right side and left side of contiguous filters completely overlap and are, thus, </a>
+<span class="lineNum">     477 </span>            : //  equivalent (same inclination)
+<span class="lineNum">     478 </span><span class="lineCov">          1 : void FeatureExtractor::computeFFTPointBin() {</span>
+<span class="lineNum">     479 </span>            : 
+<span class="lineNum">     480 </span>            :         // generate a mapping: point in the FFT &lt;-&gt; filter in the filterbank (bin)
+<span class="lineNum">     481 </span><span class="lineCov">          1 :         m_iFFTPointBin = new int[m_iFFTPoints];</span>
+<span class="lineNum">     482 </span><span class="lineCov">          1 :         double dStep = ((double)m_iSamplingRate)/((double)m_iFFTPoints);</span>
+<span class="lineNum">     483 </span><span class="lineCov">          1 :         int iBin = 1;</span>
+<span class="lineNum">     484 </span><span class="lineCov">        257 :         for(unsigned int i=1 ; i &lt;= m_iFFTPoints/2 ; ++i) {</span>
+<span class="lineNum">     485 </span><span class="lineCov">        256 :                 double dLinearFreq = (i-1)*dStep;</span>
+<span class="lineNum">     486 </span><span class="lineCov">        256 :                 if ((dLinearFreq &lt; m_iFilterbankFrequencyMin) || (dLinearFreq &gt; m_iFilterbankFrequencyMax)) {</span>
+<span class="lineNum">     487 </span><span class="lineNoCov">          0 :                         m_iFFTPointBin[i] = -1; </span>
+<span class="lineNum">     488 </span>            :                 } else {
+<span class="lineNum">     489 </span><span class="lineCov">        532 :                         while((m_dCenterFrequencyMel[iBin] &lt; linearToMel((i-1)*dStep)) &amp;&amp; (iBin &lt; (m_iFilterbankFilters+1)))  {</span>
+<span class="lineNum">     490 </span><span class="lineCov">         20 :                                 ++iBin;</span>
+<span class="lineNum">     491 </span>            :                         }
+<span class="lineNum">     492 </span><span class="lineCov">        256 :                         m_iFFTPointBin[i] = iBin-1;</span>
+<span class="lineNum">     493 </span>            :                 }
+<span class="lineNum">     494 </span>            :         }
+<span class="lineNum">     495 </span>            :         
+<span class="lineNum">     496 </span>            :         // generate a mapping: filter &lt;-&gt; filter gain (right side of the triangular filter)
+<span class="lineNum">     497 </span><span class="lineCov">          1 :         m_dFFTPointGain = new double[m_iFFTPoints];</span>
+<span class="lineNum">     498 </span><span class="lineCov">        257 :         for(unsigned int i=1 ; i &lt;= m_iFFTPoints/2 ; ++i) {</span>
+<span class="lineNum">     499 </span><span class="lineCov">        256 :                 int iBin = m_iFFTPointBin[i];</span>
+<span class="lineNum">     500 </span><span class="lineCov">        256 :                 if (iBin == -1) {</span>
+<span class="lineNum">     501 </span><span class="lineNoCov">          0 :                         m_dFFTPointGain[i] = 0.0;</span>
+<span class="lineNum">     502 </span><span class="lineCov">        256 :                 } else if (iBin &gt; 0) {</span>
+<span class="lineNum">     503 </span><span class="lineCov">        253 :                         m_dFFTPointGain[i] = (m_dCenterFrequencyMel[iBin+1]-linearToMel((i-1)*dStep))/(m_dCenterFrequencyMel[iBin+1]-m_dCenterFrequencyMel[iBin]);</span>
+<span class="lineNum">     504 </span>            :                 } else {
+<span class="lineNum">     505 </span><span class="lineCov">          3 :                         m_dFFTPointGain[i] = (m_dCenterFrequencyMel[1]-linearToMel((i-1)*dStep))/m_dCenterFrequencyMel[1];</span>
+<span class="lineNum">     506 </span>            :                 }
+<span class="lineNum">     507 </span>            :         }       
+<span class="lineNum">     508 </span><span class="lineCov">          1 : }</span>
+<a name="509"><span class="lineNum">     509 </span>            : </a>
+<span class="lineNum">     510 </span>            : // compute derivatives (each row is a feature vector)
+<span class="lineNum">     511 </span><span class="lineCov">          2 : Matrix&lt;float&gt; *FeatureExtractor::computeDerivatives(MatrixBase&lt;float&gt; &amp;mStatic) {</span>
+<span class="lineNum">     512 </span>            : 
+<span class="lineNum">     513 </span><span class="lineCov">          2 :         int iOrder = m_iDerivativesOrder;</span>
+<span class="lineNum">     514 </span><span class="lineCov">          2 :         int iDelta = m_iDerivativesDelta;</span>
+<span class="lineNum">     515 </span>            : 
+<span class="lineNum">     516 </span><span class="lineCov">          2 :         assert(iOrder &gt;= 1);</span>
+<span class="lineNum">     517 </span><span class="lineCov">          2 :         unsigned int iFeaturesMinimum = ((iDelta*2)+1);</span>
+<span class="lineNum">     518 </span><span class="lineCov">          2 :         if (mStatic.getRows() &lt; iFeaturesMinimum) {</span>
+<span class="lineNum">     519 </span><span class="lineNoCov">          0 :                 BVC_WARNING &lt;&lt; &quot;insufficient number of feature vectors to compute derivatives (available: &quot; </span>
+<span class="lineNum">     520 </span><span class="lineNoCov">          0 :                         &lt;&lt; mStatic.getRows() &lt;&lt; &quot; required: &quot; &lt;&lt; iFeaturesMinimum &lt;&lt; &quot;)&quot;;   </span>
+<span class="lineNum">     521 </span><span class="lineNoCov">          0 :                 return NULL;</span>
+<span class="lineNum">     522 </span>            :         }
+<span class="lineNum">     523 </span>            : 
+<span class="lineNum">     524 </span>            :         // allocate memory for the features
+<span class="lineNum">     525 </span><span class="lineCov">          2 :         Matrix&lt;float&gt; *m = new Matrix&lt;float&gt;(mStatic.getRows(),mStatic.getCols()*(m_iDerivativesOrder+1));</span>
+<span class="lineNum">     526 </span>            :         // copy static features
+<span class="lineNum">     527 </span><span class="lineCov">       1880 :         for(unsigned int j=0 ; j &lt; m-&gt;getRows() ; ++j) {</span>
+<span class="lineNum">     528 </span><span class="lineCov">       1878 :                 m-&gt;getRow(j).copy(mStatic.getRow(j),0,mStatic.getCols());</span>
+<span class="lineNum">     529 </span>            :         }       
+<span class="lineNum">     530 </span>            :         // generate derivatives
+<span class="lineNum">     531 </span><span class="lineCov">          2 :         Matrix&lt;float&gt; mAux(mStatic);</span>
+<span class="lineNum">     532 </span><span class="lineCov">          4 :         Matrix&lt;float&gt; mDelta(mStatic.getRows(),mStatic.getCols());</span>
+<span class="lineNum">     533 </span><span class="lineCov">          6 :         for(int i=1 ; i &lt;= iOrder ; ++i) {</span>
+<span class="lineNum">     534 </span><span class="lineCov">          4 :                 mAux.delta(mDelta,iDelta);</span>
+<span class="lineNum">     535 </span><span class="lineCov">       3760 :                 for(unsigned int j=0 ; j &lt; m-&gt;getRows() ; ++j) {</span>
+<span class="lineNum">     536 </span><span class="lineCov">       3756 :                         m-&gt;getRow(j).copy(mDelta.getRow(j),mDelta.getCols()*i,mDelta.getCols());</span>
+<span class="lineNum">     537 </span>            :                 }
+<span class="lineNum">     538 </span><span class="lineCov">          4 :                 mDelta.swap(mAux);</span>
+<span class="lineNum">     539 </span>            :         }
+<span class="lineNum">     540 </span>            :         
+<span class="lineNum">     541 </span><span class="lineCov">          4 :         return m;</span>
+<span class="lineNum">     542 </span>            : }
+<span class="lineNum">     543 </span>            : 
+<span class="lineNum">     544 </span>            : 
+<a name="545"><span class="lineNum">     545 </span>            : </a>
+<span class="lineNum">     546 </span>            : // compute CMN over a set of utterances (session mode)
+<span class="lineNum">     547 </span><span class="lineCov">          1 : void FeatureExtractor::applyCMN(VUtteranceFeatures &amp;vUtteranceFeatures, unsigned int iCoeffNorm) {</span>
+<span class="lineNum">     548 </span>            : 
+<span class="lineNum">     549 </span><span class="lineCov">          1 :         assert(!vUtteranceFeatures.empty());    </span>
+<span class="lineNum">     550 </span><span class="lineCov">          1 :         Vector&lt;double&gt; vObservation(m_iCoefficients);</span>
+<span class="lineNum">     551 </span><span class="lineCov">          2 :         Vector&lt;double&gt; vMean(m_iCoefficients);    </span>
+<span class="lineNum">     552 </span>            :  
+<span class="lineNum">     553 </span>            :         // compute the mean
+<span class="lineNum">     554 </span><span class="lineCov">          1 :         vObservation.zero();</span>
+<span class="lineNum">     555 </span><span class="lineCov">          1 :         int iFeatures = 0;</span>
+<span class="lineNum">     556 </span><span class="lineCov">          3 :         for(VUtteranceFeatures::iterator it = vUtteranceFeatures.begin() ; it != vUtteranceFeatures.end() ; ++it) {</span>
+<span class="lineNum">     557 </span><span class="lineCov">          2 :                 if (*it) {</span>
+<span class="lineNum">     558 </span><span class="lineCov">          2 :                         vObservation.addRows(*(*it));</span>
+<span class="lineNum">     559 </span><span class="lineCov">          2 :                         iFeatures += (*it)-&gt;getRows();</span>
+<span class="lineNum">     560 </span>            :                 }
+<span class="lineNum">     561 </span>            :         }       
+<span class="lineNum">     562 </span><span class="lineCov">          1 :         vMean.mul(1.0/((double)iFeatures),vObservation);</span>
+<span class="lineNum">     563 </span>            :         
+<span class="lineNum">     564 </span>            :         // not all coeff will be normalized
+<span class="lineNum">     565 </span><span class="lineCov">          2 :         for(int i=iCoeffNorm ; i &lt; m_iCoefficients ; ++i) {</span>
+<span class="lineNum">     566 </span><span class="lineCov">          1 :                 vMean(i) = 0.0;</span>
+<span class="lineNum">     567 </span>            :         }
+<span class="lineNum">     568 </span>            :         
+<span class="lineNum">     569 </span>            :         // substract the mean
+<span class="lineNum">     570 </span><span class="lineCov">          3 :         for(VUtteranceFeatures::iterator it = vUtteranceFeatures.begin() ; it != vUtteranceFeatures.end() ; ++it) {</span>
+<span class="lineNum">     571 </span><span class="lineCov">          2 :                 if (*it) {</span>
+<span class="lineNum">     572 </span><span class="lineCov">       1880 :                         for(unsigned int i=0 ; i &lt; (*it)-&gt;getRows() ; ++i) {      </span>
+<span class="lineNum">     573 </span><span class="lineCov">       1878 :                                 (*it)-&gt;getRow(i).add(-1.0,vMean);</span>
+<span class="lineNum">     574 </span>            :                         }
+<span class="lineNum">     575 </span>            :                 }
+<span class="lineNum">     576 </span><span class="lineCov">          1 :         }</span>
+<span class="lineNum">     577 </span><span class="lineCov">          1 : }</span>
+<span class="lineNum">     578 </span>            : 
+<span class="lineNum">     579 </span>            : // compute CMVN over a set of utterances (session mode)
+<span class="lineNum">     580 </span>            : /*void FeatureExtractor::applyCMVN(VUtteranceFeatures &amp;vUtteranceFeatures, unsigned int iCoeffNorm) {
+<span class="lineNum">     581 </span>            : 
+<span class="lineNum">     582 </span>            :         assert(!vUtteranceFeatures.empty());    
+<span class="lineNum">     583 </span>            :         Vector&lt;double&gt; vObservation(m_iCoefficients);
+<span class="lineNum">     584 </span>            :         Vector&lt;double&gt; vObservationSquare(m_iCoefficients);
+<span class="lineNum">     585 </span>            :         Vector&lt;double&gt; vMean(m_iCoefficients);    
+<span class="lineNum">     586 </span>            :         Vector&lt;double&gt; vStandardDeviation(m_iCoefficients);       
+<span class="lineNum">     587 </span>            :  
+<span class="lineNum">     588 </span>            :         // compute the mean
+<span class="lineNum">     589 </span>            :         vObservation.zero();
+<span class="lineNum">     590 </span>            :         int iFeatures = 0;
+<span class="lineNum">     591 </span>            :         for(VUtteranceFeatures::iterator it = vUtteranceFeatures.begin() ; it != vUtteranceFeatures.end() ; ++it) {
+<span class="lineNum">     592 </span>            :                 if (*it) {
+<span class="lineNum">     593 </span>            :                         vObservation.addRows(*(*it));
+<span class="lineNum">     594 </span>            :                         vObservationSquare.addRowsSquare(*(*it));
+<span class="lineNum">     595 </span>            :                         iFeatures += (*it)-&gt;getRows();
+<span class="lineNum">     596 </span>            :                 }
+<span class="lineNum">     597 </span>            :         }       
+<span class="lineNum">     598 </span>            : 
+<span class="lineNum">     599 </span>            :         // compute the mean and standard deviation
+<span class="lineNum">     600 </span>            :         vMean.mul(1.0/((double)iFeatures),vObservation);        
+<span class="lineNum">     601 </span>            :         vStandardDeviation.mul(1.0/((double)iFeatures),vObservationSquare);
+<span class="lineNum">     602 </span>            :         vStandardDeviation.addSquare(-1.0,vMean);       
+<span class="lineNum">     603 </span>            :         vStandardDeviation.sqrt();      
+<span class="lineNum">     604 </span>            :         
+<span class="lineNum">     605 </span>            :         // not all coeff will be normalized
+<span class="lineNum">     606 </span>            :         assert((iCoeffNorm &gt;= 0) &amp;&amp; (iCoeffNorm &lt;= m_iCoefficients));
+<span class="lineNum">     607 </span>            :         for(unsigned int i=iCoeffNorm ; i &lt; (unsigned int)m_iCoefficients ; ++i) {
+<span class="lineNum">     608 </span>            :                 vMean(i) = 0.0;
+<span class="lineNum">     609 </span>            :                 vStandardDeviation(i) = 1.0;
+<span class="lineNum">     610 </span>            :         }
+<span class="lineNum">     611 </span>            : 
+<span class="lineNum">     612 </span>            :         // substract the mean and divide by the standard deviation
+<span class="lineNum">     613 </span>            :         Vector&lt;float&gt; vSD(vStandardDeviation);
+<span class="lineNum">     614 </span>            :         for(VUtteranceFeatures::iterator it = vUtteranceFeatures.begin() ; it != vUtteranceFeatures.end() ; ++it) {
+<span class="lineNum">     615 </span>            :                 if (*it) {
+<span class="lineNum">     616 </span>            :                         for(unsigned int i=0 ; i &lt; (*it)-&gt;getRows() ; ++i) {      
+<span class="lineNum">     617 </span>            :                                 (*it)-&gt;getRow(i).add(-1.0,vMean);
+<span class="lineNum">     618 </span>            :                                 (*it)-&gt;getRow(i).divide(vSD);
+<span class="lineNum">     619 </span>            :                         }
+<span class="lineNum">     620 </span>            :                 }
+<span class="lineNum">     621 </span>            :         }
+<span class="lineNum">     622 </span>            : }
+<span class="lineNum">     623 </span>            : 
+<span class="lineNum">     624 </span>            : // splice features (concatenates static coefficients)
+<span class="lineNum">     625 </span>            : Matrix&lt;float&gt; *FeatureExtractor::spliceFeatures(MatrixBase&lt;float&gt; &amp;mFeatures, unsigned int iElements) {
+<span class="lineNum">     626 </span>            : 
+<span class="lineNum">     627 </span>            :         // it must be an odd number
+<span class="lineNum">     628 </span>            :         assert(iElements/2 == 1);
+<span class="lineNum">     629 </span>            :         int iContextSize = iElements%2;
+<span class="lineNum">     630 </span>            :         
+<span class="lineNum">     631 </span>            :         // create the stacked vectors
+<span class="lineNum">     632 </span>            :         Matrix&lt;float&gt; *m = new Matrix&lt;float&gt;(mFeatures.getRows(),mFeatures.getCols()*iElements);
+<span class="lineNum">     633 </span>            :         for(unsigned int i=0 ; i &lt; mFeatures.getRows() ; ++i) {
+<span class="lineNum">     634 </span>            :                 for(int j=i-iContextSize ; j &lt;= (int)(i+iContextSize) ; ++j) {
+<span class="lineNum">     635 </span>            :                         m-&gt;getRow(i).copy(mFeatures.getRow(std::min(std::max(0,j),(int)mFeatures.getCols())),        (j-i+iContextSize)*mFeatures.getCols(),mFeatures.getCols());
+<span class="lineNum">     636 </span>            :                 }
+<span class="lineNum">     637 </span>            :         }
+<span class="lineNum">     638 </span>            : 
+<span class="lineNum">     639 </span>            :         return m;
+<a name="640"><span class="lineNum">     640 </span>            : }*/</a>
+<span class="lineNum">     641 </span>            : 
+<span class="lineNum">     642 </span><span class="lineCov">          6 : }; // end-of-namespace</span>
+<span class="lineNum">     643 </span>            : 
+<span class="lineNum">     644 </span>            : 
+<span class="lineNum">     645 </span>            : 
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.10</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

@@ -1,0 +1,1290 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - dyna analysis - dynamicdecoder/DynamicDecoderX.cpp</title>
+  <link rel="stylesheet" type="text/css" href="../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../index.html">top level</a> - <a href="index.html">dynamicdecoder</a> - DynamicDecoderX.cpp<span style="font-size: 80%;"> (source / <a href="DynamicDecoderX.cpp.func.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">dyna analysis</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">654</td>
+            <td class="headerCovTableEntry">709</td>
+            <td class="headerCovTableEntryHi">92.2 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-05-05</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">18</td>
+            <td class="headerCovTableEntry">25</td>
+            <td class="headerCovTableEntryLo">72.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : #include &quot;DynamicDecoderX.h&quot;</a>
+<span class="lineNum">       2 </span>            : 
+<span class="lineNum">       3 </span>            : #include &quot;BestPath.h&quot;
+<span class="lineNum">       4 </span>            : #include &quot;LMFSM.h&quot;
+<span class="lineNum">       5 </span>            : #include &quot;HMMManager.h&quot;
+<span class="lineNum">       6 </span>            : #include &quot;LMManager.h&quot;
+<span class="lineNum">       7 </span>            : //#include &quot;LMLookAhead.h&quot;
+<span class="lineNum">       8 </span>            : #include &quot;PhoneSet.h&quot;
+<span class="lineNum">       9 </span>            : #include &quot;TimeUtils.h&quot;
+<span class="lineNum">      10 </span>            : #include &lt;iostream&gt;     // std::cout, std::hex, std::endl
+<span class="lineNum">      11 </span>            : #include &lt;iomanip&gt;      // std::setiosflags
+<span class="lineNum">      12 </span>            : 
+<span class="lineNum">      13 </span>            : namespace Bavieca {
+<a name="14"><span class="lineNum">      14 </span>            : </a>
+<span class="lineNum">      15 </span>            : // constructor
+<span class="lineNum">      16 </span><span class="lineCov">          1 : DynamicDecoderX::DynamicDecoderX(PhoneSet *phoneSet, HMMManager *hmmManager, </span>
+<span class="lineNum">      17 </span>            :                         LexiconManager *lexiconManager, LMManager *lmManager, float fLMScalingFactor, 
+<span class="lineNum">      18 </span>            :                         DynamicNetworkX *dynamicNetwork, int iMaxActiveNodes, 
+<span class="lineNum">      19 </span>            :                         int iMaxActiveNodesWE, int iMaxActiveTokensNode, float fBeamWidthNodes, 
+<span class="lineNum">      20 </span>            :                         float fBeamWidthNodesWE, float fBeamWidthTokensNode, bool bWordGraphGeneration, 
+<span class="lineNum">      21 </span><span class="lineCov">          1 :                         int iMaxWordSequencesState)</span>
+<span class="lineNum">      22 </span>            : {
+<span class="lineNum">      23 </span><span class="lineCov">          1 :         m_phoneSet = phoneSet;</span>
+<span class="lineNum">      24 </span><span class="lineCov">          1 :         m_hmmManager = hmmManager;</span>
+<span class="lineNum">      25 </span><span class="lineCov">          1 :         m_lexiconManager = lexiconManager;</span>
+<span class="lineNum">      26 </span><span class="lineCov">          1 :         m_lmManager = lmManager;</span>
+<span class="lineNum">      27 </span><span class="lineCov">          1 :         m_lmFSM = lmManager-&gt;getFSM();</span>
+<span class="lineNum">      28 </span><span class="lineCov">          1 :         m_fLMScalingFactor = fLMScalingFactor;</span>
+<span class="lineNum">      29 </span><span class="lineCov">          1 :         m_iNGram = m_lmFSM-&gt;getNGramOrder();</span>
+<span class="lineNum">      30 </span><span class="lineCov">          1 :         m_dynamicNetwork = dynamicNetwork;</span>
+<span class="lineNum">      31 </span>            :         // network properties
+<span class="lineNum">      32 </span><span class="lineCov">          1 :         m_arcs = m_dynamicNetwork-&gt;getArcs(&amp;m_iArcs);</span>
+<span class="lineNum">      33 </span><span class="lineCov">          1 :         m_nodes = m_dynamicNetwork-&gt;getNodes(&amp;m_iNodes);</span>
+<span class="lineNum">      34 </span><span class="lineCov">          1 :         m_iTimeCurrent = -1;</span>
+<span class="lineNum">      35 </span>            :         // pruning parameters
+<span class="lineNum">      36 </span><span class="lineCov">          1 :         m_iMaxActiveNodes = iMaxActiveNodes;</span>
+<span class="lineNum">      37 </span><span class="lineCov">          1 :         m_iMaxActiveNodesWE = iMaxActiveNodesWE;</span>
+<span class="lineNum">      38 </span><span class="lineCov">          1 :         m_iMaxActiveTokensNode = iMaxActiveTokensNode;  </span>
+<span class="lineNum">      39 </span><span class="lineCov">          1 :         m_fBeamWidthNodes = fBeamWidthNodes;    </span>
+<span class="lineNum">      40 </span><span class="lineCov">          1 :         m_fBeamWidthNodesWE = fBeamWidthNodesWE;        </span>
+<span class="lineNum">      41 </span><span class="lineCov">          1 :         m_fBeamWidthTokensNode = fBeamWidthTokensNode;</span>
+<span class="lineNum">      42 </span>            :         // active nodes
+<span class="lineNum">      43 </span><span class="lineCov">          1 :         m_nodesActiveCurrent = NULL;</span>
+<span class="lineNum">      44 </span><span class="lineCov">          1 :         m_nodesActiveNext = NULL;</span>
+<span class="lineNum">      45 </span>            :         // history items
+<span class="lineNum">      46 </span><span class="lineCov">          1 :         m_iHistoryItems = 0;</span>
+<span class="lineNum">      47 </span><span class="lineCov">          1 :         m_historyItems = NULL;</span>
+<span class="lineNum">      48 </span><span class="lineCov">          1 :         m_iHistoryItemBegSentence = -1;</span>
+<span class="lineNum">      49 </span><span class="lineCov">          1 :         m_iHistoryItemAvailable = -1;</span>
+<span class="lineNum">      50 </span><span class="lineCov">          1 :         m_iTimeGarbageCollectionLast = -1;</span>
+<span class="lineNum">      51 </span>            :         // word-graph generation
+<span class="lineNum">      52 </span><span class="lineCov">          1 :         m_iMaxWordSequencesState = iMaxWordSequencesState;</span>
+<span class="lineNum">      53 </span><span class="lineCov">          1 :         m_iWSHashBuckets = UINT_MAX;</span>
+<span class="lineNum">      54 </span><span class="lineCov">          1 :         m_iWSHashEntries = UINT_MAX;    </span>
+<span class="lineNum">      55 </span><span class="lineCov">          1 :         m_wshashEntries = NULL;</span>
+<span class="lineNum">      56 </span><span class="lineCov">          1 :         m_iWSHashEntryCollisionAvailable = -1;</span>
+<span class="lineNum">      57 </span>            :         // wrod-graph tokens
+<span class="lineNum">      58 </span><span class="lineCov">          1 :         m_iLexUnitPronUnknown = m_lexiconManager-&gt;m_lexUnitUnknown-&gt;iLexUnitPron;</span>
+<span class="lineNum">      59 </span>            :         // mark it as uninitialized
+<span class="lineNum">      60 </span><span class="lineCov">          1 :         m_bInitialized = false;</span>
+<span class="lineNum">      61 </span><span class="lineCov">          1 : }</span>
+<span class="lineNum">      62 </span>            : 
+<span class="lineNum">      63 </span>            : 
+<a name="64"><span class="lineNum">      64 </span>            : </a>
+<span class="lineNum">      65 </span>            : // initialization
+<span class="lineNum">      66 </span><span class="lineCov">          1 : void DynamicDecoderX::initialize() {</span>
+<span class="lineNum">      67 </span>            :         // max tokens per active arc
+<span class="lineNum">      68 </span><span class="lineCov">          1 :         m_iTokensNodeMax = m_iMaxActiveTokensNode*2;</span>
+<span class="lineNum">      69 </span>            :         // allocate memory for the tables of active arcs
+<span class="lineNum">      70 </span><span class="lineCov">          1 :         m_iNodesActiveCurrentMax = m_iMaxActiveNodes*5;</span>
+<span class="lineNum">      71 </span><span class="lineCov">          1 :         m_iNodesActiveNextMax = m_iMaxActiveNodes*5;    </span>
+<span class="lineNum">      72 </span><span class="lineCov">          1 :         m_nodesActiveCurrent = new DNode*[m_iNodesActiveCurrentMax];</span>
+<span class="lineNum">      73 </span><span class="lineCov">          1 :         m_nodesActiveNext = new DNode*[m_iNodesActiveNextMax];</span>
+<span class="lineNum">      74 </span>            :         
+<span class="lineNum">      75 </span>            :         // allocate memory for the tokens
+<span class="lineNum">      76 </span><span class="lineCov">          1 :         m_iTokensMax = m_iNodesActiveCurrentMax*10;</span>
+<span class="lineNum">      77 </span><span class="lineCov">          1 :         m_tokensCurrent = new Token[m_iTokensMax];</span>
+<span class="lineNum">      78 </span><span class="lineCov">          1 :         m_tokensNext = new Token[m_iTokensMax];</span>
+<span class="lineNum">      79 </span><span class="lineCov">          1 :         m_iTokensNext = 0;</span>
+<span class="lineNum">      80 </span>            :         
+<span class="lineNum">      81 </span>            :         // pre-allocate memory for the active tokens 
+<span class="lineNum">      82 </span><span class="lineCov">          1 :         m_iActiveTokenMax = m_iNodesActiveCurrentMax*m_iTokensNodeMax;</span>
+<span class="lineNum">      83 </span><span class="lineCov">          1 :         m_activeTokenCurrent = new ActiveToken[m_iActiveTokenMax];</span>
+<span class="lineNum">      84 </span><span class="lineCov">          1 :         m_activeTokenNext = new ActiveToken[m_iActiveTokenMax];</span>
+<span class="lineNum">      85 </span><span class="lineCov">          1 :         m_iActiveTokenTables = 0;</span>
+<span class="lineNum">      86 </span>            :         // history item management (there exists garbage collection for history items)
+<span class="lineNum">      87 </span><span class="lineCov">          1 :         m_iHistoryItems = 10000;</span>
+<span class="lineNum">      88 </span><span class="lineCov">          1 :         m_historyItems = new HistoryItem[m_iHistoryItems];</span>
+<span class="lineNum">      89 </span><span class="lineCov">          1 :         m_iHistoryItemsAuxBuffer = new int[m_iTokensNodeMax];</span>
+<span class="lineNum">      90 </span><span class="lineCov">          1 :         m_iHistoryItemsAux = NULL;</span>
+<span class="lineNum">      91 </span><span class="lineCov">          1 :         m_iHistoryItemsAuxSize = -1;</span>
+<span class="lineNum">      92 </span>            :         // language model look-ahead
+<span class="lineNum">      93 </span>            :         //m_lmLookAhead = new LMLookAhead(m_lexiconManager,m_lmManager,m_dynamicNetwork,this,m_iTokensMax);
+<span class="lineNum">      94 </span>            :         //m_lmLookAhead-&gt;initialize();
+<span class="lineNum">      95 </span><span class="lineCov">          1 :         m_bInitialized = true;  </span>
+<span class="lineNum">      96 </span><span class="lineCov">          1 : }</span>
+<span class="lineNum">      97 </span>            : 
+<a name="98"><span class="lineNum">      98 </span>            : </a>
+<span class="lineNum">      99 </span>            : // begin utterance
+<span class="lineNum">     100 </span><span class="lineCov">          2 : void DynamicDecoderX::beginUtterance() {</span>
+<span class="lineNum">     101 </span><span class="lineCov">          2 :         assert(m_bInitialized);</span>
+<span class="lineNum">     102 </span>            :         // mark all the nodes as inactive
+<span class="lineNum">     103 </span><span class="lineCov">     175046 :         for(int i=0 ; i &lt; m_iNodes; ++i) {</span>
+<span class="lineNum">     104 </span><span class="lineCov">     175044 :                 m_nodes[i].iActiveTokensCurrent = 0;</span>
+<span class="lineNum">     105 </span><span class="lineCov">     175044 :                 m_nodes[i].iActiveTokensCurrentBase = -1;</span>
+<span class="lineNum">     106 </span><span class="lineCov">     175044 :                 m_nodes[i].iActiveTokensNext = 0;</span>
+<span class="lineNum">     107 </span><span class="lineCov">     175044 :                 m_nodes[i].iActiveTokensNextBase = -1;</span>
+<span class="lineNum">     108 </span>            :         }
+<span class="lineNum">     109 </span>            :         
+<span class="lineNum">     110 </span>            :         // reset history items
+<span class="lineNum">     111 </span><span class="lineCov">      20000 :         for(unsigned int i=0 ; i &lt; m_iHistoryItems-1 ; ++i) {</span>
+<span class="lineNum">     112 </span><span class="lineCov">      19998 :                 m_historyItems[i].iActive = -1;</span>
+<span class="lineNum">     113 </span><span class="lineCov">      19998 :                 m_historyItems[i].iPrev = i+1;</span>
+<span class="lineNum">     114 </span>            :         }
+<span class="lineNum">     115 </span><span class="lineCov">          2 :         m_historyItems[m_iHistoryItems-1].iActive = -1;</span>
+<span class="lineNum">     116 </span><span class="lineCov">          2 :         m_historyItems[m_iHistoryItems-1].iPrev = -1;</span>
+<span class="lineNum">     117 </span><span class="lineCov">          2 :         m_iHistoryItemAvailable = 0;</span>
+<span class="lineNum">     118 </span><span class="lineCov">          2 :         m_iTimeGarbageCollectionLast = -1;      </span>
+<span class="lineNum">     119 </span><span class="lineCov">          2 :         m_iHistoryItemBegSentence = -1;</span>
+<span class="lineNum">     120 </span>            :         
+<span class="lineNum">     121 </span>            :         // active tokens
+<span class="lineNum">     122 </span><span class="lineCov">          2 :         m_iActiveTokenTables = 0;</span>
+<span class="lineNum">     123 </span><span class="lineCov">          2 :         m_iTokensNext = 0;</span>
+<span class="lineNum">     124 </span><span class="lineCov">          2 :         m_iNodesActiveCurrent = 0;</span>
+<span class="lineNum">     125 </span><span class="lineCov">          2 :         m_iNodesActiveNext = 0;</span>
+<span class="lineNum">     126 </span><span class="lineCov">          2 :         m_fScoreBest = -FLT_MAX;</span>
+<span class="lineNum">     127 </span><span class="lineCov">          2 :         m_fScoreBestWE = -FLT_MAX;</span>
+<span class="lineNum">     128 </span>            :         // utterance information
+<span class="lineNum">     129 </span><span class="lineCov">          2 :         m_iFeatureVectorsUtterance = 0;</span>
+<span class="lineNum">     130 </span><span class="lineCov">          2 :         m_hmmManager-&gt;resetHMMEmissionProbabilityComputation();</span>
+<span class="lineNum">     131 </span>            :         
+<span class="lineNum">     132 </span><span class="lineCov">          2 : }</span>
+<a name="133"><span class="lineNum">     133 </span>            :                 </a>
+<span class="lineNum">     134 </span>            : // process input feature vectors
+<span class="lineNum">     135 </span><span class="lineCov">          2 : void DynamicDecoderX::process(MatrixBase&lt;float&gt; &amp;mFeatures) {</span>
+<span class="lineNum">     136 </span><span class="lineCov">          2 :         assert(m_bInitialized);</span>
+<span class="lineNum">     137 </span><span class="lineCov">          2 :         assert(mFeatures.getRows() &gt; 0);</span>
+<span class="lineNum">     138 </span>            :         // Viterbi search
+<span class="lineNum">     139 </span><span class="lineCov">          2 :         double dTimeBegin = TimeUtils::getTimeMilliseconds();</span>
+<span class="lineNum">     140 </span><span class="lineCov">          2 :         unsigned int t = 0;</span>
+<span class="lineNum">     141 </span><span class="lineCov">          2 :         if (m_iFeatureVectorsUtterance == 0) {</span>
+<span class="lineNum">     142 </span><span class="lineCov">          2 :                 m_iTimeCurrent = 0;</span>
+<span class="lineNum">     143 </span>            :                 // root node expansion  
+<span class="lineNum">     144 </span><span class="lineCov">          2 :                 VectorStatic&lt;float&gt; vFeatureVector = mFeatures.getRow(0);</span>
+<span class="lineNum">     145 </span><span class="lineCov">          2 :                 expandRoot(vFeatureVector);</span>
+<span class="lineNum">     146 </span>            :                 // output search status
+<span class="lineNum">     147 </span><span class="lineCov">          4 :                 BVC_VERB &lt;&lt; &quot;t= &quot; &lt;&lt; setw(5) &lt;&lt; m_iTimeCurrent &lt;&lt; &quot; nodes= &quot; &lt;&lt; setw(6) &lt;&lt; m_iNodesActiveCurrent &lt;&lt; </span>
+<span class="lineNum">     148 </span><span class="lineCov">          4 :                         &quot; bestScore= &quot; &lt;&lt; FLT(12,4) &lt;&lt; m_fScoreBest &lt;&lt; &quot; we: &quot; &lt;&lt; FLT(12,4) &lt;&lt; m_fScoreBestWE;</span>
+<span class="lineNum">     149 </span><span class="lineCov">          2 :                 ++m_iTimeCurrent;</span>
+<span class="lineNum">     150 </span><span class="lineCov">          2 :                 ++t;</span>
+<span class="lineNum">     151 </span>            :         }
+<span class="lineNum">     152 </span>            :         
+<span class="lineNum">     153 </span>            :         // regular expansion
+<span class="lineNum">     154 </span><span class="lineCov">       1878 :         for( ; t &lt; mFeatures.getRows() ; ++t, ++m_iTimeCurrent) {    </span>
+<span class="lineNum">     155 </span>            :         
+<span class="lineNum">     156 </span>            :                 // prune active nodes/tokens
+<span class="lineNum">     157 </span><span class="lineCov">       1876 :                 pruning();</span>
+<span class="lineNum">     158 </span>            :                 
+<span class="lineNum">     159 </span>            :                 // next frame expansion
+<span class="lineNum">     160 </span><span class="lineCov">       1876 :                 VectorStatic&lt;float&gt; vFeatureVector = mFeatures.getRow(t);</span>
+<span class="lineNum">     161 </span><span class="lineCov">       1876 :                 expand(vFeatureVector,m_iTimeCurrent);  </span>
+<span class="lineNum">     162 </span>            :                 
+<span class="lineNum">     163 </span>            :                 // output search status
+<span class="lineNum">     164 </span><span class="lineCov">       1876 :                 if (m_iTimeCurrent % 100 == 0) {</span>
+<span class="lineNum">     165 </span><span class="lineCov">         36 :                         BVC_VERB &lt;&lt; &quot;t= &quot; &lt;&lt; setw(5) &lt;&lt; m_iTimeCurrent &lt;&lt; &quot; nodes= &quot; &lt;&lt; setw(6) &lt;&lt; m_iNodesActiveCurrent &lt;&lt; </span>
+<span class="lineNum">     166 </span><span class="lineCov">         36 :                                 &quot; bestScore= &quot; &lt;&lt; FLT(12,4) &lt;&lt; m_fScoreBest &lt;&lt; &quot; we: &quot; &lt;&lt; FLT(12,4) &lt;&lt; m_fScoreBestWE;</span>
+<span class="lineNum">     167 </span>            :                         //printHashsStats();
+<span class="lineNum">     168 </span>            :                         //printHashContents();
+<span class="lineNum">     169 </span>            :                 }
+<span class="lineNum">     170 </span><span class="lineCov">       1876 :         }</span>
+<span class="lineNum">     171 </span>            :         
+<span class="lineNum">     172 </span><span class="lineCov">          2 :         m_iFeatureVectorsUtterance += mFeatures.getRows();      </span>
+<span class="lineNum">     173 </span>            :         
+<span class="lineNum">     174 </span><span class="lineCov">          2 :         double dTimeEnd = TimeUtils::getTimeMilliseconds();</span>
+<span class="lineNum">     175 </span><span class="lineCov">          2 :         double dTimeSeconds = (dTimeEnd-dTimeBegin)/1000.0;</span>
+<span class="lineNum">     176 </span>            :         
+<span class="lineNum">     177 </span><span class="lineCov">          4 :         BVC_VERB &lt;&lt; &quot;decoding time: &quot; &lt;&lt; FLT(8,2) &lt;&lt; dTimeSeconds &lt;&lt; &quot; seconds (RTF: &quot; &lt;&lt;  </span>
+<span class="lineNum">     178 </span><span class="lineCov">          4 :                 FLT(5,2) &lt;&lt; dTimeSeconds/(((float)mFeatures.getRows())/100.0) &lt;&lt; &quot;)&quot;;     </span>
+<span class="lineNum">     179 </span><span class="lineCov">          2 : }</span>
+<a name="180"><span class="lineNum">     180 </span>            : </a>
+<span class="lineNum">     181 </span>            : // root-node expansion
+<span class="lineNum">     182 </span><span class="lineCov">          2 : void DynamicDecoderX::expandRoot(VectorBase&lt;float&gt; &amp;vFeatureVector) {</span>
+<span class="lineNum">     183 </span><span class="lineCov">          2 :         DNode *nodeRoot = m_dynamicNetwork-&gt;getRootNode();</span>
+<span class="lineNum">     184 </span>            :         float fScore;
+<span class="lineNum">     185 </span><span class="lineCov">          2 :         int iLMStateInitial = m_lmFSM-&gt;getInitialState();</span>
+<span class="lineNum">     186 </span>            :         // create the &lt;s&gt; history item
+<span class="lineNum">     187 </span><span class="lineCov">          2 :         m_iHistoryItemBegSentence = newHistoryItem();</span>
+<span class="lineNum">     188 </span><span class="lineCov">          2 :         HistoryItem *historyItemBegSentence = m_historyItems+m_iHistoryItemBegSentence;</span>
+<span class="lineNum">     189 </span><span class="lineCov">          2 :         historyItemBegSentence-&gt;iLexUnitPron = m_lexiconManager-&gt;m_lexUnitBegSentence-&gt;iLexUnitPron;</span>
+<span class="lineNum">     190 </span><span class="lineCov">          2 :         historyItemBegSentence-&gt;iEndFrame = INT_MIN;</span>
+<span class="lineNum">     191 </span><span class="lineCov">          2 :         historyItemBegSentence-&gt;fScore = 0.0;</span>
+<span class="lineNum">     192 </span><span class="lineCov">          2 :         historyItemBegSentence-&gt;iPrev = -1;</span>
+<span class="lineNum">     193 </span><span class="lineCov">          2 :         historyItemBegSentence-&gt;iActive = -1;</span>
+<span class="lineNum">     194 </span><span class="lineCov">          2 :         historyItemBegSentence-&gt;iWGToken = -1;       </span>
+<span class="lineNum">     195 </span>            :         
+<span class="lineNum">     196 </span>            :         // expand the root node
+<span class="lineNum">     197 </span><span class="lineCov">          2 :         DArc *arcEnd = m_arcs+(nodeRoot+1)-&gt;iArcNext;</span>
+<span class="lineNum">     198 </span><span class="lineCov">       1932 :         for(DArc *arc = m_arcs+nodeRoot-&gt;iArcNext ; arc != arcEnd ; ++arc) {</span>
+<span class="lineNum">     199 </span><span class="lineCov">       1930 :                 assert(arc-&gt;iType == ARC_TYPE_HMM);</span>
+<span class="lineNum">     200 </span><span class="lineCov">       1930 :                 DNode *nodeDest = m_nodes+arc-&gt;iNodeDest;</span>
+<span class="lineNum">     201 </span>            :                 // compute emission probability
+<span class="lineNum">     202 </span><span class="lineCov">       1930 :                 fScore = arc-&gt;state-&gt;computeEmissionProbability(vFeatureVector.getData(),0);      </span>
+<span class="lineNum">     203 </span>            :                 // apply insertion-penalty
+<span class="lineNum">     204 </span><span class="lineCov">       1930 :                 fScore += m_dynamicNetwork-&gt;getIP((m_nodes+arc-&gt;iNodeDest)-&gt;iIPIndex); </span>
+<span class="lineNum">     205 </span>            :                 
+<span class="lineNum">     206 </span><span class="lineCov">       1930 :                 if (fScore &gt; m_fScoreBest-m_fBeamWidthNodes) {</span>
+<span class="lineNum">     207 </span><span class="lineCov">       1930 :                         if (fScore &gt; m_fScoreBest) {m_fScoreBest = fScore;}  </span>
+<span class="lineNum">     208 </span>            :                 
+<span class="lineNum">     209 </span><span class="lineCov">       1930 :                         int iToken = newToken();</span>
+<span class="lineNum">     210 </span><span class="lineCov">       1930 :                         Token *token = m_tokensNext+iToken;</span>
+<span class="lineNum">     211 </span><span class="lineCov">       1930 :                         token-&gt;fScore = fScore;</span>
+<span class="lineNum">     212 </span><span class="lineCov">       1930 :                         token-&gt;state = arc-&gt;state;</span>
+<span class="lineNum">     213 </span><span class="lineCov">       1930 :                         token-&gt;iLMState = iLMStateInitial;</span>
+<span class="lineNum">     214 </span><span class="lineCov">       1930 :                         token-&gt;iLexUnitPron = m_iLexUnitPronUnknown;</span>
+<span class="lineNum">     215 </span><span class="lineCov">       1930 :                         token-&gt;iNode = arc-&gt;iNodeDest;</span>
+<span class="lineNum">     216 </span><span class="lineCov">       1930 :                         token-&gt;iHistoryItem = (int)(historyItemBegSentence-m_historyItems);</span>
+<span class="lineNum">     217 </span>            :                         
+<span class="lineNum">     218 </span>            :                         // activate the token
+<span class="lineNum">     219 </span><span class="lineCov">       1930 :                         assert(nodeDest-&gt;iActiveTokensNextBase == -1);</span>
+<span class="lineNum">     220 </span><span class="lineCov">       1930 :                         nodeDest-&gt;iActiveTokensNextBase = newActiveTokenTable();</span>
+<span class="lineNum">     221 </span><span class="lineCov">       1930 :                         (m_activeTokenNext+nodeDest-&gt;iActiveTokensNextBase)[0].iLMState = token-&gt;iLMState;</span>
+<span class="lineNum">     222 </span><span class="lineCov">       1930 :                         (m_activeTokenNext+nodeDest-&gt;iActiveTokensNextBase)[0].iToken = iToken;</span>
+<span class="lineNum">     223 </span><span class="lineCov">       1930 :                         nodeDest-&gt;iActiveTokensNext = 1;     </span>
+<span class="lineNum">     224 </span><span class="lineCov">       1930 :                         m_nodesActiveNext[m_iNodesActiveNext++] = nodeDest;</span>
+<span class="lineNum">     225 </span><span class="lineCov">       1930 :                         assert(m_iNodesActiveNext &lt; m_iNodesActiveNextMax);</span>
+<span class="lineNum">     226 </span>            :                 }
+<span class="lineNum">     227 </span>            :         }       
+<span class="lineNum">     228 </span><span class="lineCov">          2 : }</span>
+<a name="229"><span class="lineNum">     229 </span>            : </a>
+<span class="lineNum">     230 </span>            : // regular expansion
+<span class="lineNum">     231 </span><span class="lineCov">       1876 : void DynamicDecoderX::expand(VectorBase&lt;float&gt; &amp;vFeatureVector, int t) {</span>
+<span class="lineNum">     232 </span><span class="lineCov">       1876 :         m_fScoreBest = -FLT_MAX;</span>
+<span class="lineNum">     233 </span><span class="lineCov">       1876 :         m_fScoreBestWE = -FLT_MAX;</span>
+<span class="lineNum">     234 </span>            :         float fScore , fScoreToken;
+<span class="lineNum">     235 </span>            :         // expand nodes in the active states
+<span class="lineNum">     236 </span>            :         // (1) self-loop (hmm is in the token) (no token recombination is needed since all LM-states in the arc are different)
+<span class="lineNum">     237 </span><span class="lineCov">    5065222 :         for(int l=0 ; l &lt; m_iNodesActiveCurrent ; ++l) {</span>
+<span class="lineNum">     238 </span><span class="lineCov">    5063346 :                 DNode *node = m_nodesActiveCurrent[l];</span>
+<span class="lineNum">     239 </span><span class="lineCov">    5063346 :                 ActiveToken *activeTokensCurrent = m_activeTokenCurrent+node-&gt;iActiveTokensCurrentBase;</span>
+<span class="lineNum">     240 </span><span class="lineCov">    5063346 :                 HMMStateDecoding *state = (m_tokensCurrent+activeTokensCurrent[0].iToken)-&gt;state;</span>
+<span class="lineNum">     241 </span>            :                 // (1) self loop (the hmm-state is in the token)
+<span class="lineNum">     242 </span>            :                 // compute emission probability
+<span class="lineNum">     243 </span><span class="lineCov">    5063346 :                 fScore = state-&gt;computeEmissionProbability(vFeatureVector.getData(),t);      </span>
+<span class="lineNum">     244 </span>            :                 // regular-node
+<span class="lineNum">     245 </span><span class="lineCov">    5063346 :                 float *fScoreBest = &amp;m_fScoreBest;</span>
+<span class="lineNum">     246 </span><span class="lineCov">    5063346 :                 float fBeamWidth = m_fBeamWidthNodes;</span>
+<span class="lineNum">     247 </span>            :                 // propagate tokens within the arc
+<span class="lineNum">     248 </span><span class="lineCov">   14510250 :                 for(int i=0 ; i &lt; node-&gt;iActiveTokensCurrent ; ++i) {     </span>
+<span class="lineNum">     249 </span><span class="lineCov">    9446904 :                         Token *token = m_tokensCurrent+(activeTokensCurrent+i)-&gt;iToken;</span>
+<span class="lineNum">     250 </span><span class="lineCov">    9446904 :                         fScoreToken = token-&gt;fScore+fScore;</span>
+<span class="lineNum">     251 </span><span class="lineCov">    9446904 :                         if (fScoreToken &gt; (*fScoreBest-fBeamWidth)) {</span>
+<span class="lineNum">     252 </span>            :                                 // keep higher score
+<span class="lineNum">     253 </span><span class="lineCov">    8909256 :                                 if (fScoreToken &gt; *fScoreBest) {</span>
+<span class="lineNum">     254 </span><span class="lineCov">      15017 :                                         *fScoreBest = fScoreToken;</span>
+<span class="lineNum">     255 </span>            :                                 }
+<span class="lineNum">     256 </span>            :                                 // create expanded token
+<span class="lineNum">     257 </span><span class="lineCov">    8909256 :                                 int iToken = newToken();</span>
+<span class="lineNum">     258 </span><span class="lineCov">    8909256 :                                 Token *tokenAux = m_tokensNext+iToken;</span>
+<span class="lineNum">     259 </span><span class="lineCov">    8909256 :                                 tokenAux-&gt;fScore = fScoreToken;</span>
+<span class="lineNum">     260 </span><span class="lineCov">    8909256 :                                 tokenAux-&gt;state = token-&gt;state;</span>
+<span class="lineNum">     261 </span><span class="lineCov">    8909256 :                                 tokenAux-&gt;iLMState = token-&gt;iLMState;</span>
+<span class="lineNum">     262 </span><span class="lineCov">    8909256 :                                 tokenAux-&gt;iLexUnitPron = token-&gt;iLexUnitPron;</span>
+<span class="lineNum">     263 </span><span class="lineCov">    8909256 :                                 tokenAux-&gt;iNode = (int)(node-m_nodes);</span>
+<span class="lineNum">     264 </span><span class="lineCov">    8909256 :                                 tokenAux-&gt;iHistoryItem = token-&gt;iHistoryItem;</span>
+<span class="lineNum">     265 </span>            :                                 //tokenAux-&gt;fLAScores = token-&gt;fLAScores;
+<span class="lineNum">     266 </span>            :                                 //tokenAux-&gt;iWGToken = -1;   
+<span class="lineNum">     267 </span>            :                                 
+<span class="lineNum">     268 </span>            :                                 // activate the arc
+<span class="lineNum">     269 </span><span class="lineCov">    8909256 :                                 if (node-&gt;iActiveTokensNextBase == -1) {</span>
+<span class="lineNum">     270 </span><span class="lineCov">    4728446 :                                         node-&gt;iActiveTokensNextBase = newActiveTokenTable();</span>
+<span class="lineNum">     271 </span><span class="lineCov">    4728446 :                                         node-&gt;iActiveTokensNext = 0;</span>
+<span class="lineNum">     272 </span><span class="lineCov">    4728446 :                                         m_nodesActiveNext[m_iNodesActiveNext++] = node;</span>
+<span class="lineNum">     273 </span><span class="lineCov">    4728446 :                                         assert(m_iNodesActiveNext &lt; m_iNodesActiveNextMax);</span>
+<span class="lineNum">     274 </span>            :                                 }
+<span class="lineNum">     275 </span><span class="lineCov">    8909256 :                                 (m_activeTokenNext+node-&gt;iActiveTokensNextBase)[node-&gt;iActiveTokensNext].iLMState = token-&gt;iLMState;</span>
+<span class="lineNum">     276 </span><span class="lineCov">    8909256 :                                 (m_activeTokenNext+node-&gt;iActiveTokensNextBase)[node-&gt;iActiveTokensNext].iToken = iToken;</span>
+<span class="lineNum">     277 </span><span class="lineCov">    8909256 :                                 node-&gt;iActiveTokensNext++;</span>
+<span class="lineNum">     278 </span><span class="lineCov">    8909256 :                                 assert(node-&gt;iActiveTokensNext &lt; m_iTokensNodeMax);</span>
+<span class="lineNum">     279 </span>            :                         }
+<span class="lineNum">     280 </span>            :                 }
+<span class="lineNum">     281 </span>            :         }
+<span class="lineNum">     282 </span>            :                 
+<span class="lineNum">     283 </span>            :         // (2) outgoing arcs
+<span class="lineNum">     284 </span><span class="lineCov">    5065222 :         for(int i=0 ; i &lt; m_iNodesActiveCurrent ; ++i) {</span>
+<span class="lineNum">     285 </span><span class="lineCov">    5063346 :                 DNode *node = m_nodesActiveCurrent[i];</span>
+<span class="lineNum">     286 </span>            :                 // word-end? if so, get ready to extend word history
+<span class="lineNum">     287 </span><span class="lineCov">    5063346 :                 m_iHistoryItemsAux = NULL;</span>
+<span class="lineNum">     288 </span><span class="lineCov">    5063346 :                 if (node-&gt;bWordEnd) {</span>
+<span class="lineNum">     289 </span><span class="lineCov">     360231 :                         m_iHistoryItemsAuxSize = node-&gt;iActiveTokensCurrent;</span>
+<span class="lineNum">     290 </span><span class="lineCov">     360231 :                         assert(node-&gt;iActiveTokensCurrent &lt; m_iTokensNodeMax);</span>
+<span class="lineNum">     291 </span><span class="lineCov">     360231 :                         m_iHistoryItemsAux = m_iHistoryItemsAuxBuffer;</span>
+<span class="lineNum">     292 </span><span class="lineCov">    1074360 :                         for(int j=0 ; j &lt; node-&gt;iActiveTokensCurrent ; ++j) {</span>
+<span class="lineNum">     293 </span><span class="lineCov">     714129 :                                 m_iHistoryItemsAux[j] = -1;</span>
+<span class="lineNum">     294 </span>            :                         }
+<span class="lineNum">     295 </span>            :                 }       
+<span class="lineNum">     296 </span>            :                         
+<span class="lineNum">     297 </span><span class="lineCov">    5063346 :                 DArc *arcEnd = m_arcs+(node+1)-&gt;iArcNext;</span>
+<span class="lineNum">     298 </span><span class="lineCov">   15307231 :                 for(DArc *arcNext = m_arcs+node-&gt;iArcNext ; arcNext != arcEnd ; ++arcNext) {</span>
+<span class="lineNum">     299 </span>            :                         // hmm-arc
+<span class="lineNum">     300 </span><span class="lineCov">   10243885 :                         if (arcNext-&gt;iType == ARC_TYPE_HMM) {</span>
+<span class="lineNum">     301 </span><span class="lineCov">    7792018 :                                 expandToHMM(node,arcNext,vFeatureVector,t);     </span>
+<span class="lineNum">     302 </span>            :                         } 
+<span class="lineNum">     303 </span>            :                         // word-arc
+<span class="lineNum">     304 </span><span class="lineCov">    2451867 :                         else if (arcNext-&gt;iType == ARC_TYPE_WORD) {  </span>
+<span class="lineNum">     305 </span>            :                                 // lm-transition
+<span class="lineNum">     306 </span><span class="lineCov">    1663098 :                                 LMTransition *lmTransition = new LMTransition[node-&gt;iActiveTokensCurrent];</span>
+<span class="lineNum">     307 </span><span class="lineCov">    4551343 :                                 for(int j=0 ; j &lt; node-&gt;iActiveTokensCurrent ; ++j) {</span>
+<span class="lineNum">     308 </span><span class="lineCov">    2888245 :                                         lmTransition[j].iLMState = -1;</span>
+<span class="lineNum">     309 </span>            :                                 }       
+<span class="lineNum">     310 </span>            :                                                         
+<span class="lineNum">     311 </span><span class="lineCov">    1663098 :                                 DNode *node2 = m_nodes+arcNext-&gt;iNodeDest;</span>
+<span class="lineNum">     312 </span><span class="lineCov">    1663098 :                                 DArc *arcEnd2 = m_arcs+(node2+1)-&gt;iArcNext;</span>
+<span class="lineNum">     313 </span><span class="lineCov">    4214624 :                                 for(DArc *arcNext2 = m_arcs+node2-&gt;iArcNext ; arcNext2 != arcEnd2 ; ++arcNext2) {</span>
+<span class="lineNum">     314 </span>            :                                         // hmm-arc
+<span class="lineNum">     315 </span><span class="lineCov">    2551526 :                                         if (arcNext2-&gt;iType == ARC_TYPE_HMM) {       </span>
+<span class="lineNum">     316 </span><span class="lineCov">    2551526 :                                                 expandToHMMNewWord(node,arcNext2,arcNext-&gt;lexUnit,lmTransition,vFeatureVector,t);</span>
+<span class="lineNum">     317 </span>            :                                         } 
+<span class="lineNum">     318 </span>            :                                         // null-arc
+<span class="lineNum">     319 </span>            :                                         else {
+<span class="lineNum">     320 </span><span class="lineNoCov">          0 :                                                 assert(arcNext2-&gt;iType == ARC_TYPE_NULL);</span>
+<span class="lineNum">     321 </span>            :                                                 
+<span class="lineNum">     322 </span><span class="lineNoCov">          0 :                                                 DNode *node3 = m_nodes+arcNext2-&gt;iNodeDest;  </span>
+<span class="lineNum">     323 </span><span class="lineNoCov">          0 :                                                 DArc *arcEnd3 = m_arcs+(node3+1)-&gt;iArcNext;</span>
+<span class="lineNum">     324 </span><span class="lineNoCov">          0 :                                                 for(DArc *arcNext3 = m_arcs+node3-&gt;iArcNext ; arcNext3 != arcEnd3 ; ++arcNext3) {</span>
+<span class="lineNum">     325 </span>            :                                                         // hmm-arc
+<span class="lineNum">     326 </span><span class="lineNoCov">          0 :                                                         assert(arcNext3-&gt;iType == ARC_TYPE_HMM);</span>
+<span class="lineNum">     327 </span><span class="lineNoCov">          0 :                                                         expandToHMMNewWord(node,arcNext3,arcNext-&gt;lexUnit,lmTransition,vFeatureVector,t);</span>
+<span class="lineNum">     328 </span>            :                                                 }       
+<span class="lineNum">     329 </span>            :                                         }
+<span class="lineNum">     330 </span>            :                                 }
+<span class="lineNum">     331 </span>            :                                 
+<span class="lineNum">     332 </span>            :                                 // there can be multiple words (homophones) getting to a starting node
+<span class="lineNum">     333 </span><span class="lineCov">    1663098 :                                 if (node-&gt;bWordEnd) {</span>
+<span class="lineNum">     334 </span><span class="lineNoCov">          0 :                                         for(int j=0 ; j &lt; node-&gt;iActiveTokensCurrent ; ++j) {</span>
+<span class="lineNum">     335 </span><span class="lineNoCov">          0 :                                                 m_iHistoryItemsAux[j] = -1;</span>
+<span class="lineNum">     336 </span>            :                                         }
+<span class="lineNum">     337 </span>            :                                 }       
+<span class="lineNum">     338 </span>            :                                 
+<span class="lineNum">     339 </span><span class="lineCov">    1663098 :                                 delete [] lmTransition;</span>
+<span class="lineNum">     340 </span>            :                         }
+<span class="lineNum">     341 </span>            :                         // null-arc
+<span class="lineNum">     342 </span>            :                         else {
+<span class="lineNum">     343 </span><span class="lineCov">     788769 :                                 assert(arcNext-&gt;iType == ARC_TYPE_NULL);</span>
+<span class="lineNum">     344 </span><span class="lineCov">     788769 :                                 DNode *node2 = m_nodes+arcNext-&gt;iNodeDest;   </span>
+<span class="lineNum">     345 </span><span class="lineCov">     788769 :                                 DArc *arcEnd2 = m_arcs+(node2+1)-&gt;iArcNext;</span>
+<span class="lineNum">     346 </span><span class="lineCov">    2809837 :                                 for(DArc *arcNext2 = m_arcs+node2-&gt;iArcNext ; arcNext2 != arcEnd2 ; ++arcNext2) {</span>
+<span class="lineNum">     347 </span>            :                                         // hmm-arc
+<span class="lineNum">     348 </span><span class="lineCov">    2021068 :                                         if (arcNext2-&gt;iType == ARC_TYPE_HMM) {       </span>
+<span class="lineNum">     349 </span><span class="lineCov">     997400 :                                                 expandToHMM(node,arcNext2,vFeatureVector,t);</span>
+<span class="lineNum">     350 </span>            :                                         } 
+<span class="lineNum">     351 </span>            :                                         // word-arc
+<span class="lineNum">     352 </span>            :                                         else {
+<span class="lineNum">     353 </span><span class="lineCov">    1023668 :                                                 assert(arcNext2-&gt;iType == ARC_TYPE_WORD);    </span>
+<span class="lineNum">     354 </span>            :                                                 // lm-transition
+<span class="lineNum">     355 </span><span class="lineCov">    1023668 :                                                 LMTransition *lmTransition = new LMTransition[node-&gt;iActiveTokensCurrent];</span>
+<span class="lineNum">     356 </span><span class="lineCov">    3086973 :                                                 for(int j=0 ; j &lt; node-&gt;iActiveTokensCurrent ; ++j) {</span>
+<span class="lineNum">     357 </span><span class="lineCov">    2063305 :                                                         lmTransition[j].iLMState = -1;</span>
+<span class="lineNum">     358 </span>            :                                                 }       
+<span class="lineNum">     359 </span><span class="lineCov">    1023668 :                                                 DNode *node3 = m_nodes+arcNext2-&gt;iNodeDest;  </span>
+<span class="lineNum">     360 </span><span class="lineCov">    1023668 :                                                 DArc *arcEnd3 = m_arcs+(node3+1)-&gt;iArcNext;</span>
+<span class="lineNum">     361 </span><span class="lineCov">    3620395 :                                                 for(DArc *arcNext3 = m_arcs+node3-&gt;iArcNext ; arcNext3 != arcEnd3 ; ++arcNext3) {</span>
+<span class="lineNum">     362 </span>            :                                                         // hmm-arc
+<span class="lineNum">     363 </span><span class="lineCov">    2596727 :                                                         if (arcNext3-&gt;iType == ARC_TYPE_HMM) {</span>
+<span class="lineNum">     364 </span><span class="lineCov">    2596727 :                                                                 expandToHMMNewWord(node,arcNext3,arcNext2-&gt;lexUnit,lmTransition,vFeatureVector,t);   </span>
+<span class="lineNum">     365 </span>            :                                                         } 
+<span class="lineNum">     366 </span>            :                                                         // null-arc
+<span class="lineNum">     367 </span>            :                                                         else {
+<span class="lineNum">     368 </span><span class="lineNoCov">          0 :                                                                 assert(arcNext3-&gt;iType == ARC_TYPE_NULL);</span>
+<span class="lineNum">     369 </span>            :                                                         
+<span class="lineNum">     370 </span><span class="lineNoCov">          0 :                                                                 DNode *node4 = m_nodes+arcNext3-&gt;iNodeDest;  </span>
+<span class="lineNum">     371 </span><span class="lineNoCov">          0 :                                                                 DArc *arcEnd4 = m_arcs+(node4+1)-&gt;iArcNext;</span>
+<span class="lineNum">     372 </span><span class="lineNoCov">          0 :                                                                 for(DArc *arcNext4 = m_arcs+node4-&gt;iArcNext ; arcNext4 != arcEnd4 ; ++arcNext4) {</span>
+<span class="lineNum">     373 </span>            :                                                                         // hmm-arc
+<span class="lineNum">     374 </span><span class="lineNoCov">          0 :                                                                         assert(arcNext3-&gt;iType == ARC_TYPE_HMM);</span>
+<span class="lineNum">     375 </span><span class="lineNoCov">          0 :                                                                         expandToHMMNewWord(node,arcNext4,arcNext2-&gt;lexUnit,lmTransition,vFeatureVector,t);   </span>
+<span class="lineNum">     376 </span>            :                                                                 }
+<span class="lineNum">     377 </span>            :                                                         }       
+<span class="lineNum">     378 </span>            :                                                 }
+<span class="lineNum">     379 </span>            :                                                 // there can be multiple words (homophones) getting to a starting node
+<span class="lineNum">     380 </span><span class="lineCov">    1023668 :                                                 if (node-&gt;bWordEnd) {</span>
+<span class="lineNum">     381 </span><span class="lineCov">    1783371 :                                                         for(int j=0 ; j &lt; node-&gt;iActiveTokensCurrent ; ++j) {</span>
+<span class="lineNum">     382 </span><span class="lineCov">    1165264 :                                                                 m_iHistoryItemsAux[j] = -1;</span>
+<span class="lineNum">     383 </span>            :                                                         }
+<span class="lineNum">     384 </span>            :                                                 }       
+<span class="lineNum">     385 </span>            :                                                 
+<span class="lineNum">     386 </span><span class="lineCov">    1023668 :                                                 delete [] lmTransition;</span>
+<span class="lineNum">     387 </span>            :                                         }
+<span class="lineNum">     388 </span>            :                                 }       
+<span class="lineNum">     389 </span>            :                         }
+<span class="lineNum">     390 </span>            :                 }
+<span class="lineNum">     391 </span>            :                 
+<span class="lineNum">     392 </span><span class="lineCov">    5063346 :                 node-&gt;iActiveTokensCurrent = 0;</span>
+<span class="lineNum">     393 </span><span class="lineCov">    5063346 :                 node-&gt;iActiveTokensCurrentBase = -1;</span>
+<span class="lineNum">     394 </span>            :         }
+<span class="lineNum">     395 </span><span class="lineCov">       1876 : }</span>
+<a name="396"><span class="lineNum">     396 </span>            : </a>
+<span class="lineNum">     397 </span>            : // expand a series of tokens to a hmm-state
+<span class="lineNum">     398 </span><span class="lineCov">    8789418 : void DynamicDecoderX::expandToHMM(DNode *node, DArc *arcNext, VectorBase&lt;float&gt; &amp;vFeatureVector, int t) {</span>
+<span class="lineNum">     399 </span>            :         float fScore;
+<span class="lineNum">     400 </span>            :         float fScoreToken;
+<span class="lineNum">     401 </span><span class="lineCov">    8789418 :         ActiveToken *activeTokensCurrent = m_activeTokenCurrent+node-&gt;iActiveTokensCurrentBase;</span>
+<span class="lineNum">     402 </span><span class="lineCov">    8789418 :         DNode *nodeNext = m_nodes+arcNext-&gt;iNodeDest;</span>
+<span class="lineNum">     403 </span><span class="lineCov">    8789418 :         ActiveToken *activeTokensNext = m_activeTokenNext+nodeNext-&gt;iActiveTokensNextBase;</span>
+<span class="lineNum">     404 </span>            : 
+<span class="lineNum">     405 </span>            :         // compute emission probability
+<span class="lineNum">     406 </span><span class="lineCov">    8789418 :         fScore = arcNext-&gt;state-&gt;computeEmissionProbability(vFeatureVector.getData(),t);  </span>
+<span class="lineNum">     407 </span><span class="lineCov">    8789418 :         bool bWordEnd = (nodeNext-&gt;iIPIndex != -1);</span>
+<span class="lineNum">     408 </span>            : 
+<span class="lineNum">     409 </span>            :         // apply insertion-penalty?
+<span class="lineNum">     410 </span><span class="lineCov">    8789418 :         if (bWordEnd) {fScore += m_dynamicNetwork-&gt;getIP(m_nodes[arcNext-&gt;iNodeDest].iIPIndex);}</span>
+<span class="lineNum">     411 </span>            : 
+<span class="lineNum">     412 </span>            :         // regular-node
+<span class="lineNum">     413 </span><span class="lineCov">    8789418 :         float *fScoreBest = &amp;m_fScoreBest;</span>
+<span class="lineNum">     414 </span><span class="lineCov">    8789418 :         float fBeamWidth = m_fBeamWidthNodes;</span>
+<span class="lineNum">     415 </span>            :         // we-node
+<span class="lineNum">     416 </span>            :         // propagate tokens within the arc
+<span class="lineNum">     417 </span><span class="lineCov">   25850165 :         for(int j=0 ; j &lt; node-&gt;iActiveTokensCurrent ; ++j) {</span>
+<span class="lineNum">     418 </span><span class="lineCov">   17060747 :                 Token *token = m_tokensCurrent+(activeTokensCurrent+j)-&gt;iToken;</span>
+<span class="lineNum">     419 </span><span class="lineCov">   17060747 :                 fScoreToken = token-&gt;fScore+fScore;</span>
+<span class="lineNum">     420 </span>            :                 
+<span class="lineNum">     421 </span>            :                 
+<span class="lineNum">     422 </span><span class="lineCov">   17060747 :                 if (fScoreToken &gt; (*fScoreBest-fBeamWidth)) {</span>
+<span class="lineNum">     423 </span>            :                         // keep higher score
+<span class="lineNum">     424 </span><span class="lineCov">   15540994 :                         if (fScoreToken &gt; *fScoreBest) {</span>
+<span class="lineNum">     425 </span><span class="lineCov">        463 :                                 *fScoreBest = fScoreToken;</span>
+<span class="lineNum">     426 </span>            :                         }
+<span class="lineNum">     427 </span>            :                         
+<span class="lineNum">     428 </span>            :                         // token recombination?
+<span class="lineNum">     429 </span><span class="lineCov">   15540994 :                         bool bFound = false;</span>
+<span class="lineNum">     430 </span><span class="lineCov">   46187801 :                         for(int k=0 ; k &lt; nodeNext-&gt;iActiveTokensNext ; ++k) {</span>
+<span class="lineNum">     431 </span><span class="lineCov">   38803918 :                                 if (activeTokensNext[k].iLMState == token-&gt;iLMState) {</span>
+<span class="lineNum">     432 </span><span class="lineCov">    8157111 :                                         Token *tokenRec = m_tokensNext+activeTokensNext[k].iToken;</span>
+<span class="lineNum">     433 </span><span class="lineCov">    8157111 :                                                 if (fScoreToken &gt; tokenRec-&gt;fScore) {</span>
+<span class="lineNum">     434 </span>            :                                                         // recombine
+<span class="lineNum">     435 </span><span class="lineCov">    6410937 :                                                         tokenRec-&gt;fScore = fScoreToken;</span>
+<span class="lineNum">     436 </span><span class="lineCov">    6410937 :                                                         tokenRec-&gt;iLexUnitPron = token-&gt;iLexUnitPron;</span>
+<span class="lineNum">     437 </span>            :                                                         //assert(tokenRec-&gt;state == arcNext-&gt;state);
+<span class="lineNum">     438 </span>            :                                                         // (a) not an end-of-word
+<span class="lineNum">     439 </span>            :                                                         //if (m_iHistoryItemsAux == NULL) {
+<span class="lineNum">     440 </span><span class="lineCov">    6410937 :                                                         if (bWordEnd == false) {</span>
+<span class="lineNum">     441 </span><span class="lineCov">    6261315 :                                                                 tokenRec-&gt;iHistoryItem = token-&gt;iHistoryItem;</span>
+<span class="lineNum">     442 </span>            :                                                                         
+<span class="lineNum">     443 </span>            :                                                         } 
+<span class="lineNum">     444 </span>            :                                                         // (b) end-of-word
+<span class="lineNum">     445 </span>            :                                                         else {
+<span class="lineNum">     446 </span><span class="lineCov">     149622 :                                                                 assert(m_iHistoryItemsAux != NULL);</span>
+<span class="lineNum">     447 </span><span class="lineCov">     149622 :                                                                 if (m_iHistoryItemsAux[j] == -1) {</span>
+<span class="lineNum">     448 </span><span class="lineCov">      56284 :                                                                         m_iHistoryItemsAux[j] = newHistoryItem();</span>
+<span class="lineNum">     449 </span><span class="lineCov">      56284 :                                                                         HistoryItem &amp;historyItem = m_historyItems[m_iHistoryItemsAux[j]];</span>
+<span class="lineNum">     450 </span><span class="lineCov">      56284 :                                                                         historyItem.iLexUnitPron = token-&gt;iLexUnitPron;</span>
+<span class="lineNum">     451 </span><span class="lineCov">      56284 :                                                                         historyItem.iEndFrame = t-1;</span>
+<span class="lineNum">     452 </span><span class="lineCov">      56284 :                                                                         historyItem.fScore = token-&gt;fScore;</span>
+<span class="lineNum">     453 </span><span class="lineCov">      56284 :                                                                         historyItem.iPrev = token-&gt;iHistoryItem;</span>
+<span class="lineNum">     454 </span><span class="lineCov">      56284 :                                                                         assert(m_historyItems[historyItem.iPrev].iEndFrame &lt; historyItem.iEndFrame);</span>
+<span class="lineNum">     455 </span><span class="lineCov">      56284 :                                                                         historyItem.iActive = -1;</span>
+<span class="lineNum">     456 </span><span class="lineCov">      56284 :                                                                         historyItem.iWGToken = -1;</span>
+<span class="lineNum">     457 </span>            :                                                                 }
+<span class="lineNum">     458 </span><span class="lineCov">     149622 :                                                                 tokenRec-&gt;iHistoryItem = m_iHistoryItemsAux[j];</span>
+<span class="lineNum">     459 </span>            :                                                                  
+<span class="lineNum">     460 </span>            :                                                         }
+<span class="lineNum">     461 </span>            :                                                 }
+<span class="lineNum">     462 </span><span class="lineCov">    8157111 :                                         bFound = true;</span>
+<span class="lineNum">     463 </span><span class="lineCov">    8157111 :                                         break;</span>
+<span class="lineNum">     464 </span>            :                                 }
+<span class="lineNum">     465 </span>            :                         }
+<span class="lineNum">     466 </span><span class="lineCov">   15540994 :                         if (bFound) { continue; }</span>
+<span class="lineNum">     467 </span>            :                 
+<span class="lineNum">     468 </span>            :                         // create expanded token (no recombination)
+<span class="lineNum">     469 </span><span class="lineCov">    7383883 :                         int iToken = newToken();</span>
+<span class="lineNum">     470 </span><span class="lineCov">    7383883 :                         Token *tokenAux = m_tokensNext+iToken;</span>
+<span class="lineNum">     471 </span><span class="lineCov">    7383883 :                         tokenAux-&gt;fScore = fScoreToken;</span>
+<span class="lineNum">     472 </span><span class="lineCov">    7383883 :                         tokenAux-&gt;state = arcNext-&gt;state;</span>
+<span class="lineNum">     473 </span><span class="lineCov">    7383883 :                         tokenAux-&gt;iLMState = token-&gt;iLMState;</span>
+<span class="lineNum">     474 </span><span class="lineCov">    7383883 :                         tokenAux-&gt;iLexUnitPron = token-&gt;iLexUnitPron;</span>
+<span class="lineNum">     475 </span><span class="lineCov">    7383883 :                         tokenAux-&gt;iNode = arcNext-&gt;iNodeDest;</span>
+<span class="lineNum">     476 </span>            :                         
+<span class="lineNum">     477 </span>            :                         // (a) not an end-of-word
+<span class="lineNum">     478 </span><span class="lineCov">    7383883 :                         if (bWordEnd == false) {</span>
+<span class="lineNum">     479 </span><span class="lineCov">    6978642 :                                 tokenAux-&gt;iHistoryItem = token-&gt;iHistoryItem;</span>
+<span class="lineNum">     480 </span>            :                                 // word-graph generation
+<span class="lineNum">     481 </span>            :                                  
+<span class="lineNum">     482 </span>            :                         } 
+<span class="lineNum">     483 </span>            :                         // (b) end-of-word
+<span class="lineNum">     484 </span>            :                         else {
+<span class="lineNum">     485 </span><span class="lineCov">     405241 :                                 assert(m_iHistoryItemsAux != NULL);     </span>
+<span class="lineNum">     486 </span><span class="lineCov">     405241 :                                 if (m_iHistoryItemsAux[j] == -1) {</span>
+<span class="lineNum">     487 </span><span class="lineCov">     146750 :                                         m_iHistoryItemsAux[j] = newHistoryItem();</span>
+<span class="lineNum">     488 </span><span class="lineCov">     146750 :                                         HistoryItem &amp;historyItem = m_historyItems[m_iHistoryItemsAux[j]];</span>
+<span class="lineNum">     489 </span><span class="lineCov">     146750 :                                         historyItem.iLexUnitPron = token-&gt;iLexUnitPron;</span>
+<span class="lineNum">     490 </span><span class="lineCov">     146750 :                                         historyItem.iEndFrame = t-1;</span>
+<span class="lineNum">     491 </span><span class="lineCov">     146750 :                                         historyItem.fScore = token-&gt;fScore;</span>
+<span class="lineNum">     492 </span><span class="lineCov">     146750 :                                         historyItem.iPrev = token-&gt;iHistoryItem;</span>
+<span class="lineNum">     493 </span><span class="lineCov">     146750 :                                         assert(m_historyItems[historyItem.iPrev].iEndFrame &lt; historyItem.iEndFrame);</span>
+<span class="lineNum">     494 </span><span class="lineCov">     146750 :                                         historyItem.iActive = -1;</span>
+<span class="lineNum">     495 </span>            :                                         // word-graph generation?
+<span class="lineNum">     496 </span><span class="lineCov">     146750 :                                         historyItem.iWGToken = -1;</span>
+<span class="lineNum">     497 </span>            :                                         
+<span class="lineNum">     498 </span>            :                                 }
+<span class="lineNum">     499 </span><span class="lineCov">     405241 :                                 tokenAux-&gt;iHistoryItem = m_iHistoryItemsAux[j];</span>
+<span class="lineNum">     500 </span>            :                                 // word-graph generation?
+<span class="lineNum">     501 </span>            :                                  
+<span class="lineNum">     502 </span>            :                                 
+<span class="lineNum">     503 </span>            :                         }
+<span class="lineNum">     504 </span>            :                         
+<span class="lineNum">     505 </span>            :                         // activate the node
+<span class="lineNum">     506 </span><span class="lineCov">    7383883 :                         if (nodeNext-&gt;iActiveTokensNextBase == -1) {</span>
+<span class="lineNum">     507 </span><span class="lineCov">    3053107 :                                 nodeNext-&gt;iActiveTokensNextBase = newActiveTokenTable();</span>
+<span class="lineNum">     508 </span><span class="lineCov">    3053107 :                                 nodeNext-&gt;iActiveTokensNext = 0;</span>
+<span class="lineNum">     509 </span><span class="lineCov">    3053107 :                                 activeTokensNext = m_activeTokenNext+nodeNext-&gt;iActiveTokensNextBase;</span>
+<span class="lineNum">     510 </span><span class="lineCov">    3053107 :                                 m_nodesActiveNext[m_iNodesActiveNext++] = nodeNext;     </span>
+<span class="lineNum">     511 </span><span class="lineCov">    3053107 :                                 assert(m_iNodesActiveNext &lt; m_iNodesActiveNextMax);</span>
+<span class="lineNum">     512 </span>            :                         }
+<span class="lineNum">     513 </span><span class="lineCov">    7383883 :                         activeTokensNext[nodeNext-&gt;iActiveTokensNext].iLMState = token-&gt;iLMState;</span>
+<span class="lineNum">     514 </span><span class="lineCov">    7383883 :                         activeTokensNext[nodeNext-&gt;iActiveTokensNext].iToken = iToken;</span>
+<span class="lineNum">     515 </span><span class="lineCov">    7383883 :                         nodeNext-&gt;iActiveTokensNext++;</span>
+<span class="lineNum">     516 </span><span class="lineCov">    7383883 :                         if (nodeNext-&gt;iActiveTokensNext &gt;= m_iTokensNodeMax) {</span>
+<span class="lineNum">     517 </span><span class="lineCov">        142 :                                 pruneExtraTokens(nodeNext);</span>
+<span class="lineNum">     518 </span>            :                         }
+<span class="lineNum">     519 </span><span class="lineCov">    7383883 :                         assert(nodeNext-&gt;iActiveTokensNext &lt; m_iTokensNodeMax);</span>
+<span class="lineNum">     520 </span>            :                 }
+<span class="lineNum">     521 </span>            :         }
+<span class="lineNum">     522 </span><span class="lineCov">    8789418 : }</span>
+<a name="523"><span class="lineNum">     523 </span>            : </a>
+<span class="lineNum">     524 </span>            : // expand a series of tokens to a hmm-state after obsering a new word
+<span class="lineNum">     525 </span><span class="lineCov">    5148253 : void DynamicDecoderX::expandToHMMNewWord(DNode *node, DArc *arcNext, LexUnit *lexUnit, LMTransition *lmTransition, </span>
+<span class="lineNum">     526 </span>            :         VectorBase&lt;float&gt; &amp;vFeatureVector, int t) {
+<span class="lineNum">     527 </span>            :         float fScore;
+<span class="lineNum">     528 </span>            :         float fScoreLM;
+<span class="lineNum">     529 </span>            :         float fScoreToken;
+<span class="lineNum">     530 </span><span class="lineCov">    5148253 :         ActiveToken *activeTokensCurrent = m_activeTokenCurrent+node-&gt;iActiveTokensCurrentBase;</span>
+<span class="lineNum">     531 </span><span class="lineCov">    5148253 :         DNode *nodeNext = m_nodes+arcNext-&gt;iNodeDest;</span>
+<span class="lineNum">     532 </span><span class="lineCov">    5148253 :         ActiveToken *activeTokensNext = m_activeTokenNext+nodeNext-&gt;iActiveTokensNextBase;</span>
+<span class="lineNum">     533 </span>            :         
+<span class="lineNum">     534 </span>            :         // compute emission probability
+<span class="lineNum">     535 </span><span class="lineCov">    5148253 :         fScore = arcNext-&gt;state-&gt;computeEmissionProbability(vFeatureVector.getData(),t);  </span>
+<span class="lineNum">     536 </span><span class="lineCov">    5148253 :         bool bWordEnd = (nodeNext-&gt;iIPIndex != -1);</span>
+<span class="lineNum">     537 </span>            :         // apply insertion-penalty?
+<span class="lineNum">     538 </span><span class="lineCov">    5148253 :         if (bWordEnd) {</span>
+<span class="lineNum">     539 </span><span class="lineCov">    1534730 :                 fScore += m_dynamicNetwork-&gt;getIP(m_nodes[arcNext-&gt;iNodeDest].iIPIndex);</span>
+<span class="lineNum">     540 </span>            :         }
+<span class="lineNum">     541 </span>            :         // regular-arc
+<span class="lineNum">     542 </span><span class="lineCov">    5148253 :         float *fScoreBest = &amp;m_fScoreBest;</span>
+<span class="lineNum">     543 </span><span class="lineCov">    5148253 :         float fBeamWidth = m_fBeamWidthNodes;</span>
+<span class="lineNum">     544 </span>            :  
+<span class="lineNum">     545 </span>            :         // propagate tokens within the node
+<span class="lineNum">     546 </span><span class="lineCov">   15175771 :         for(int j=0 ; j &lt; node-&gt;iActiveTokensCurrent ; ++j) {</span>
+<span class="lineNum">     547 </span><span class="lineCov">   10027518 :                 Token *token = m_tokensCurrent+activeTokensCurrent[j].iToken;</span>
+<span class="lineNum">     548 </span><span class="lineCov">   10027518 :                 int iLMState = -1;</span>
+<span class="lineNum">     549 </span>            :                 // standard lexical unit: apply LM-score and insertion penalty
+<span class="lineNum">     550 </span><span class="lineCov">   10027518 :                 if (m_lexiconManager-&gt;isStandard(lexUnit)) {</span>
+<span class="lineNum">     551 </span>            :                         // compute LM-score if needed
+<span class="lineNum">     552 </span><span class="lineCov">    9518058 :                         if (lmTransition[j].iLMState == -1) {</span>
+<span class="lineNum">     553 </span><span class="lineCov">    4943059 :                                 lmTransition[j].iLMState = m_lmFSM-&gt;updateLMState(token-&gt;iLMState,</span>
+<span class="lineNum">     554 </span><span class="lineCov">    4943059 :                                         lexUnit-&gt;iLexUnit,&amp;lmTransition[j].fScoreLM);</span>
+<span class="lineNum">     555 </span><span class="lineCov">    4943059 :                                 lmTransition[j].fScoreLM *= m_fLMScalingFactor;</span>
+<span class="lineNum">     556 </span>            :                         }
+<span class="lineNum">     557 </span><span class="lineCov">    9518058 :                         iLMState = lmTransition[j].iLMState;</span>
+<span class="lineNum">     558 </span><span class="lineCov">    9518058 :                         fScoreLM = lmTransition[j].fScoreLM;</span>
+<span class="lineNum">     559 </span>            :                 } 
+<span class="lineNum">     560 </span>            :                 // filler lexical unit: keep original lm state 
+<span class="lineNum">     561 </span>            :                 else {
+<span class="lineNum">     562 </span><span class="lineCov">     509460 :                         iLMState = token-&gt;iLMState;</span>
+<span class="lineNum">     563 </span><span class="lineCov">     509460 :                         fScoreLM = 0.0;</span>
+<span class="lineNum">     564 </span>            :                 }
+<span class="lineNum">     565 </span><span class="lineCov">   10027518 :                 fScoreToken = token-&gt;fScore+fScore+fScoreLM;</span>
+<span class="lineNum">     566 </span><span class="lineCov">   10027518 :                 if (fScoreToken &gt; (*fScoreBest-fBeamWidth)) {</span>
+<span class="lineNum">     567 </span>            :                         // keep higher score
+<span class="lineNum">     568 </span><span class="lineCov">    2926010 :                         if (fScoreToken &gt; *fScoreBest) {</span>
+<span class="lineNum">     569 </span><span class="lineCov">         26 :                                 *fScoreBest = fScoreToken;</span>
+<span class="lineNum">     570 </span>            :                         }
+<span class="lineNum">     571 </span>            :                         // token recombination?
+<span class="lineNum">     572 </span><span class="lineCov">    2926010 :                         bool bFound = false;</span>
+<span class="lineNum">     573 </span><span class="lineCov">   12433270 :                         for(int k=0 ; k &lt; nodeNext-&gt;iActiveTokensNext ; ++k) {</span>
+<span class="lineNum">     574 </span><span class="lineCov">   10759736 :                                 if (activeTokensNext[k].iLMState == iLMState) {</span>
+<span class="lineNum">     575 </span><span class="lineCov">    1252476 :                                         Token *tokenRec = m_tokensNext+activeTokensNext[k].iToken;</span>
+<span class="lineNum">     576 </span><span class="lineCov">    1252476 :                                         assert(tokenRec-&gt;state == arcNext-&gt;state);</span>
+<span class="lineNum">     577 </span><span class="lineCov">    1252476 :                                                 if (fScoreToken &gt; tokenRec-&gt;fScore) {</span>
+<span class="lineNum">     578 </span>            :                                                         // recombine
+<span class="lineNum">     579 </span><span class="lineCov">     426005 :                                                         tokenRec-&gt;fScore = fScoreToken;</span>
+<span class="lineNum">     580 </span><span class="lineCov">     426005 :                                                         tokenRec-&gt;iLexUnitPron = lexUnit-&gt;iLexUnitPron;</span>
+<span class="lineNum">     581 </span>            :                                                         // (a) not an end-of-word
+<span class="lineNum">     582 </span>            :                                                         //if (m_iHistoryItemsAux == NULL) {
+<span class="lineNum">     583 </span><span class="lineCov">     426005 :                                                         if (bWordEnd == false) {</span>
+<span class="lineNum">     584 </span><span class="lineCov">     139354 :                                                                 tokenRec-&gt;iHistoryItem = token-&gt;iHistoryItem;</span>
+<span class="lineNum">     585 </span>            :                                                                  
+<span class="lineNum">     586 </span>            :                                                         } 
+<span class="lineNum">     587 </span>            :                                                         // (b) end-of-word
+<span class="lineNum">     588 </span>            :                                                         else {
+<span class="lineNum">     589 </span><span class="lineCov">     286651 :                                                                 assert(m_iHistoryItemsAux != NULL);</span>
+<span class="lineNum">     590 </span><span class="lineCov">     286651 :                                                                 if (m_iHistoryItemsAux[j] == -1) {</span>
+<span class="lineNum">     591 </span><span class="lineCov">      29224 :                                                                         m_iHistoryItemsAux[j] = newHistoryItem();</span>
+<span class="lineNum">     592 </span><span class="lineCov">      29224 :                                                                         HistoryItem &amp;historyItem = m_historyItems[m_iHistoryItemsAux[j]];   </span>
+<span class="lineNum">     593 </span><span class="lineCov">      29224 :                                                                         historyItem.iLexUnitPron = lexUnit-&gt;iLexUnitPron;</span>
+<span class="lineNum">     594 </span><span class="lineCov">      29224 :                                                                         historyItem.iEndFrame = t-1;</span>
+<span class="lineNum">     595 </span><span class="lineCov">      29224 :                                                                         historyItem.fScore = token-&gt;fScore+fScoreLM;</span>
+<span class="lineNum">     596 </span><span class="lineCov">      29224 :                                                                         historyItem.iPrev = token-&gt;iHistoryItem;</span>
+<span class="lineNum">     597 </span><span class="lineCov">      29224 :                                                                         assert(m_historyItems[historyItem.iPrev].iEndFrame &lt; historyItem.iEndFrame);</span>
+<span class="lineNum">     598 </span><span class="lineCov">      29224 :                                                                         historyItem.iActive = -1;</span>
+<span class="lineNum">     599 </span><span class="lineCov">      29224 :                                                                         historyItem.iWGToken = -1;</span>
+<span class="lineNum">     600 </span>            :                                                                 }
+<span class="lineNum">     601 </span><span class="lineCov">     286651 :                                                                 tokenRec-&gt;iHistoryItem = m_iHistoryItemsAux[j];</span>
+<span class="lineNum">     602 </span>            : 
+<span class="lineNum">     603 </span>            :                                                         }
+<span class="lineNum">     604 </span>            :                                                 } 
+<span class="lineNum">     605 </span><span class="lineCov">    1252476 :                                         bFound = true;</span>
+<span class="lineNum">     606 </span><span class="lineCov">    1252476 :                                         break;</span>
+<span class="lineNum">     607 </span>            :                                 }
+<span class="lineNum">     608 </span>            :                         }
+<span class="lineNum">     609 </span><span class="lineCov">    2926010 :                         if (bFound) { continue; }</span>
+<span class="lineNum">     610 </span>            :                         // create expanded token (no recombination)
+<span class="lineNum">     611 </span><span class="lineCov">    1673534 :                         int iToken = newToken();</span>
+<span class="lineNum">     612 </span><span class="lineCov">    1673534 :                         Token *tokenAux = m_tokensNext+iToken;</span>
+<span class="lineNum">     613 </span><span class="lineCov">    1673534 :                         tokenAux-&gt;fScore = fScoreToken;</span>
+<span class="lineNum">     614 </span><span class="lineCov">    1673534 :                         tokenAux-&gt;state = arcNext-&gt;state;</span>
+<span class="lineNum">     615 </span><span class="lineCov">    1673534 :                         tokenAux-&gt;iLMState = iLMState;</span>
+<span class="lineNum">     616 </span><span class="lineCov">    1673534 :                         tokenAux-&gt;iLexUnitPron = lexUnit-&gt;iLexUnitPron;</span>
+<span class="lineNum">     617 </span><span class="lineCov">    1673534 :                         tokenAux-&gt;iNode = (int)(nodeNext-m_nodes);</span>
+<span class="lineNum">     618 </span>            :                          
+<span class="lineNum">     619 </span>            :                         // (a) not an end-of-word
+<span class="lineNum">     620 </span><span class="lineCov">    1673534 :                         if (bWordEnd == false) {</span>
+<span class="lineNum">     621 </span><span class="lineCov">    1086891 :                                 tokenAux-&gt;iHistoryItem = token-&gt;iHistoryItem;</span>
+<span class="lineNum">     622 </span>            :                                 // word-graph generation?
+<span class="lineNum">     623 </span>            :                                  
+<span class="lineNum">     624 </span>            :                         } 
+<span class="lineNum">     625 </span>            :                         // (b) end-of-word
+<span class="lineNum">     626 </span>            :                         else {
+<span class="lineNum">     627 </span><span class="lineCov">     586643 :                                 assert(m_iHistoryItemsAux != NULL);</span>
+<span class="lineNum">     628 </span><span class="lineCov">     586643 :                                 if (m_iHistoryItemsAux[j] == -1) {</span>
+<span class="lineNum">     629 </span><span class="lineCov">     173516 :                                         m_iHistoryItemsAux[j] = newHistoryItem();</span>
+<span class="lineNum">     630 </span><span class="lineCov">     173516 :                                         HistoryItem &amp;historyItem = m_historyItems[m_iHistoryItemsAux[j]];</span>
+<span class="lineNum">     631 </span><span class="lineCov">     173516 :                                         historyItem.iLexUnitPron = lexUnit-&gt;iLexUnitPron;</span>
+<span class="lineNum">     632 </span><span class="lineCov">     173516 :                                         historyItem.iEndFrame = t-1;</span>
+<span class="lineNum">     633 </span><span class="lineCov">     173516 :                                         historyItem.fScore = token-&gt;fScore+fScoreLM;</span>
+<span class="lineNum">     634 </span><span class="lineCov">     173516 :                                         historyItem.iPrev = token-&gt;iHistoryItem;</span>
+<span class="lineNum">     635 </span><span class="lineCov">     173516 :                                         assert(m_historyItems[historyItem.iPrev].iEndFrame &lt; historyItem.iEndFrame);</span>
+<span class="lineNum">     636 </span><span class="lineCov">     173516 :                                         historyItem.iActive = -1;</span>
+<span class="lineNum">     637 </span>            :                                         // word-graph generation?
+<span class="lineNum">     638 </span><span class="lineCov">     173516 :                                          historyItem.iWGToken = -1;</span>
+<span class="lineNum">     639 </span>            :                                 }
+<span class="lineNum">     640 </span><span class="lineCov">     586643 :                                 tokenAux-&gt;iHistoryItem = m_iHistoryItemsAux[j];</span>
+<span class="lineNum">     641 </span>            :                                 // word-graph generation?
+<span class="lineNum">     642 </span>            :                                  
+<span class="lineNum">     643 </span><span class="lineCov">     586643 :                                 assert((tokenAux-&gt;iHistoryItem+m_historyItems)-&gt;iWGToken &gt;= -1);</span>
+<span class="lineNum">     644 </span>            :                         }
+<span class="lineNum">     645 </span>            :                         // activate the node
+<span class="lineNum">     646 </span><span class="lineCov">    1673534 :                         if (nodeNext-&gt;iActiveTokensNextBase == -1) {</span>
+<span class="lineNum">     647 </span><span class="lineCov">     586730 :                                 assert(nodeNext-&gt;iActiveTokensNext == 0);</span>
+<span class="lineNum">     648 </span><span class="lineCov">     586730 :                                 nodeNext-&gt;iActiveTokensNextBase = newActiveTokenTable();</span>
+<span class="lineNum">     649 </span><span class="lineCov">     586730 :                                 nodeNext-&gt;iActiveTokensNext = 0;</span>
+<span class="lineNum">     650 </span><span class="lineCov">     586730 :                                 activeTokensNext = m_activeTokenNext+nodeNext-&gt;iActiveTokensNextBase;</span>
+<span class="lineNum">     651 </span><span class="lineCov">     586730 :                                 m_nodesActiveNext[m_iNodesActiveNext++] = nodeNext;</span>
+<span class="lineNum">     652 </span><span class="lineCov">     586730 :                                 assert(m_iNodesActiveNext &lt; m_iNodesActiveNextMax);</span>
+<span class="lineNum">     653 </span>            :                         }
+<span class="lineNum">     654 </span><span class="lineCov">    1673534 :                         activeTokensNext[nodeNext-&gt;iActiveTokensNext].iLMState = iLMState;</span>
+<span class="lineNum">     655 </span><span class="lineCov">    1673534 :                         activeTokensNext[nodeNext-&gt;iActiveTokensNext].iToken = iToken;</span>
+<span class="lineNum">     656 </span><span class="lineCov">    1673534 :                         nodeNext-&gt;iActiveTokensNext++;</span>
+<span class="lineNum">     657 </span><span class="lineCov">    1673534 :                         if (nodeNext-&gt;iActiveTokensNext &gt;= m_iTokensNodeMax) {</span>
+<span class="lineNum">     658 </span><span class="lineCov">        503 :                                 pruneExtraTokens(nodeNext);</span>
+<span class="lineNum">     659 </span>            :                         }       
+<span class="lineNum">     660 </span><span class="lineCov">    1673534 :                         assert(nodeNext-&gt;iActiveTokensNext &lt; m_iTokensNodeMax);</span>
+<span class="lineNum">     661 </span>            :                 }
+<span class="lineNum">     662 </span>            :         }
+<span class="lineNum">     663 </span><span class="lineCov">    5148253 : }</span>
+<span class="lineNum">     664 </span>            : 
+<a name="665"><span class="lineNum">     665 </span>            : </a>
+<span class="lineNum">     666 </span>            : // pruning (token based)
+<span class="lineNum">     667 </span><span class="lineCov">       1876 : void DynamicDecoderX::pruning() {</span>
+<span class="lineNum">     668 </span><span class="lineCov">       1876 :         assert(m_fScoreBestWE &lt;= m_fScoreBest);</span>
+<span class="lineNum">     669 </span><span class="lineCov">       1876 :         m_fScoreBestWE = m_fScoreBest; //       HACK</span>
+<span class="lineNum">     670 </span>            :         // compute threshold for beam based pruning
+<span class="lineNum">     671 </span><span class="lineCov">       1876 :         int iNumberBins = NUMBER_BINS_HISTOGRAM;</span>
+<span class="lineNum">     672 </span><span class="lineCov">       1876 :         int iSurvivorsRegular = 0;</span>
+<span class="lineNum">     673 </span><span class="lineCov">       1876 :         float fThresholdRegular = m_fScoreBest-m_fBeamWidthNodes;       </span>
+<span class="lineNum">     674 </span>            :         
+<span class="lineNum">     675 </span>            :         // (1) apply within-node pruning
+<span class="lineNum">     676 </span>            :         // apply pruning to each arc
+<span class="lineNum">     677 </span><span class="lineCov">       1876 :         m_iNodesActiveCurrent = 0;</span>
+<span class="lineNum">     678 </span><span class="lineCov">       1876 :         int iPrunedTotal = 0;   </span>
+<span class="lineNum">     679 </span><span class="lineCov">       1876 :         int *iBins = new int[iNumberBins];</span>
+<span class="lineNum">     680 </span>            :         int iBin;
+<span class="lineNum">     681 </span><span class="lineCov">       1876 :         float fScoreBestNode = -FLT_MAX;</span>
+<span class="lineNum">     682 </span><span class="lineCov">       1876 :         float *fThresholdNode = new float[m_iNodesActiveNext];</span>
+<span class="lineNum">     683 </span><span class="lineCov">       1876 :         int iSurvivorsAll = 0;</span>
+<span class="lineNum">     684 </span><span class="lineCov">    8359003 :         for(int i=0 ; i &lt; m_iNodesActiveNext ; ++i) {</span>
+<span class="lineNum">     685 </span><span class="lineCov">    8357127 :                 DNode *node = m_nodesActiveNext[i];</span>
+<span class="lineNum">     686 </span><span class="lineCov">    8357127 :                 assert(node-&gt;iActiveTokensNext &gt; 0);</span>
+<span class="lineNum">     687 </span><span class="lineCov">    8357127 :                 fThresholdNode[i] = fThresholdRegular;</span>
+<span class="lineNum">     688 </span>            :                 
+<span class="lineNum">     689 </span>            :                 // (a) histogram pruning within the node
+<span class="lineNum">     690 </span><span class="lineCov">    8357127 :                 if (node-&gt;iActiveTokensNext &gt; m_iMaxActiveTokensNode) {</span>
+<span class="lineNum">     691 </span>            :                 
+<span class="lineNum">     692 </span>            :                         // get the best score within the node
+<span class="lineNum">     693 </span><span class="lineCov">      19405 :                         fScoreBestNode = -FLT_MAX;</span>
+<span class="lineNum">     694 </span><span class="lineCov">     479204 :                         for(int j=0 ; j &lt; node-&gt;iActiveTokensNext ; ++j) {</span>
+<span class="lineNum">     695 </span><span class="lineCov">     459799 :                                 Token *token = m_tokensNext+(m_activeTokenNext+node-&gt;iActiveTokensNextBase)[j].iToken;</span>
+<span class="lineNum">     696 </span><span class="lineCov">     459799 :                                 if (token-&gt;fScore &gt; fScoreBestNode) {</span>
+<span class="lineNum">     697 </span><span class="lineCov">      28123 :                                         fScoreBestNode = token-&gt;fScore;</span>
+<span class="lineNum">     698 </span>            :                                 }
+<span class="lineNum">     699 </span>            :                         }
+<span class="lineNum">     700 </span>            :                         // compute bin-size for histogram pruning
+<span class="lineNum">     701 </span><span class="lineCov">      19405 :                         float fLength = m_fBeamWidthTokensNode+1;</span>
+<span class="lineNum">     702 </span><span class="lineCov">      19405 :                         float fBinSize = fLength/((float)iNumberBins);</span>
+<span class="lineNum">     703 </span><span class="lineCov">      19405 :                         assert(fBinSize &gt; 0);</span>
+<span class="lineNum">     704 </span>            :                                         
+<span class="lineNum">     705 </span><span class="lineCov">      19405 :                         fThresholdNode[i] = max(fScoreBestNode-m_fBeamWidthTokensNode,fThresholdRegular);</span>
+<span class="lineNum">     706 </span>            :                 
+<span class="lineNum">     707 </span>            :                         // (2.1) compute the size of each bin and initialize them
+<span class="lineNum">     708 </span><span class="lineCov">     989655 :                         for(int j = 0 ; j &lt; iNumberBins ; ++j) {</span>
+<span class="lineNum">     709 </span><span class="lineCov">     970250 :                                 iBins[j] = 0;</span>
+<span class="lineNum">     710 </span>            :                         }
+<span class="lineNum">     711 </span>            :                         // (2.2) fill the bins, the first bin keeps the best tokens
+<span class="lineNum">     712 </span><span class="lineCov">      19405 :                         ActiveToken *activeTokensNext = m_activeTokenNext+node-&gt;iActiveTokensNextBase;</span>
+<span class="lineNum">     713 </span><span class="lineCov">     479204 :                         for(int j=0 ; j &lt; node-&gt;iActiveTokensNext ; ++j) {</span>
+<span class="lineNum">     714 </span><span class="lineCov">     459799 :                                 Token *token = m_tokensNext+activeTokensNext[j].iToken;</span>
+<span class="lineNum">     715 </span><span class="lineCov">     459799 :                                 if (token-&gt;fScore &gt; fThresholdNode[i]) {</span>
+<span class="lineNum">     716 </span><span class="lineCov">     380009 :                                         iBin = (int)(fabs(token-&gt;fScore-fScoreBestNode)/fBinSize);</span>
+<span class="lineNum">     717 </span><span class="lineCov">     380009 :                                         assert((iBin &gt;= 0) &amp;&amp; (iBin &lt; iNumberBins));</span>
+<span class="lineNum">     718 </span><span class="lineCov">     380009 :                                         iBins[iBin]++;</span>
+<span class="lineNum">     719 </span>            :                                 }
+<span class="lineNum">     720 </span>            :                         }
+<span class="lineNum">     721 </span>            :                         // (2.3) get the threshold
+<span class="lineNum">     722 </span><span class="lineCov">      19405 :                         int iSurvivors = 0;</span>
+<span class="lineNum">     723 </span><span class="lineCov">      19405 :                         float fThresholdHistogram = fThresholdRegular;</span>
+<span class="lineNum">     724 </span><span class="lineCov">     776569 :                         for(int j = 0 ; j &lt; iNumberBins-1 ; ++j) {</span>
+<span class="lineNum">     725 </span><span class="lineCov">     771395 :                                 iSurvivors += iBins[j];</span>
+<span class="lineNum">     726 </span>            :                                 // this is the cut-off
+<span class="lineNum">     727 </span><span class="lineCov">     771395 :                                 if (iSurvivors &gt;= m_iMaxActiveTokensNode) {</span>
+<span class="lineNum">     728 </span><span class="lineCov">      14231 :                                         fThresholdHistogram = fScoreBestNode-((j+1)*fBinSize);</span>
+<span class="lineNum">     729 </span><span class="lineCov">      14231 :                                         iSurvivorsAll += iSurvivors;</span>
+<span class="lineNum">     730 </span><span class="lineCov">      14231 :                                         break;</span>
+<span class="lineNum">     731 </span>            :                                 }
+<span class="lineNum">     732 </span>            :                         }
+<span class="lineNum">     733 </span><span class="lineCov">      19405 :                         fThresholdNode[i] = max(fThresholdNode[i],fThresholdHistogram);</span>
+<span class="lineNum">     734 </span>            :                 } else {
+<span class="lineNum">     735 </span><span class="lineCov">    8337722 :                         iSurvivorsAll += node-&gt;iActiveTokensNext;</span>
+<span class="lineNum">     736 </span>            :                 }
+<span class="lineNum">     737 </span>            :         }
+<span class="lineNum">     738 </span>            :         
+<span class="lineNum">     739 </span>            :         // (2) global-pruning
+<span class="lineNum">     740 </span>            :         // histogram pruning?
+<span class="lineNum">     741 </span><span class="lineCov">       1876 :         if (iSurvivorsAll &gt; m_iMaxActiveNodes) {</span>
+<span class="lineNum">     742 </span>            :                 // (2.1) compute the size of each bin and initialize them
+<span class="lineNum">     743 </span><span class="lineCov">       1683 :                 float fLengthRegular = m_fBeamWidthNodes+1;</span>
+<span class="lineNum">     744 </span><span class="lineCov">       1683 :                 float fBinSizeRegular = ((float)fLengthRegular)/((float)iNumberBins);</span>
+<span class="lineNum">     745 </span><span class="lineCov">       1683 :                 assert(fBinSizeRegular &gt; 0);</span>
+<span class="lineNum">     746 </span><span class="lineCov">       1683 :                 int *iBinsRegular = new int[iNumberBins];</span>
+<span class="lineNum">     747 </span><span class="lineCov">       1683 :                 int iRegular = 0;</span>
+<span class="lineNum">     748 </span><span class="lineCov">      85833 :                 for(int i = 0 ; i &lt; iNumberBins ; ++i) {</span>
+<span class="lineNum">     749 </span><span class="lineCov">      84150 :                         iBinsRegular[i] = 0;</span>
+<span class="lineNum">     750 </span>            :                 }
+<span class="lineNum">     751 </span>            :                 // (2.2) fill the bins, the first bin keeps the best tokens
+<span class="lineNum">     752 </span>            :                 int iBin;
+<span class="lineNum">     753 </span><span class="lineCov">    8106260 :                 for(int i=0 ; i &lt; m_iNodesActiveNext ; ++i) {</span>
+<span class="lineNum">     754 </span><span class="lineCov">    8104577 :                         ActiveToken *activeTokens = m_activeTokenNext+m_nodesActiveNext[i]-&gt;iActiveTokensNextBase;</span>
+<span class="lineNum">     755 </span><span class="lineCov">   25560125 :                         for(int j=0 ; j &lt; m_nodesActiveNext[i]-&gt;iActiveTokensNext ; ++j) {</span>
+<span class="lineNum">     756 </span><span class="lineCov">   17455548 :                                 Token *token = m_tokensNext+activeTokens[j].iToken;</span>
+<span class="lineNum">     757 </span><span class="lineCov">   17455548 :                                 if (token-&gt;fScore &lt;= fThresholdNode[i]) {</span>
+<span class="lineNum">     758 </span><span class="lineCov">     120893 :                                         continue;</span>
+<span class="lineNum">     759 </span>            :                                 }       
+<span class="lineNum">     760 </span><span class="lineCov">   17334655 :                                 iBin = (int)(fabs(token-&gt;fScore-m_fScoreBest)/fBinSizeRegular);</span>
+<span class="lineNum">     761 </span><span class="lineCov">   17334655 :                                 assert((iBin &gt;= 0) &amp;&amp; (iBin &lt; iNumberBins));</span>
+<span class="lineNum">     762 </span><span class="lineCov">   17334655 :                                 iBinsRegular[iBin]++;</span>
+<span class="lineNum">     763 </span><span class="lineCov">   17334655 :                                 ++iRegular;</span>
+<span class="lineNum">     764 </span>            :                         }
+<span class="lineNum">     765 </span>            :                 }       
+<span class="lineNum">     766 </span>            :                 // (2.3) get the threshold
+<span class="lineNum">     767 </span><span class="lineCov">       1683 :                 float fThresholdHistogramRegular = fThresholdRegular;</span>
+<span class="lineNum">     768 </span><span class="lineCov">      61646 :                 for(int i = 0 ; i &lt; iNumberBins-1 ; ++i) {</span>
+<span class="lineNum">     769 </span><span class="lineCov">      61624 :                         iSurvivorsRegular += iBinsRegular[i];</span>
+<span class="lineNum">     770 </span>            :                         // this is the cut-off
+<span class="lineNum">     771 </span><span class="lineCov">      61624 :                         if (iSurvivorsRegular &gt;= m_iMaxActiveNodes) {</span>
+<span class="lineNum">     772 </span><span class="lineCov">       1661 :                                 fThresholdHistogramRegular = m_fScoreBest-((i+1)*fBinSizeRegular);</span>
+<span class="lineNum">     773 </span><span class="lineCov">       1661 :                                 break;</span>
+<span class="lineNum">     774 </span>            :                         }
+<span class="lineNum">     775 </span>            :                 }
+<span class="lineNum">     776 </span><span class="lineCov">       1683 :                 fThresholdRegular = max(fThresholdRegular,fThresholdHistogramRegular);</span>
+<span class="lineNum">     777 </span><span class="lineCov">       1683 :                 delete [] iBinsRegular;</span>
+<span class="lineNum">     778 </span>            :         }       
+<span class="lineNum">     779 </span>            :         // (3) actual pruning
+<span class="lineNum">     780 </span><span class="lineCov">    8359003 :         for(int i=0 ; i &lt; m_iNodesActiveNext ; ++i) {</span>
+<span class="lineNum">     781 </span><span class="lineCov">    8357127 :                 DNode *node = m_nodesActiveNext[i];</span>
+<span class="lineNum">     782 </span><span class="lineCov">    8357127 :                 fThresholdNode[i] = max(fThresholdNode[i],fThresholdRegular);   </span>
+<span class="lineNum">     783 </span>            :                 
+<span class="lineNum">     784 </span><span class="lineCov">    8357127 :                 int iPruned = 0;</span>
+<span class="lineNum">     785 </span><span class="lineCov">    8357127 :                 int iAvailable = -1;</span>
+<span class="lineNum">     786 </span><span class="lineCov">    8357127 :                 ActiveToken *activeTokensNext = m_activeTokenNext+node-&gt;iActiveTokensNextBase;</span>
+<span class="lineNum">     787 </span><span class="lineCov">   26292748 :                 for(int j=0 ; j &lt; node-&gt;iActiveTokensNext ; ++j) {</span>
+<span class="lineNum">     788 </span><span class="lineCov">   17935621 :                         Token *token = m_tokensNext+activeTokensNext[j].iToken;</span>
+<span class="lineNum">     789 </span><span class="lineCov">   17935621 :                         if (token-&gt;fScore &lt; fThresholdNode[i]) {</span>
+<span class="lineNum">     790 </span><span class="lineCov">    8488717 :                                 if (iAvailable == -1) {</span>
+<span class="lineNum">     791 </span><span class="lineCov">    4984567 :                                         iAvailable = j; </span>
+<span class="lineNum">     792 </span>            :                                 }
+<span class="lineNum">     793 </span><span class="lineCov">    8488717 :                                 ++iPruned;</span>
+<span class="lineNum">     794 </span><span class="lineCov">    9446904 :                         } else if (iAvailable != -1) {</span>
+<span class="lineNum">     795 </span><span class="lineCov">     324849 :                                 activeTokensNext[iAvailable] = activeTokensNext[j];</span>
+<span class="lineNum">     796 </span><span class="lineCov">     324849 :                                 ++iAvailable;</span>
+<span class="lineNum">     797 </span>            :                         }
+<span class="lineNum">     798 </span>            :                 }
+<span class="lineNum">     799 </span><span class="lineCov">    8357127 :                 iPrunedTotal += iPruned;</span>
+<span class="lineNum">     800 </span><span class="lineCov">    8357127 :                 assert(node-&gt;iActiveTokensCurrentBase == -1);</span>
+<span class="lineNum">     801 </span><span class="lineCov">    8357127 :                 assert(node-&gt;iActiveTokensCurrent == 0);</span>
+<span class="lineNum">     802 </span><span class="lineCov">    8357127 :                 int iSurvivors = node-&gt;iActiveTokensNext-iPruned;</span>
+<span class="lineNum">     803 </span>            :                 //iSurvivorsH[iSurvivors]++;
+<span class="lineNum">     804 </span><span class="lineCov">    8357127 :                 if (iSurvivors &gt; 0) {</span>
+<span class="lineNum">     805 </span><span class="lineCov">    5063346 :                         assert(node-&gt;iActiveTokensNextBase != -1);</span>
+<span class="lineNum">     806 </span><span class="lineCov">    5063346 :                         node-&gt;iActiveTokensCurrentBase = node-&gt;iActiveTokensNextBase;</span>
+<span class="lineNum">     807 </span><span class="lineCov">    5063346 :                         node-&gt;iActiveTokensCurrent = iSurvivors;</span>
+<span class="lineNum">     808 </span><span class="lineCov">    5063346 :                         m_nodesActiveCurrent[m_iNodesActiveCurrent++] = node;</span>
+<span class="lineNum">     809 </span>            :                 }
+<span class="lineNum">     810 </span><span class="lineCov">    8357127 :                 node-&gt;iActiveTokensNextBase = -1;</span>
+<span class="lineNum">     811 </span><span class="lineCov">    8357127 :                 node-&gt;iActiveTokensNext = 0;</span>
+<span class="lineNum">     812 </span>            :         }
+<span class="lineNum">     813 </span>            :         
+<span class="lineNum">     814 </span><span class="lineCov">       1876 :         delete [] iBins;</span>
+<span class="lineNum">     815 </span><span class="lineCov">       1876 :         delete [] fThresholdNode;</span>
+<span class="lineNum">     816 </span>            :         //printf(&quot;# tokens active: (%d -&gt; %d)\n&quot;,m_iTokensNext,m_iTokensNext-iPrunedTotal);
+<span class="lineNum">     817 </span>            :         // clean the table of next active states
+<span class="lineNum">     818 </span><span class="lineCov">       1876 :         m_iNodesActiveNext = 0; </span>
+<span class="lineNum">     819 </span>            :         // swap the token tables
+<span class="lineNum">     820 </span><span class="lineCov">       1876 :         swapTokenTables();</span>
+<span class="lineNum">     821 </span><span class="lineCov">       1876 : }</span>
+<a name="822"><span class="lineNum">     822 </span>            :                 </a>
+<span class="lineNum">     823 </span>            : // return the BestPath
+<span class="lineNum">     824 </span><span class="lineCov">          2 : BestPath *DynamicDecoderX::getBestPath() {</span>
+<span class="lineNum">     825 </span><span class="lineCov">          2 :         assert(m_bInitialized);</span>
+<span class="lineNum">     826 </span>            :         // (1) get the best scoring token
+<span class="lineNum">     827 </span><span class="lineCov">          2 :         float fScoreBestWE = -FLT_MAX;</span>
+<span class="lineNum">     828 </span><span class="lineCov">          2 :         Token *tokenBest = NULL;</span>
+<span class="lineNum">     829 </span><span class="lineCov">          2 :         LexUnit *lexUnitLast = NULL;</span>
+<span class="lineNum">     830 </span>            :         float fScoreToken;
+<span class="lineNum">     831 </span>            :         float fScoreLM1;
+<span class="lineNum">     832 </span>            :         int iLMState;
+<span class="lineNum">     833 </span>            :         
+<span class="lineNum">     834 </span>            :         // for each active token
+<span class="lineNum">     835 </span><span class="lineCov">      18606 :         for(int i=0 ; i &lt; m_iTokensNext ; ++i) {</span>
+<span class="lineNum">     836 </span><span class="lineCov">      18604 :                 Token *token = &amp;m_tokensNext[i];</span>
+<span class="lineNum">     837 </span>            :                 // check if pruned by &quot;pruneExtraTokens&quot;
+<span class="lineNum">     838 </span><span class="lineCov">      18604 :                 if (token-&gt;iNode == -1) {    </span>
+<span class="lineNum">     839 </span><span class="lineCov">      17316 :                         continue;</span>
+<span class="lineNum">     840 </span>            :                 }
+<span class="lineNum">     841 </span><span class="lineCov">      18604 :                 DNode *node = m_nodes+token-&gt;iNode;</span>
+<span class="lineNum">     842 </span>            :                 // only tokens in word-end nodes
+<span class="lineNum">     843 </span><span class="lineCov">      18604 :                 if (node-&gt;bWordEnd == false) {</span>
+<span class="lineNum">     844 </span><span class="lineCov">      17316 :                         continue;</span>
+<span class="lineNum">     845 </span>            :                 }
+<span class="lineNum">     846 </span>            :                 // two possibilities: 
+<span class="lineNum">     847 </span>            :                 // (a) monophones: the node goes to a word-arc before any hmm-node is seen 
+<span class="lineNum">     848 </span>            :                 // (b) multi-phones: the node goes directly to an hmm-state
+<span class="lineNum">     849 </span><span class="lineCov">       1288 :                 VLexUnit vLexUnitDest;</span>
+<span class="lineNum">     850 </span><span class="lineCov">       1288 :                 getDestinationMonophoneLexUnits(node,vLexUnitDest);</span>
+<span class="lineNum">     851 </span>            :                 // (a) monophones
+<span class="lineNum">     852 </span><span class="lineCov">       1288 :                 if (vLexUnitDest.empty() == false) {</span>
+<span class="lineNum">     853 </span><span class="lineCov">       2768 :                         for(VLexUnit::iterator it = vLexUnitDest.begin() ; it != vLexUnitDest.end() ; ++it) {   </span>
+<span class="lineNum">     854 </span><span class="lineCov">       1818 :                                 fScoreLM1 = 0.0;</span>
+<span class="lineNum">     855 </span><span class="lineCov">       1818 :                                 iLMState = -1;</span>
+<span class="lineNum">     856 </span><span class="lineCov">       1818 :                                 if (m_lexiconManager-&gt;isStandard(*it)) {</span>
+<span class="lineNum">     857 </span><span class="lineCov">       1807 :                                         iLMState = m_lmFSM-&gt;updateLMState(token-&gt;iLMState,(*it)-&gt;iLexUnit,&amp;fScoreLM1);</span>
+<span class="lineNum">     858 </span><span class="lineCov">       1807 :                                         fScoreLM1 *= m_fLMScalingFactor;</span>
+<span class="lineNum">     859 </span>            :                                 } else {
+<span class="lineNum">     860 </span><span class="lineCov">         11 :                                         iLMState = token-&gt;iLMState;</span>
+<span class="lineNum">     861 </span>            :                                 }
+<span class="lineNum">     862 </span><span class="lineCov">       1818 :                                 float fScoreLM2 = m_lmFSM-&gt;toFinalState(iLMState)*m_fLMScalingFactor;</span>
+<span class="lineNum">     863 </span><span class="lineCov">       1818 :                                 fScoreToken = token-&gt;fScore + fScoreLM1 + fScoreLM2;</span>
+<span class="lineNum">     864 </span><span class="lineCov">       1818 :                                 if (fScoreToken &gt; fScoreBestWE) {</span>
+<span class="lineNum">     865 </span><span class="lineCov">          6 :                                         fScoreBestWE = fScoreToken;</span>
+<span class="lineNum">     866 </span><span class="lineCov">          6 :                                         tokenBest = token;</span>
+<span class="lineNum">     867 </span><span class="lineCov">          6 :                                         lexUnitLast = *it;</span>
+<span class="lineNum">     868 </span>            :                                 }
+<span class="lineNum">     869 </span>            :                         }
+<span class="lineNum">     870 </span>            :                 }
+<span class="lineNum">     871 </span>            :                 // (b) multi-phones 
+<span class="lineNum">     872 </span>            :                 else {
+<span class="lineNum">     873 </span><span class="lineCov">        338 :                         fScoreLM1 = m_lmFSM-&gt;toFinalState(token-&gt;iLMState)*m_fLMScalingFactor;</span>
+<span class="lineNum">     874 </span><span class="lineCov">        338 :                         fScoreToken = token-&gt;fScore + fScoreLM1;</span>
+<span class="lineNum">     875 </span><span class="lineCov">        338 :                         if (fScoreToken &gt; fScoreBestWE) {</span>
+<span class="lineNum">     876 </span><span class="lineNoCov">          0 :                                 fScoreBestWE = fScoreToken;</span>
+<span class="lineNum">     877 </span><span class="lineNoCov">          0 :                                 tokenBest = token;</span>
+<span class="lineNum">     878 </span><span class="lineNoCov">          0 :                                 lexUnitLast = m_lexiconManager-&gt;getLexUnitPron(token-&gt;iLexUnitPron);</span>
+<span class="lineNum">     879 </span>            :                         }
+<span class="lineNum">     880 </span>            :                 }
+<span class="lineNum">     881 </span><span class="lineCov">       1288 :         }</span>
+<span class="lineNum">     882 </span>            :         
+<span class="lineNum">     883 </span>            :         // no active tokens at terminal nodes:
+<span class="lineNum">     884 </span><span class="lineCov">          2 :         if (tokenBest == NULL) {</span>
+<span class="lineNum">     885 </span><span class="lineNoCov">          0 :                 BVC_WARNING &lt;&lt; &quot;unable to retrieve the best decoding path, no active tokens found at terminal nodes&quot;;</span>
+<span class="lineNum">     886 </span>            :                 // TODO in this scenario, which is usually very rare, it would be possible to generate a best path by 
+<span class="lineNum">     887 </span>            :                 // modifying the path in the best token by doing a) or b):
+<span class="lineNum">     888 </span>            :                 // a) changing the alignment of the last word/silence so it ends a the last HMM-state (use forced alignment)
+<span class="lineNum">     889 </span>            :                 // b) remove last word and run force alignment on the rest in order to compute best path score
+<span class="lineNum">     890 </span><span class="lineNoCov">          0 :                 return NULL;</span>
+<span class="lineNum">     891 </span>            :         }       
+<span class="lineNum">     892 </span>            :         
+<span class="lineNum">     893 </span>            :         // (2) get the best sequence of lexical units from the best scoring token
+<span class="lineNum">     894 </span><span class="lineCov">          2 :         BestPath *bestPath = new BestPath(m_lexiconManager,fScoreBestWE);</span>
+<span class="lineNum">     895 </span><span class="lineCov">          2 :         int iHistoryItem = tokenBest-&gt;iHistoryItem;</span>
+<span class="lineNum">     896 </span>            :         int iFrameStart;
+<span class="lineNum">     897 </span>            :         int iFrameEnd;
+<span class="lineNum">     898 </span>            :         float fScore;
+<span class="lineNum">     899 </span><span class="lineCov">         57 :         while (iHistoryItem != -1) {</span>
+<span class="lineNum">     900 </span><span class="lineCov">         53 :                 HistoryItem *historyItem = iHistoryItem+m_historyItems;</span>
+<span class="lineNum">     901 </span><span class="lineCov">         53 :                 if (historyItem-&gt;iPrev != -1) {</span>
+<span class="lineNum">     902 </span><span class="lineCov">         51 :                         iFrameStart = max(0,m_historyItems[historyItem-&gt;iPrev].iEndFrame+1);                 // (INT_MIN is used for the initial item)</span>
+<span class="lineNum">     903 </span><span class="lineCov">         51 :                         iFrameEnd = historyItem-&gt;iEndFrame;</span>
+<span class="lineNum">     904 </span><span class="lineCov">         51 :                         assert(iFrameStart &lt; iFrameEnd);</span>
+<span class="lineNum">     905 </span><span class="lineCov">         51 :                         fScore = historyItem-&gt;fScore;</span>
+<span class="lineNum">     906 </span>            :                 } else {
+<span class="lineNum">     907 </span><span class="lineCov">          2 :                         iFrameStart = -1;</span>
+<span class="lineNum">     908 </span><span class="lineCov">          2 :                         iFrameEnd = -1;</span>
+<span class="lineNum">     909 </span><span class="lineCov">          2 :                         fScore = 0.0;</span>
+<span class="lineNum">     910 </span>            :                 }
+<span class="lineNum">     911 </span>            :                 // get the observed lexical unit
+<span class="lineNum">     912 </span><span class="lineCov">         53 :                 LexUnit *lexUnit = m_lexiconManager-&gt;getLexUnitPron(historyItem-&gt;iLexUnitPron);</span>
+<span class="lineNum">     913 </span>            :                 // add a new element
+<span class="lineNum">     914 </span><span class="lineCov">         53 :                 bestPath-&gt;newElementFront(iFrameStart,iFrameEnd,fScore,0.0,0.0,0.0,lexUnit,0.0);</span>
+<span class="lineNum">     915 </span><span class="lineCov">         53 :                 iHistoryItem = m_historyItems[iHistoryItem].iPrev;</span>
+<span class="lineNum">     916 </span>            :         }
+<span class="lineNum">     917 </span>            : 
+<span class="lineNum">     918 </span>            :         // add the final lexical unit if any
+<span class="lineNum">     919 </span><span class="lineCov">          2 :         assert(lexUnitLast != NULL);</span>
+<span class="lineNum">     920 </span><span class="lineCov">          2 :         if (m_historyItems[tokenBest-&gt;iHistoryItem].iLexUnitPron != m_lexiconManager-&gt;m_lexUnitBegSentence-&gt;iLexUnitPron) {</span>
+<span class="lineNum">     921 </span><span class="lineCov">          2 :                 iFrameStart = m_historyItems[tokenBest-&gt;iHistoryItem].iEndFrame+1;</span>
+<span class="lineNum">     922 </span>            :         } else {
+<span class="lineNum">     923 </span><span class="lineNoCov">          0 :                 iFrameStart = 0;</span>
+<span class="lineNum">     924 </span>            :         }
+<span class="lineNum">     925 </span><span class="lineCov">          2 :         bestPath-&gt;newElementBack(iFrameStart,m_iFeatureVectorsUtterance-1,tokenBest-&gt;fScore,0.0,0.0,0.0,lexUnitLast,0.0);</span>
+<span class="lineNum">     926 </span>            :         // add the end of sentence
+<span class="lineNum">     927 </span><span class="lineCov">          2 :         bestPath-&gt;newElementBack(-1,-1,0.0,0.0,0.0,0.0,m_lexiconManager-&gt;m_lexUnitEndSentence,0.0);</span>
+<span class="lineNum">     928 </span>            :         // TODO attach lm-scores and compute real am-scores by substracting lm-score and insertion penalty
+<span class="lineNum">     929 </span><span class="lineCov">          2 :         BVC_VERB        &lt;&lt; &quot;best score:    &quot; &lt;&lt; FLT(12,4) &lt;&lt; m_fScoreBest;</span>
+<span class="lineNum">     930 </span><span class="lineCov">          2 :         BVC_VERB        &lt;&lt; &quot;best WE score: &quot; &lt;&lt; FLT(12,4) &lt;&lt; fScoreBestWE &lt;&lt; &quot; &quot; &lt;&lt; FLT(12,4) &lt;&lt; m_fScoreBestWE;</span>
+<span class="lineNum">     931 </span>            :         
+<span class="lineNum">     932 </span><span class="lineCov">          2 :         return bestPath;</span>
+<span class="lineNum">     933 </span>            : }
+<a name="934"><span class="lineNum">     934 </span>            : </a>
+<span class="lineNum">     935 </span>            : // get monophone lexical units accessible right aftet the given hmm-node 
+<span class="lineNum">     936 </span><span class="lineCov">       1288 : void DynamicDecoderX::getDestinationMonophoneLexUnits(DNode *node, VLexUnit &amp;vLexUnitDest) {</span>
+<span class="lineNum">     937 </span><span class="lineCov">       1288 :         map&lt;int,bool&gt; mLexUnitSeen;</span>
+<span class="lineNum">     938 </span>            : 
+<span class="lineNum">     939 </span><span class="lineCov">       1288 :         DArc *arcEnd = m_arcs+(node+1)-&gt;iArcNext;</span>
+<span class="lineNum">     940 </span><span class="lineCov">       3728 :         for(DArc *arcNext = m_arcs+node-&gt;iArcNext ; arcNext != arcEnd ; ++arcNext) {</span>
+<span class="lineNum">     941 </span>            :                 
+<span class="lineNum">     942 </span>            :                 // word-arc
+<span class="lineNum">     943 </span><span class="lineCov">       2440 :                 if (arcNext-&gt;iType == ARC_TYPE_WORD) {</span>
+<span class="lineNum">     944 </span><span class="lineNoCov">          0 :                         vLexUnitDest.push_back(arcNext-&gt;lexUnit);</span>
+<span class="lineNum">     945 </span>            :                 }
+<span class="lineNum">     946 </span>            :                 // null-arc
+<span class="lineNum">     947 </span><span class="lineCov">       2440 :                 else if (arcNext-&gt;iType == ARC_TYPE_NULL) {</span>
+<span class="lineNum">     948 </span>            :                 
+<span class="lineNum">     949 </span><span class="lineCov">       1604 :                         DNode *node2 = m_nodes+arcNext-&gt;iNodeDest;   </span>
+<span class="lineNum">     950 </span><span class="lineCov">       1604 :                         DArc *arcEnd2 = m_arcs+(node2+1)-&gt;iArcNext;</span>
+<span class="lineNum">     951 </span><span class="lineCov">       4808 :                         for(DArc *arcNext2 = m_arcs+node2-&gt;iArcNext ; arcNext2 != arcEnd2 ; ++arcNext2) {    </span>
+<span class="lineNum">     952 </span><span class="lineCov">       3204 :                                 if (arcNext2-&gt;iType == ARC_TYPE_WORD) {</span>
+<span class="lineNum">     953 </span><span class="lineCov">       2560 :                                         if (arcNext2-&gt;lexUnit-&gt;vPhones.size() == 1) {</span>
+<span class="lineNum">     954 </span><span class="lineCov">       2095 :                                                 if (mLexUnitSeen.find(arcNext2-&gt;lexUnit-&gt;iLexUnit) == mLexUnitSeen.end()) {</span>
+<span class="lineNum">     955 </span>            :                                                         //m_lexiconManager-&gt;print(arcNext2-&gt;lexUnit);     
+<span class="lineNum">     956 </span><span class="lineCov">       1818 :                                                         mLexUnitSeen.insert(map&lt;int,bool&gt;::value_type(arcNext2-&gt;lexUnit-&gt;iLexUnit,true));</span>
+<span class="lineNum">     957 </span><span class="lineCov">       1818 :                                                         vLexUnitDest.push_back(arcNext2-&gt;lexUnit);</span>
+<span class="lineNum">     958 </span>            :                                                 }
+<span class="lineNum">     959 </span>            :                                         }
+<span class="lineNum">     960 </span>            :                                 }
+<span class="lineNum">     961 </span>            :                         }       
+<span class="lineNum">     962 </span>            :                 }
+<span class="lineNum">     963 </span><span class="lineCov">       1288 :         }</span>
+<span class="lineNum">     964 </span><span class="lineCov">       1288 : }</span>
+<span class="lineNum">     965 </span>            : 
+<span class="lineNum">     966 </span>            : // garbage collection of history items
+<a name="967"><span class="lineNum">     967 </span>            : // (1) it starts by marking the active items by traversing back items from the active states</a>
+<span class="lineNum">     968 </span>            : // (2) it adds inactive items to the queue of available items
+<span class="lineNum">     969 </span><span class="lineCov">         41 : void DynamicDecoderX::historyItemGarbageCollection() {</span>
+<span class="lineNum">     970 </span><span class="lineCov">         41 :         int iItemsActive = 0;</span>
+<span class="lineNum">     971 </span>            :         
+<span class="lineNum">     972 </span>            :         // (1) check if garbage collection was already run within the current time frame
+<span class="lineNum">     973 </span>            :         // note: this is an undesirable situation because it requires an extra pass over the complete array of items
+<span class="lineNum">     974 </span>            :         // it should be avoided by allocating a larger number of entries from the beginning
+<span class="lineNum">     975 </span><span class="lineCov">         41 :         if (m_iTimeGarbageCollectionLast == m_iTimeCurrent) {</span>
+<span class="lineNum">     976 </span>            :                 // mark all the history items as inactive
+<span class="lineNum">     977 </span><span class="lineNoCov">          0 :                 for(unsigned int i=0 ; i &lt; m_iHistoryItems ; ++i) {</span>
+<span class="lineNum">     978 </span><span class="lineNoCov">          0 :                         m_historyItems[i].iActive = -1;</span>
+<span class="lineNum">     979 </span>            :                 }       
+<span class="lineNum">     980 </span>            :         }       
+<span class="lineNum">     981 </span>            :         
+<span class="lineNum">     982 </span>            :         // (2) mark items coming from active arcs as active
+<span class="lineNum">     983 </span>            :         // (2.1) active arcs for current time frame
+<span class="lineNum">     984 </span><span class="lineCov">     103121 :         for(int i=0 ; i &lt; m_iNodesActiveCurrent ; ++i) {</span>
+<span class="lineNum">     985 </span><span class="lineCov">     103080 :                 ActiveToken *activeTokens = m_activeTokenCurrent+m_nodesActiveCurrent[i]-&gt;iActiveTokensCurrentBase;</span>
+<span class="lineNum">     986 </span><span class="lineCov">     207377 :                 for(int j=0 ; j &lt; m_nodesActiveCurrent[i]-&gt;iActiveTokensCurrent ; ++j) {</span>
+<span class="lineNum">     987 </span><span class="lineCov">     104297 :                         Token *token = m_tokensCurrent+activeTokens[j].iToken;</span>
+<span class="lineNum">     988 </span><span class="lineCov">     104297 :                         int iHistoryItem = token-&gt;iHistoryItem;      </span>
+<span class="lineNum">     989 </span><span class="lineCov">     215904 :                         while((iHistoryItem != -1) &amp;&amp; ((m_historyItems+iHistoryItem)-&gt;iActive != m_iTimeCurrent)) {</span>
+<span class="lineNum">     990 </span><span class="lineCov">       7310 :                                 (m_historyItems+iHistoryItem)-&gt;iActive = m_iTimeCurrent;     </span>
+<span class="lineNum">     991 </span><span class="lineCov">       7310 :                                 iHistoryItem = (m_historyItems+iHistoryItem)-&gt;iPrev;</span>
+<span class="lineNum">     992 </span><span class="lineCov">       7310 :                                 ++iItemsActive;</span>
+<span class="lineNum">     993 </span>            :                         }
+<span class="lineNum">     994 </span>            :                 }
+<span class="lineNum">     995 </span>            :         }       
+<span class="lineNum">     996 </span>            :         // (2.2) active arcs for next time frame
+<span class="lineNum">     997 </span>            :         // TODO: it would be faster to traverse the array of next tokens, but this should not be too bad
+<span class="lineNum">     998 </span><span class="lineCov">     120783 :         for(int i=0 ; i &lt; m_iNodesActiveNext ; ++i) {</span>
+<span class="lineNum">     999 </span><span class="lineCov">     120742 :                 ActiveToken *activeTokens = m_activeTokenNext+m_nodesActiveNext[i]-&gt;iActiveTokensNextBase;</span>
+<span class="lineNum">    1000 </span><span class="lineCov">     420978 :                 for(int j=0 ; j &lt; m_nodesActiveNext[i]-&gt;iActiveTokensNext ; ++j) {</span>
+<span class="lineNum">    1001 </span><span class="lineCov">     300236 :                         Token *token = m_tokensNext+activeTokens[j].iToken;</span>
+<span class="lineNum">    1002 </span><span class="lineCov">     300236 :                         int iHistoryItem = token-&gt;iHistoryItem;      </span>
+<span class="lineNum">    1003 </span><span class="lineCov">     609863 :                         while((iHistoryItem != -1) &amp;&amp; ((m_historyItems+iHistoryItem)-&gt;iActive != m_iTimeCurrent)) {</span>
+<span class="lineNum">    1004 </span><span class="lineCov">       9391 :                                 (m_historyItems+iHistoryItem)-&gt;iActive = m_iTimeCurrent;     </span>
+<span class="lineNum">    1005 </span><span class="lineCov">       9391 :                                 iHistoryItem = (m_historyItems+iHistoryItem)-&gt;iPrev;</span>
+<span class="lineNum">    1006 </span><span class="lineCov">       9391 :                                 ++iItemsActive;</span>
+<span class="lineNum">    1007 </span>            :                         }
+<span class="lineNum">    1008 </span>            :                 }
+<span class="lineNum">    1009 </span>            :         }
+<span class="lineNum">    1010 </span>            :         // check also auxiliar arrays for history items in use
+<span class="lineNum">    1011 </span><span class="lineCov">         41 :         if (m_iHistoryItemsAux != NULL) {</span>
+<span class="lineNum">    1012 </span><span class="lineCov">        230 :                 for(int i=0 ; i &lt; m_iHistoryItemsAuxSize ; ++i) {</span>
+<span class="lineNum">    1013 </span><span class="lineCov">        189 :                         if (m_iHistoryItemsAux[i] != -1) {</span>
+<span class="lineNum">    1014 </span><span class="lineCov">         35 :                                 if ((m_historyItems+m_iHistoryItemsAux[i])-&gt;iActive != m_iTimeCurrent) {     </span>
+<span class="lineNum">    1015 </span><span class="lineNoCov">          0 :                                         (m_historyItems+m_iHistoryItemsAux[i])-&gt;iActive = m_iTimeCurrent;</span>
+<span class="lineNum">    1016 </span><span class="lineNoCov">          0 :                                         ++iItemsActive;</span>
+<span class="lineNum">    1017 </span>            :                                 }
+<span class="lineNum">    1018 </span>            :                         }
+<span class="lineNum">    1019 </span>            :                 }       
+<span class="lineNum">    1020 </span>            :         }
+<span class="lineNum">    1021 </span>            :         // (3) if a certain percentage* of the items are active then we need to allocate 
+<span class="lineNum">    1022 </span>            :         // a bigger data structure to keep the new history items
+<span class="lineNum">    1023 </span>            :         // (* if we wait until all the items are active there will be many calls to the garbage collector
+<span class="lineNum">    1024 </span>            :         // when the array of reach a high occupation, that would introduce substantial overhead)
+<span class="lineNum">    1025 </span><span class="lineCov">         41 :         assert(iItemsActive &lt;= (int)m_iHistoryItems);</span>
+<span class="lineNum">    1026 </span><span class="lineCov">         41 :         if (iItemsActive &gt;= (0.20*m_iHistoryItems)) {</span>
+<span class="lineNum">    1027 </span>            : 
+<span class="lineNum">    1028 </span>            :                 //printf(&quot;history item garbage collection...\n&quot;);     
+<span class="lineNum">    1029 </span>            :                 //printf(&quot;allocating space for new items (item sused: %d existing: %d)\n&quot;,iItemsActive,m_iHistoryItems);      
+<span class="lineNum">    1030 </span>            :                 
+<span class="lineNum">    1031 </span>            :                 // allocate a new data structure with double capacity
+<span class="lineNum">    1032 </span><span class="lineNoCov">          0 :                 HistoryItem *historyItems = NULL;</span>
+<span class="lineNum">    1033 </span>            :                 try {
+<span class="lineNum">    1034 </span><span class="lineNoCov">          0 :                         historyItems = new HistoryItem[m_iHistoryItems*2];</span>
+<span class="lineNum">    1035 </span>            :                 } 
+<span class="lineNum">    1036 </span><span class="lineNoCov">          0 :                 catch (const std::bad_alloc&amp;) {</span>
+<span class="lineNum">    1037 </span><span class="lineNoCov">          0 :                         int iBytes = m_iHistoryItems*2*sizeof(WGToken);</span>
+<span class="lineNum">    1038 </span><span class="lineNoCov">          0 :                         BVC_ERROR &lt;&lt; &quot;unable to allocate memory for history items, &quot; &lt;&lt; iBytes &lt;&lt; &quot; Bytes needed&quot;;</span>
+<span class="lineNum">    1039 </span>            :                 }
+<span class="lineNum">    1040 </span>            :                 
+<span class="lineNum">    1041 </span>            :                 // copy the active items from the old data structure
+<span class="lineNum">    1042 </span><span class="lineNoCov">          0 :                 for(unsigned int i=0 ; i &lt; m_iHistoryItems ; ++i) {</span>
+<span class="lineNum">    1043 </span><span class="lineNoCov">          0 :                         historyItems[i].iLexUnitPron = m_historyItems[i].iLexUnitPron;</span>
+<span class="lineNum">    1044 </span><span class="lineNoCov">          0 :                         historyItems[i].iEndFrame = m_historyItems[i].iEndFrame;</span>
+<span class="lineNum">    1045 </span><span class="lineNoCov">          0 :                         historyItems[i].fScore = m_historyItems[i].fScore;</span>
+<span class="lineNum">    1046 </span><span class="lineNoCov">          0 :                         historyItems[i].iActive = m_iTimeCurrent;</span>
+<span class="lineNum">    1047 </span><span class="lineNoCov">          0 :                         historyItems[i].iWGToken = m_historyItems[i].iWGToken;</span>
+<span class="lineNum">    1048 </span><span class="lineNoCov">          0 :                         historyItems[i].iPrev = m_historyItems[i].iPrev;</span>
+<span class="lineNum">    1049 </span>            :                 }
+<span class="lineNum">    1050 </span>            :                 
+<span class="lineNum">    1051 </span>            :                 // create the linked list of available items
+<span class="lineNum">    1052 </span><span class="lineNoCov">          0 :                 for(unsigned int i=m_iHistoryItems ; i &lt; (2*m_iHistoryItems)-1 ; ++i) {</span>
+<span class="lineNum">    1053 </span><span class="lineNoCov">          0 :                         historyItems[i].iPrev = i+1;</span>
+<span class="lineNum">    1054 </span><span class="lineNoCov">          0 :                         historyItems[i].iActive = -1;   </span>
+<span class="lineNum">    1055 </span>            :                 }
+<span class="lineNum">    1056 </span><span class="lineNoCov">          0 :                 historyItems[(2*m_iHistoryItems)-1].iPrev = -1;</span>
+<span class="lineNum">    1057 </span><span class="lineNoCov">          0 :                 historyItems[(2*m_iHistoryItems)-1].iActive = -1;</span>
+<span class="lineNum">    1058 </span>            :                 
+<span class="lineNum">    1059 </span><span class="lineNoCov">          0 :                 delete [] m_historyItems;</span>
+<span class="lineNum">    1060 </span><span class="lineNoCov">          0 :                 m_historyItems = historyItems;</span>
+<span class="lineNum">    1061 </span><span class="lineNoCov">          0 :                 m_iHistoryItemAvailable = m_iHistoryItems;</span>
+<span class="lineNum">    1062 </span><span class="lineNoCov">          0 :                 m_iHistoryItems *= 2;</span>
+<span class="lineNum">    1063 </span>            :         }
+<span class="lineNum">    1064 </span>            :         // (3') there are inactive items: create a linked list with them
+<span class="lineNum">    1065 </span>            :         else {
+<span class="lineNum">    1066 </span><span class="lineCov">         41 :                 int *iHistoryItemAux = &amp;m_iHistoryItemAvailable;</span>
+<span class="lineNum">    1067 </span><span class="lineCov">     410041 :                 for(unsigned int i = 0 ; i &lt; m_iHistoryItems ; ++i) {</span>
+<span class="lineNum">    1068 </span><span class="lineCov">     410000 :                         if (m_historyItems[i].iActive != m_iTimeCurrent) {</span>
+<span class="lineNum">    1069 </span><span class="lineCov">     393299 :                                 m_historyItems[i].iActive = -1;</span>
+<span class="lineNum">    1070 </span><span class="lineCov">     393299 :                                 m_historyItems[i].iEndFrame = -1;</span>
+<span class="lineNum">    1071 </span><span class="lineCov">     393299 :                                 *iHistoryItemAux = i;</span>
+<span class="lineNum">    1072 </span><span class="lineCov">     393299 :                                 iHistoryItemAux = &amp;m_historyItems[i].iPrev; </span>
+<span class="lineNum">    1073 </span>            :                         }
+<span class="lineNum">    1074 </span>            :                 }
+<span class="lineNum">    1075 </span><span class="lineCov">         41 :                 *iHistoryItemAux = -1;</span>
+<span class="lineNum">    1076 </span>            :         }
+<span class="lineNum">    1077 </span>            :         
+<span class="lineNum">    1078 </span><span class="lineCov">         41 :         m_iTimeGarbageCollectionLast = m_iTimeCurrent;</span>
+<span class="lineNum">    1079 </span>            :         
+<span class="lineNum">    1080 </span>            :         //printf(&quot;%d used %d total\n&quot;,iItemsActive,m_iHistoryItems);  
+<span class="lineNum">    1081 </span><span class="lineCov">         41 : }</span>
+<span class="lineNum">    1082 </span>            : 
+<span class="lineNum">    1083 </span>            : 
+<span class="lineNum">    1084 </span>            : 
+<span class="lineNum">    1085 </span>            : 
+<a name="1086"><span class="lineNum">    1086 </span>            : </a>
+<span class="lineNum">    1087 </span>            : // prune active tokens that are not in the top-N within a node 
+<span class="lineNum">    1088 </span><span class="lineCov">        645 : void DynamicDecoderX::pruneExtraTokens(DNode *node) {</span>
+<span class="lineNum">    1089 </span><span class="lineCov">        645 :         assert(node-&gt;iActiveTokensNext &gt;= m_iTokensNodeMax);</span>
+<span class="lineNum">    1090 </span>            : 
+<span class="lineNum">    1091 </span>            :         // get the best score within the node
+<span class="lineNum">    1092 </span><span class="lineCov">        645 :         float fScoreBestNode = -FLT_MAX;</span>
+<span class="lineNum">    1093 </span><span class="lineCov">      26445 :         for(int j=0 ; j &lt; node-&gt;iActiveTokensNext ; ++j) {</span>
+<span class="lineNum">    1094 </span><span class="lineCov">      25800 :                 Token *token = m_tokensNext+(m_activeTokenNext+node-&gt;iActiveTokensNextBase)[j].iToken;</span>
+<span class="lineNum">    1095 </span><span class="lineCov">      25800 :                 if (token-&gt;fScore &gt; fScoreBestNode) {</span>
+<span class="lineNum">    1096 </span><span class="lineCov">       1228 :                         fScoreBestNode = token-&gt;fScore;</span>
+<span class="lineNum">    1097 </span>            :                 }
+<span class="lineNum">    1098 </span>            :         }
+<span class="lineNum">    1099 </span>            :                 
+<span class="lineNum">    1100 </span>            :         // compute bin-size for histogram pruning
+<span class="lineNum">    1101 </span><span class="lineCov">        645 :         int iNumberBins = NUMBER_BINS_HISTOGRAM_WITHIN_NODE;</span>
+<span class="lineNum">    1102 </span><span class="lineCov">        645 :         int *iBins = new int[iNumberBins];</span>
+<span class="lineNum">    1103 </span>            :         int iBin;
+<span class="lineNum">    1104 </span><span class="lineCov">        645 :         float fLength = m_fBeamWidthTokensNode+1;</span>
+<span class="lineNum">    1105 </span><span class="lineCov">        645 :         float fBinSize = fLength/((float)iNumberBins);</span>
+<span class="lineNum">    1106 </span><span class="lineCov">        645 :         assert(fBinSize &gt; 0);</span>
+<span class="lineNum">    1107 </span>            :                         
+<span class="lineNum">    1108 </span><span class="lineCov">        645 :         float fThresholdLikelihood = fScoreBestNode-m_fBeamWidthTokensNode;</span>
+<span class="lineNum">    1109 </span>            : 
+<span class="lineNum">    1110 </span>            :         // compute the size of each bin and initialize them
+<span class="lineNum">    1111 </span><span class="lineCov">      65145 :         for(int j = 0 ; j &lt; iNumberBins ; ++j) {</span>
+<span class="lineNum">    1112 </span><span class="lineCov">      64500 :                 iBins[j] = 0;</span>
+<span class="lineNum">    1113 </span>            :         }
+<span class="lineNum">    1114 </span>            :         // fill the bins, the first bin keeps the best tokens
+<span class="lineNum">    1115 </span><span class="lineCov">        645 :         ActiveToken *activeTokensNext = m_activeTokenNext+node-&gt;iActiveTokensNextBase;</span>
+<span class="lineNum">    1116 </span><span class="lineCov">      26445 :         for(int j=0 ; j &lt; node-&gt;iActiveTokensNext ; ++j) {</span>
+<span class="lineNum">    1117 </span><span class="lineCov">      25800 :                 Token *token = m_tokensNext+activeTokensNext[j].iToken;</span>
+<span class="lineNum">    1118 </span><span class="lineCov">      25800 :                 if (token-&gt;fScore &gt;= fThresholdLikelihood) {</span>
+<span class="lineNum">    1119 </span><span class="lineCov">      15588 :                         iBin = (int)(fabs(token-&gt;fScore-fScoreBestNode)/fBinSize);</span>
+<span class="lineNum">    1120 </span><span class="lineCov">      15588 :                         assert((iBin &gt;= 0) &amp;&amp; (iBin &lt; iNumberBins));</span>
+<span class="lineNum">    1121 </span><span class="lineCov">      15588 :                         iBins[iBin]++;</span>
+<span class="lineNum">    1122 </span>            :                 }
+<span class="lineNum">    1123 </span>            :         }
+<span class="lineNum">    1124 </span>            :         // get the threshold
+<span class="lineNum">    1125 </span><span class="lineCov">        645 :         int iSurvivors = 0;</span>
+<span class="lineNum">    1126 </span><span class="lineCov">        645 :         float fThresholdHistogram = -FLT_MAX;</span>
+<span class="lineNum">    1127 </span><span class="lineCov">      55342 :         for(int j = 0 ; j &lt; iNumberBins ; ++j) {</span>
+<span class="lineNum">    1128 </span><span class="lineCov">      55138 :                 int iSum = iSurvivors+iBins[j];</span>
+<span class="lineNum">    1129 </span>            :                 // this is the cut-off
+<span class="lineNum">    1130 </span><span class="lineCov">      55138 :                 if (iSum &gt; m_iMaxActiveTokensNode) { </span>
+<span class="lineNum">    1131 </span><span class="lineCov">        441 :                         fThresholdHistogram = fScoreBestNode-(j*fBinSize);</span>
+<span class="lineNum">    1132 </span><span class="lineCov">        441 :                         break;</span>
+<span class="lineNum">    1133 </span>            :                 }
+<span class="lineNum">    1134 </span><span class="lineCov">      54697 :                 iSurvivors = iSum;</span>
+<span class="lineNum">    1135 </span>            :         }
+<span class="lineNum">    1136 </span><span class="lineCov">        645 :         float fThresholdNode = max(fThresholdLikelihood,fThresholdHistogram);</span>
+<span class="lineNum">    1137 </span>            :         
+<span class="lineNum">    1138 </span>            :         // actual pruning
+<span class="lineNum">    1139 </span><span class="lineCov">        645 :         int iPruned = 0;</span>
+<span class="lineNum">    1140 </span><span class="lineCov">        645 :         int iAvailable = -1;</span>
+<span class="lineNum">    1141 </span><span class="lineCov">      26445 :         for(int j=0 ; j &lt; node-&gt;iActiveTokensNext ; ++j) {</span>
+<span class="lineNum">    1142 </span><span class="lineCov">      25800 :                 Token *token = m_tokensNext+activeTokensNext[j].iToken;</span>
+<span class="lineNum">    1143 </span><span class="lineCov">      25800 :                 if (token-&gt;fScore &lt; fThresholdNode) {</span>
+<span class="lineNum">    1144 </span><span class="lineCov">      14378 :                         if (iAvailable == -1) {</span>
+<span class="lineNum">    1145 </span><span class="lineCov">        645 :                                 iAvailable = j; </span>
+<span class="lineNum">    1146 </span>            :                         }
+<span class="lineNum">    1147 </span><span class="lineCov">      14378 :                         token-&gt;iNode = -1;</span>
+<span class="lineNum">    1148 </span><span class="lineCov">      14378 :                         ++iPruned;      </span>
+<span class="lineNum">    1149 </span><span class="lineCov">      11422 :                 } else if (iAvailable != -1) {</span>
+<span class="lineNum">    1150 </span><span class="lineCov">       6316 :                         activeTokensNext[iAvailable] = activeTokensNext[j];</span>
+<span class="lineNum">    1151 </span><span class="lineCov">       6316 :                         ++iAvailable;</span>
+<span class="lineNum">    1152 </span>            :                 }
+<span class="lineNum">    1153 </span>            :         }
+<span class="lineNum">    1154 </span><span class="lineCov">        645 :         node-&gt;iActiveTokensNext = node-&gt;iActiveTokensNext-iPruned;</span>
+<span class="lineNum">    1155 </span>            :         
+<span class="lineNum">    1156 </span>            :         // this should never happen
+<span class="lineNum">    1157 </span><span class="lineCov">        645 :         if ((node-&gt;iActiveTokensNext &gt;= m_iTokensNodeMax) || (node-&gt;iActiveTokensNext == 0)) {</span>
+<span class="lineNum">    1158 </span><span class="lineNoCov">          0 :                 for(int i=0 ; i &lt; iNumberBins ; ++i) {</span>
+<span class="lineNum">    1159 </span><span class="lineNoCov">          0 :                         BVC_VERB &lt;&lt; setw(3) &lt;&lt; i &lt;&lt; &quot; -&gt; &quot; &lt;&lt; setw(4) &lt;&lt; iBins[i];</span>
+<span class="lineNum">    1160 </span>            :                 }
+<span class="lineNum">    1161 </span>            :         }
+<span class="lineNum">    1162 </span>            :         
+<span class="lineNum">    1163 </span><span class="lineCov">        645 :         assert(node-&gt;iActiveTokensNext &lt; m_iTokensNodeMax);</span>
+<span class="lineNum">    1164 </span>            : 
+<span class="lineNum">    1165 </span><span class="lineCov">        645 :         delete [] iBins;</span>
+<span class="lineNum">    1166 </span><span class="lineCov">        645 : }</span>
+<a name="1167"><span class="lineNum">    1167 </span>            : </a>
+<span class="lineNum">    1168 </span>            : // uninitialize
+<span class="lineNum">    1169 </span><span class="lineCov">          1 : void DynamicDecoderX::uninitialize() {</span>
+<span class="lineNum">    1170 </span><span class="lineCov">          1 :         assert(m_bInitialized);</span>
+<span class="lineNum">    1171 </span><span class="lineCov">          1 :         delete [] m_nodesActiveCurrent;</span>
+<span class="lineNum">    1172 </span><span class="lineCov">          1 :         delete [] m_nodesActiveNext;</span>
+<span class="lineNum">    1173 </span><span class="lineCov">          1 :         delete [] m_tokensCurrent;</span>
+<span class="lineNum">    1174 </span><span class="lineCov">          1 :         delete [] m_tokensNext;</span>
+<span class="lineNum">    1175 </span><span class="lineCov">          1 :         delete [] m_activeTokenCurrent;</span>
+<span class="lineNum">    1176 </span><span class="lineCov">          1 :         delete [] m_activeTokenNext;</span>
+<span class="lineNum">    1177 </span><span class="lineCov">          1 :         delete [] m_historyItems;</span>
+<span class="lineNum">    1178 </span><span class="lineCov">          1 :         delete [] m_iHistoryItemsAuxBuffer;</span>
+<span class="lineNum">    1179 </span>            :         //delete m_lmLookAhead;
+<span class="lineNum">    1180 </span>            :         // word-graph generation?
+<span class="lineNum">    1181 </span><span class="lineCov">          1 :         m_bInitialized = false;</span>
+<a name="1182"><span class="lineNum">    1182 </span><span class="lineCov">          1 : }</span></a>
+<span class="lineNum">    1183 </span>            : // print the hash-contents (debugging)
+<a name="1184"><span class="lineNum">    1184 </span><span class="lineNoCov">          0 : void DynamicDecoderX::printHashContents() { }</span></a>
+<span class="lineNum">    1185 </span>            : // end utterance
+<a name="1186"><span class="lineNum">    1186 </span><span class="lineCov">          2 : void DynamicDecoderX::endUtterance() { }</span></a>
+<span class="lineNum">    1187 </span>            : // pruning (token based)
+<a name="1188"><span class="lineNum">    1188 </span><span class="lineNoCov">          0 : void DynamicDecoderX::pruningOriginal(){}</span></a>
+<span class="lineNum">    1189 </span>            : // destructor
+<a name="1190"><span class="lineNum">    1190 </span><span class="lineCov">          1 : DynamicDecoderX::~DynamicDecoderX(){}</span></a>
+<span class="lineNum">    1191 </span>            : // return the active lm-states at the current time (lm-state in active tokens)
+<a name="1192"><span class="lineNum">    1192 </span><span class="lineNoCov">          0 : void DynamicDecoderX::getActiveLMStates(map&lt;int,bool&gt; &amp;mLMState) { }</span></a>
+<span class="lineNum">    1193 </span>            : // keeps the best history item for each unique word-sequence (auxiliar method)
+<span class="lineNum">    1194 </span><span class="lineNoCov">          0 : void DynamicDecoderX::keepBestHistoryItem(int iHistoryItem) { }</span>
+<a name="1195"><span class="lineNum">    1195 </span>            :  </a>
+<span class="lineNum">    1196 </span>            : // compute the load factor of the hash table containing unque word sequences
+<a name="1197"><span class="lineNum">    1197 </span><span class="lineNoCov">          0 : float DynamicDecoderX::computeLoadFactorHashWordSequences(int *iBucketsUsed, int *iCollisions) {return 0.0; }</span></a>
+<span class="lineNum">    1198 </span>            : // show hash-occupation information (debugging)
+<a name="1199"><span class="lineNum">    1199 </span><span class="lineNoCov">          0 : void DynamicDecoderX::printHashsStats() {}</span></a>
+<span class="lineNum">    1200 </span>            : // marks unused history items as available (lattice generation)
+<span class="lineNum">    1201 </span><span class="lineNoCov">          0 : void DynamicDecoderX::historyItemGarbageCollectionLattice(bool bRecycleHistoryItems, bool bRecycleWGTokens) { }</span>
+<span class="lineNum">    1202 </span>            : // build a hypothesis lattice for the utterance
+<a name="1203"><span class="lineNum">    1203 </span>            : </a>
+<span class="lineNum">    1204 </span>            : 
+<span class="lineNum">    1205 </span><span class="lineCov">          6 : };      // end-of-namespace</span>
+<span class="lineNum">    1206 </span>            : 
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.10</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

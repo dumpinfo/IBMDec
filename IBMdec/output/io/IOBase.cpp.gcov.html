@@ -1,0 +1,371 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - dyna analysis - io/IOBase.cpp</title>
+  <link rel="stylesheet" type="text/css" href="../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../index.html">top level</a> - <a href="index.html">io</a> - IOBase.cpp<span style="font-size: 80%;"> (source / <a href="IOBase.cpp.func.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">dyna analysis</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">44</td>
+            <td class="headerCovTableEntry">142</td>
+            <td class="headerCovTableEntryLo">31.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-05-05</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">10</td>
+            <td class="headerCovTableEntry">23</td>
+            <td class="headerCovTableEntryLo">43.5 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : /*---------------------------------------------------------------------------------------------*</a>
+<span class="lineNum">       2 </span>            :  * Copyright (C) 2012 Daniel Bolaños - www.bltek.com - Boulder Language Technologies           *
+<span class="lineNum">       3 </span>            :  *                                                                                             *
+<span class="lineNum">       4 </span>            :  * www.bavieca.org is the website of the Bavieca Speech Recognition Toolkit                    *
+<span class="lineNum">       5 </span>            :  *                                                                                             *
+<span class="lineNum">       6 </span>            :  * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);                             *
+<span class="lineNum">       7 </span>            :  * you may not use this file except in compliance with the License.                            *
+<span class="lineNum">       8 </span>            :  * You may obtain a copy of the License at                                                     *
+<span class="lineNum">       9 </span>            :  *                                                                                             *
+<span class="lineNum">      10 </span>            :  *         http://www.apache.org/licenses/LICENSE-2.0                                          *
+<span class="lineNum">      11 </span>            :  *                                                                                             *
+<span class="lineNum">      12 </span>            :  * Unless required by applicable law or agreed to in writing, software                         *
+<span class="lineNum">      13 </span>            :  * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,                           *
+<span class="lineNum">      14 </span>            :  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.                    *
+<span class="lineNum">      15 </span>            :  * See the License for the specific language governing permissions and                         *
+<span class="lineNum">      16 </span>            :  * limitations under the License.                                                              *
+<span class="lineNum">      17 </span>            :  *---------------------------------------------------------------------------------------------*/
+<span class="lineNum">      18 </span>            : 
+<span class="lineNum">      19 </span>            : 
+<span class="lineNum">      20 </span>            : #include &quot;IOBase.h&quot;
+<span class="lineNum">      21 </span>            : #include &quot;LogMessage.h&quot;
+<span class="lineNum">      22 </span>            : 
+<span class="lineNum">      23 </span>            : namespace Bavieca {
+<a name="24"><span class="lineNum">      24 </span>            : </a>
+<span class="lineNum">      25 </span>            : // read bool value
+<span class="lineNum">      26 </span><span class="lineNoCov">          0 : void IOBase::read(istream &amp;is, bool *bData, bool bBinary) {</span>
+<span class="lineNum">      27 </span>            : 
+<span class="lineNum">      28 </span><span class="lineNoCov">          0 :         if (bBinary) {</span>
+<span class="lineNum">      29 </span><span class="lineNoCov">          0 :                 is.read(reinterpret_cast&lt;char*&gt;(bData),sizeof(bool));     </span>
+<span class="lineNum">      30 </span>            :         } else {
+<span class="lineNum">      31 </span><span class="lineNoCov">          0 :                 is &gt;&gt; *bData;     </span>
+<span class="lineNum">      32 </span>            :         }
+<span class="lineNum">      33 </span><span class="lineNoCov">          0 :         if (is.fail()) {</span>
+<span class="lineNum">      34 </span><span class="lineNoCov">          0 :                 BVC_ERROR &lt;&lt; &quot;error reading from stream at position: &quot; &lt;&lt; is.tellg();</span>
+<span class="lineNum">      35 </span>            :         }
+<span class="lineNum">      36 </span><span class="lineNoCov">          0 : }</span>
+<a name="37"><span class="lineNum">      37 </span>            : </a>
+<span class="lineNum">      38 </span>            : // read unsigned char value
+<span class="lineNum">      39 </span><span class="lineNoCov">          0 : void IOBase::read(istream &amp;is, char *iData, bool bBinary) {</span>
+<span class="lineNum">      40 </span>            : 
+<span class="lineNum">      41 </span><span class="lineNoCov">          0 :         if (bBinary) {</span>
+<span class="lineNum">      42 </span><span class="lineNoCov">          0 :                 is.read(iData,sizeof(char));    </span>
+<span class="lineNum">      43 </span>            :         } else {
+<span class="lineNum">      44 </span><span class="lineNoCov">          0 :                 is &gt;&gt; *iData;     </span>
+<span class="lineNum">      45 </span>            :         }
+<span class="lineNum">      46 </span><span class="lineNoCov">          0 :         if (is.fail()) {</span>
+<span class="lineNum">      47 </span><span class="lineNoCov">          0 :                 BVC_ERROR &lt;&lt; &quot;error reading from stream at position: &quot; &lt;&lt; is.tellg();</span>
+<span class="lineNum">      48 </span>            :         }
+<span class="lineNum">      49 </span><span class="lineNoCov">          0 : }</span>
+<a name="50"><span class="lineNum">      50 </span>            : </a>
+<span class="lineNum">      51 </span>            : // read unsigned char value
+<span class="lineNum">      52 </span><span class="lineCov">      19703 : void IOBase::read(istream &amp;is, unsigned char *iData, bool bBinary) {</span>
+<span class="lineNum">      53 </span>            : 
+<span class="lineNum">      54 </span><span class="lineCov">      19703 :         if (bBinary) {</span>
+<span class="lineNum">      55 </span><span class="lineCov">      19703 :                 is.read(reinterpret_cast&lt;char*&gt;(iData),sizeof(unsigned char));    </span>
+<span class="lineNum">      56 </span>            :         } else {
+<span class="lineNum">      57 </span><span class="lineNoCov">          0 :                 is &gt;&gt; *iData;     </span>
+<span class="lineNum">      58 </span>            :         }
+<span class="lineNum">      59 </span><span class="lineCov">      19703 :         if (is.fail()) {</span>
+<span class="lineNum">      60 </span><span class="lineNoCov">          0 :                 BVC_ERROR &lt;&lt; &quot;error reading from stream at position: &quot; &lt;&lt; is.tellg();</span>
+<span class="lineNum">      61 </span>            :         }
+<span class="lineNum">      62 </span><span class="lineCov">      19703 : }</span>
+<a name="63"><span class="lineNum">      63 </span>            : </a>
+<span class="lineNum">      64 </span>            : // read int value
+<span class="lineNum">      65 </span><span class="lineCov">      30015 : void IOBase::read(istream &amp;is, int *iData, bool bBinary) {</span>
+<span class="lineNum">      66 </span>            : 
+<span class="lineNum">      67 </span><span class="lineCov">      30015 :         if (bBinary) {</span>
+<span class="lineNum">      68 </span><span class="lineCov">      30015 :                 is.read(reinterpret_cast&lt;char*&gt;(iData),sizeof(int));      </span>
+<span class="lineNum">      69 </span>            :         } else {
+<span class="lineNum">      70 </span><span class="lineNoCov">          0 :                 is &gt;&gt; *iData;</span>
+<span class="lineNum">      71 </span>            :         }
+<span class="lineNum">      72 </span><span class="lineCov">      30015 :         if (is.fail()) {</span>
+<span class="lineNum">      73 </span><span class="lineNoCov">          0 :                 BVC_ERROR &lt;&lt; &quot;error reading from stream at position: &quot; &lt;&lt; is.tellg();</span>
+<span class="lineNum">      74 </span>            :         }
+<span class="lineNum">      75 </span><span class="lineCov">      30015 : }</span>
+<a name="76"><span class="lineNum">      76 </span>            : </a>
+<span class="lineNum">      77 </span>            : // read unsigned int value
+<span class="lineNum">      78 </span><span class="lineNoCov">          0 : void IOBase::read(istream &amp;is, unsigned int *iData, bool bBinary) {</span>
+<span class="lineNum">      79 </span>            : 
+<span class="lineNum">      80 </span><span class="lineNoCov">          0 :         if (bBinary) {</span>
+<span class="lineNum">      81 </span><span class="lineNoCov">          0 :                 is.read(reinterpret_cast&lt;char*&gt;(iData),sizeof(unsigned int));     </span>
+<span class="lineNum">      82 </span>            :         } else {
+<span class="lineNum">      83 </span><span class="lineNoCov">          0 :                 is &gt;&gt; *iData;</span>
+<span class="lineNum">      84 </span>            :         }
+<span class="lineNum">      85 </span><span class="lineNoCov">          0 :         if (is.fail()) {</span>
+<span class="lineNum">      86 </span><span class="lineNoCov">          0 :                 BVC_ERROR &lt;&lt; &quot;error reading from stream at position: &quot; &lt;&lt; is.tellg();</span>
+<span class="lineNum">      87 </span>            :         }
+<span class="lineNum">      88 </span><span class="lineNoCov">          0 : }</span>
+<a name="89"><span class="lineNum">      89 </span>            : </a>
+<span class="lineNum">      90 </span>            : // read float value
+<span class="lineNum">      91 </span><span class="lineCov">   10329687 : void IOBase::read(istream &amp;is, float *fData, bool bBinary) {</span>
+<span class="lineNum">      92 </span>            : 
+<span class="lineNum">      93 </span><span class="lineCov">   10329687 :         if (bBinary) {</span>
+<span class="lineNum">      94 </span><span class="lineCov">      99006 :                 is.read(reinterpret_cast&lt;char*&gt;(fData),sizeof(float));    </span>
+<span class="lineNum">      95 </span>            :         } else {
+<span class="lineNum">      96 </span><span class="lineCov">   10230681 :                 is &gt;&gt; *fData;     </span>
+<span class="lineNum">      97 </span>            :         }
+<span class="lineNum">      98 </span><span class="lineCov">   10329687 :         if (is.fail()) {</span>
+<span class="lineNum">      99 </span><span class="lineNoCov">          0 :                 BVC_ERROR &lt;&lt; &quot;error reading from stream at position: &quot; &lt;&lt; is.tellg();</span>
+<span class="lineNum">     100 </span>            :         }
+<span class="lineNum">     101 </span><span class="lineCov">   10329687 : }</span>
+<a name="102"><span class="lineNum">     102 </span>            : </a>
+<span class="lineNum">     103 </span>            : // read double value
+<span class="lineNum">     104 </span><span class="lineNoCov">          0 : void IOBase::read(istream &amp;is, double *dData, bool bBinary) {</span>
+<span class="lineNum">     105 </span>            : 
+<span class="lineNum">     106 </span><span class="lineNoCov">          0 :         if (bBinary) {</span>
+<span class="lineNum">     107 </span><span class="lineNoCov">          0 :                 is.read(reinterpret_cast&lt;char*&gt;(dData),sizeof(double));   </span>
+<span class="lineNum">     108 </span>            :         } else {
+<span class="lineNum">     109 </span><span class="lineNoCov">          0 :                 is &gt;&gt; *dData;</span>
+<span class="lineNum">     110 </span>            :         }
+<span class="lineNum">     111 </span><span class="lineNoCov">          0 :         if (is.fail()) {</span>
+<span class="lineNum">     112 </span><span class="lineNoCov">          0 :                 BVC_ERROR &lt;&lt; &quot;error reading from stream at position: &quot; &lt;&lt; is.tellg();</span>
+<span class="lineNum">     113 </span>            :         }
+<span class="lineNum">     114 </span><span class="lineNoCov">          0 : }</span>
+<a name="115"><span class="lineNum">     115 </span>            : </a>
+<span class="lineNum">     116 </span>            : // read a string
+<span class="lineNum">     117 </span><span class="lineCov">        134 : void IOBase::readString(istream &amp;is, char **str) {</span>
+<span class="lineNum">     118 </span>            :         
+<span class="lineNum">     119 </span>            :         // read length
+<span class="lineNum">     120 </span><span class="lineCov">        134 :         int iElements = -1;</span>
+<span class="lineNum">     121 </span><span class="lineCov">        134 :         is.read(reinterpret_cast&lt;char*&gt;(&amp;iElements),sizeof(int));     </span>
+<span class="lineNum">     122 </span><span class="lineCov">        134 :         if (is.fail()) {</span>
+<span class="lineNum">     123 </span><span class="lineNoCov">          0 :                 BVC_ERROR &lt;&lt; &quot;error reading from stream at position: &quot; &lt;&lt; is.tellg();</span>
+<span class="lineNum">     124 </span>            :         }
+<span class="lineNum">     125 </span>            :         
+<span class="lineNum">     126 </span>            :         // read the actual elements
+<span class="lineNum">     127 </span><span class="lineCov">        134 :         *str = new char[iElements+1];</span>
+<span class="lineNum">     128 </span><span class="lineCov">        134 :         is.read(*str,sizeof(char)*iElements);   </span>
+<span class="lineNum">     129 </span><span class="lineCov">        134 :         if (is.fail()) {</span>
+<span class="lineNum">     130 </span><span class="lineNoCov">          0 :                 BVC_ERROR &lt;&lt; &quot;error reading from stream at position: &quot; &lt;&lt; is.tellg();</span>
+<span class="lineNum">     131 </span>            :         }
+<span class="lineNum">     132 </span><span class="lineCov">        134 :         (*str)[iElements] = 0;  </span>
+<span class="lineNum">     133 </span><span class="lineCov">        134 : }</span>
+<a name="134"><span class="lineNum">     134 </span>            : </a>
+<span class="lineNum">     135 </span>            : // read a string
+<span class="lineNum">     136 </span><span class="lineCov">   16517883 : void IOBase::readString(istream &amp;is, string &amp;str) {</span>
+<span class="lineNum">     137 </span>            : 
+<span class="lineNum">     138 </span><span class="lineCov">   16517883 :         is &gt;&gt; str;</span>
+<span class="lineNum">     139 </span><span class="lineCov">   16517883 :         if (is.fail()) {</span>
+<span class="lineNum">     140 </span><span class="lineNoCov">          0 :                 BVC_ERROR &lt;&lt; &quot;error reading from stream at position: &quot; &lt;&lt; is.tellg();</span>
+<span class="lineNum">     141 </span>            :         }
+<span class="lineNum">     142 </span><span class="lineCov">   16517883 : }</span>
+<a name="143"><span class="lineNum">     143 </span>            : </a>
+<span class="lineNum">     144 </span>            : // read bytes
+<span class="lineNum">     145 </span><span class="lineCov">     201468 : void IOBase::readBytes(istream &amp;is, char *cData, int iBytes) {</span>
+<span class="lineNum">     146 </span>            : 
+<span class="lineNum">     147 </span><span class="lineCov">     201468 :         is.read(cData,iBytes);  </span>
+<span class="lineNum">     148 </span><span class="lineCov">     201468 :         if (is.fail()) {</span>
+<span class="lineNum">     149 </span><span class="lineNoCov">          0 :                 BVC_ERROR &lt;&lt; &quot;error reading from stream at position: &quot; &lt;&lt; is.tellg();</span>
+<span class="lineNum">     150 </span>            :         }
+<span class="lineNum">     151 </span><span class="lineCov">     201468 : }</span>
+<a name="152"><span class="lineNum">     152 </span>            : </a>
+<span class="lineNum">     153 </span>            : // read whitespaces (text mode)
+<span class="lineNum">     154 </span><span class="lineCov">    6692104 : void IOBase::readWhiteSpaces(istream &amp;is) {</span>
+<span class="lineNum">     155 </span>            :         
+<span class="lineNum">     156 </span>            :         char c;
+<span class="lineNum">     157 </span><span class="lineCov">   20076312 :         while(is.peek() == ' ') {</span>
+<span class="lineNum">     158 </span><span class="lineCov">    6692104 :                 is &gt;&gt; c; </span>
+<span class="lineNum">     159 </span>            :         }
+<span class="lineNum">     160 </span><span class="lineCov">    6692104 : }</span>
+<a name="161"><span class="lineNum">     161 </span>            : </a>
+<span class="lineNum">     162 </span>            : // write bool value
+<span class="lineNum">     163 </span><span class="lineNoCov">          0 : void IOBase::write(ostream &amp;os, bool bData, bool bBinary) {</span>
+<span class="lineNum">     164 </span>            : 
+<span class="lineNum">     165 </span><span class="lineNoCov">          0 :         if (bBinary) {</span>
+<span class="lineNum">     166 </span><span class="lineNoCov">          0 :                 os.write(reinterpret_cast&lt;char*&gt;(&amp;bData),sizeof(bool));       </span>
+<span class="lineNum">     167 </span>            :         } else {
+<span class="lineNum">     168 </span><span class="lineNoCov">          0 :                 os &lt;&lt; bData;</span>
+<span class="lineNum">     169 </span>            :         }
+<span class="lineNum">     170 </span><span class="lineNoCov">          0 :         if (os.fail()) {</span>
+<span class="lineNum">     171 </span><span class="lineNoCov">          0 :                 BVC_ERROR &lt;&lt; &quot;error writing to stream&quot;;</span>
+<span class="lineNum">     172 </span>            :         }
+<span class="lineNum">     173 </span><span class="lineNoCov">          0 : }</span>
+<a name="174"><span class="lineNum">     174 </span>            : </a>
+<span class="lineNum">     175 </span>            : // write unsigned char value
+<span class="lineNum">     176 </span><span class="lineNoCov">          0 : void IOBase::write(ostream &amp;os, unsigned char iData, bool bBinary) {</span>
+<span class="lineNum">     177 </span>            : 
+<span class="lineNum">     178 </span><span class="lineNoCov">          0 :         if (bBinary) {</span>
+<span class="lineNum">     179 </span><span class="lineNoCov">          0 :                 os.write(reinterpret_cast&lt;char*&gt;(&amp;iData),sizeof(unsigned char));      </span>
+<span class="lineNum">     180 </span>            :         } else {
+<span class="lineNum">     181 </span><span class="lineNoCov">          0 :                 os &lt;&lt; iData;</span>
+<span class="lineNum">     182 </span>            :         }
+<span class="lineNum">     183 </span><span class="lineNoCov">          0 :         if (os.fail()) {</span>
+<span class="lineNum">     184 </span><span class="lineNoCov">          0 :                 BVC_ERROR &lt;&lt; &quot;error writing to stream&quot;;</span>
+<span class="lineNum">     185 </span>            :         }
+<span class="lineNum">     186 </span><span class="lineNoCov">          0 : }</span>
+<a name="187"><span class="lineNum">     187 </span>            : </a>
+<span class="lineNum">     188 </span>            : // write int value
+<span class="lineNum">     189 </span><span class="lineNoCov">          0 : void IOBase::write(ostream &amp;os, int iData, bool bBinary) {</span>
+<span class="lineNum">     190 </span>            : 
+<span class="lineNum">     191 </span><span class="lineNoCov">          0 :         if (bBinary) {</span>
+<span class="lineNum">     192 </span><span class="lineNoCov">          0 :                 os.write(reinterpret_cast&lt;char*&gt;(&amp;iData),sizeof(int));        </span>
+<span class="lineNum">     193 </span>            :         } else {
+<span class="lineNum">     194 </span><span class="lineNoCov">          0 :                 os &lt;&lt; iData;</span>
+<span class="lineNum">     195 </span>            :         }
+<span class="lineNum">     196 </span><span class="lineNoCov">          0 :         if (os.fail()) {</span>
+<span class="lineNum">     197 </span><span class="lineNoCov">          0 :                 BVC_ERROR &lt;&lt; &quot;error writing to stream&quot;;</span>
+<span class="lineNum">     198 </span>            :         }
+<span class="lineNum">     199 </span><span class="lineNoCov">          0 : }</span>
+<a name="200"><span class="lineNum">     200 </span>            : </a>
+<span class="lineNum">     201 </span>            : // write int value
+<span class="lineNum">     202 </span><span class="lineNoCov">          0 : void IOBase::write(ostream &amp;os, unsigned int iData, bool bBinary) {</span>
+<span class="lineNum">     203 </span>            : 
+<span class="lineNum">     204 </span><span class="lineNoCov">          0 :         if (bBinary) {  </span>
+<span class="lineNum">     205 </span><span class="lineNoCov">          0 :                 os.write(reinterpret_cast&lt;char*&gt;(&amp;iData),sizeof(unsigned int));       </span>
+<span class="lineNum">     206 </span>            :         } else {
+<span class="lineNum">     207 </span><span class="lineNoCov">          0 :                 os &lt;&lt; iData;</span>
+<span class="lineNum">     208 </span>            :         }
+<span class="lineNum">     209 </span><span class="lineNoCov">          0 :         if (os.fail()) {</span>
+<span class="lineNum">     210 </span><span class="lineNoCov">          0 :                 BVC_ERROR &lt;&lt; &quot;error writing to stream&quot;;</span>
+<span class="lineNum">     211 </span>            :         }
+<span class="lineNum">     212 </span><span class="lineNoCov">          0 : }</span>
+<a name="213"><span class="lineNum">     213 </span>            : </a>
+<span class="lineNum">     214 </span>            : // write float value
+<span class="lineNum">     215 </span><span class="lineNoCov">          0 : void IOBase::write(ostream &amp;os, float fData, bool bBinary) {</span>
+<span class="lineNum">     216 </span>            : 
+<span class="lineNum">     217 </span><span class="lineNoCov">          0 :         if (bBinary) {</span>
+<span class="lineNum">     218 </span><span class="lineNoCov">          0 :                 os.write(reinterpret_cast&lt;char*&gt;(&amp;fData),sizeof(float));      </span>
+<span class="lineNum">     219 </span>            :         } else {
+<span class="lineNum">     220 </span><span class="lineNoCov">          0 :                 os &lt;&lt; fData;</span>
+<span class="lineNum">     221 </span>            :         }
+<span class="lineNum">     222 </span><span class="lineNoCov">          0 :         if (os.fail()) {</span>
+<span class="lineNum">     223 </span><span class="lineNoCov">          0 :                 BVC_ERROR &lt;&lt; &quot;error writing to stream&quot;;</span>
+<span class="lineNum">     224 </span>            :         }
+<span class="lineNum">     225 </span><span class="lineNoCov">          0 : }</span>
+<a name="226"><span class="lineNum">     226 </span>            : </a>
+<span class="lineNum">     227 </span>            : // write double value
+<span class="lineNum">     228 </span><span class="lineNoCov">          0 : void IOBase::write(ostream &amp;os, double dData, bool bBinary) {</span>
+<span class="lineNum">     229 </span>            : 
+<span class="lineNum">     230 </span><span class="lineNoCov">          0 :         if (bBinary) {</span>
+<span class="lineNum">     231 </span><span class="lineNoCov">          0 :                 os.write(reinterpret_cast&lt;char*&gt;(&amp;dData),sizeof(double));     </span>
+<span class="lineNum">     232 </span>            :         } else {
+<span class="lineNum">     233 </span><span class="lineNoCov">          0 :                 os &lt;&lt; dData;</span>
+<span class="lineNum">     234 </span>            :         }
+<span class="lineNum">     235 </span><span class="lineNoCov">          0 :         if (os.fail()) {</span>
+<span class="lineNum">     236 </span><span class="lineNoCov">          0 :                 BVC_ERROR &lt;&lt; &quot;error writing to stream&quot;;</span>
+<span class="lineNum">     237 </span>            :         }
+<span class="lineNum">     238 </span><span class="lineNoCov">          0 : }</span>
+<a name="239"><span class="lineNum">     239 </span>            : </a>
+<span class="lineNum">     240 </span>            : // write a string
+<span class="lineNum">     241 </span><span class="lineNoCov">          0 : void IOBase::writeString(ostream &amp;os, const char *str, int iLength) {</span>
+<span class="lineNum">     242 </span>            : 
+<span class="lineNum">     243 </span>            :         // write length
+<span class="lineNum">     244 </span><span class="lineNoCov">          0 :         os.write(reinterpret_cast&lt;char*&gt;(&amp;iLength),sizeof(int));      </span>
+<span class="lineNum">     245 </span><span class="lineNoCov">          0 :         if (os.fail()) {</span>
+<span class="lineNum">     246 </span><span class="lineNoCov">          0 :                 BVC_ERROR &lt;&lt; &quot;error writing to stream&quot;;</span>
+<span class="lineNum">     247 </span>            :         }
+<span class="lineNum">     248 </span>            :         
+<span class="lineNum">     249 </span>            :         // write the actual elements
+<span class="lineNum">     250 </span><span class="lineNoCov">          0 :         os.write(str,sizeof(char)*iLength);     </span>
+<span class="lineNum">     251 </span><span class="lineNoCov">          0 :         if (os.fail()) {</span>
+<span class="lineNum">     252 </span><span class="lineNoCov">          0 :                 BVC_ERROR &lt;&lt; &quot;error writing to stream&quot;;</span>
+<span class="lineNum">     253 </span>            :         }
+<span class="lineNum">     254 </span><span class="lineNoCov">          0 : }</span>
+<a name="255"><span class="lineNum">     255 </span>            : </a>
+<span class="lineNum">     256 </span>            : // write a string
+<span class="lineNum">     257 </span><span class="lineNoCov">          0 : void IOBase::writeString(ostream &amp;os, string &amp;str) {</span>
+<span class="lineNum">     258 </span>            : 
+<span class="lineNum">     259 </span><span class="lineNoCov">          0 :         os &lt;&lt; str;</span>
+<span class="lineNum">     260 </span><span class="lineNoCov">          0 :         if (os.fail()) {</span>
+<span class="lineNum">     261 </span><span class="lineNoCov">          0 :                 BVC_ERROR &lt;&lt; &quot;error writing to stream&quot;;</span>
+<span class="lineNum">     262 </span>            :         }
+<span class="lineNum">     263 </span><span class="lineNoCov">          0 : }</span>
+<a name="264"><span class="lineNum">     264 </span>            : </a>
+<span class="lineNum">     265 </span>            : // write a string
+<span class="lineNum">     266 </span><span class="lineCov">          2 : void IOBase::writeString(ostream &amp;os, ostringstream &amp;oss) {</span>
+<span class="lineNum">     267 </span>            : 
+<span class="lineNum">     268 </span><span class="lineCov">          2 :         string str = oss.str();</span>
+<span class="lineNum">     269 </span><span class="lineCov">          2 :         os &lt;&lt; str;</span>
+<span class="lineNum">     270 </span><span class="lineCov">          2 :         if (os.fail()) {</span>
+<span class="lineNum">     271 </span><span class="lineNoCov">          0 :                 BVC_ERROR &lt;&lt; &quot;error writing to stream&quot;;</span>
+<span class="lineNum">     272 </span><span class="lineCov">          2 :         }</span>
+<span class="lineNum">     273 </span><span class="lineCov">          2 : }</span>
+<span class="lineNum">     274 </span>            : 
+<span class="lineNum">     275 </span>            : 
+<a name="276"><span class="lineNum">     276 </span>            : </a>
+<span class="lineNum">     277 </span>            : // write double value
+<span class="lineNum">     278 </span><span class="lineNoCov">          0 : void IOBase::writeBytes(ostream &amp;os, char *bData, int iBytes) {</span>
+<span class="lineNum">     279 </span>            : 
+<span class="lineNum">     280 </span><span class="lineNoCov">          0 :         os.write(bData,iBytes); </span>
+<span class="lineNum">     281 </span><span class="lineNoCov">          0 :         if (os.fail()) {</span>
+<span class="lineNum">     282 </span><span class="lineNoCov">          0 :                 BVC_ERROR &lt;&lt; &quot;error writing to stream&quot;;</span>
+<span class="lineNum">     283 </span>            :         }
+<a name="284"><span class="lineNum">     284 </span><span class="lineNoCov">          0 : }</span></a>
+<span class="lineNum">     285 </span>            : 
+<span class="lineNum">     286 </span><span class="lineCov">          6 : };      // end-of-namespace</span>
+<span class="lineNum">     287 </span>            : 
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.10</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>
